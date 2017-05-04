@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">xendit-android</string>
+
+    <!-- Request errors -->
+    <string name="create_token_error_card_number">Card number is invalid</string>
+    <string name="create_token_error_card_expiration">Card expiration date is invalid</string>
+    <string name="create_token_error_card_cvn">Card CVN is invalid</string>
+    <string name="create_token_error_tokenization">Tokenization Error</string>
+    <string name="create_token_error_validation">Validation Error</string>
+</resources>
