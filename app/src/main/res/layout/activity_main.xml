@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="10dp"
-            android:text="3DS Authentication"
+            android:text="Create Authentication"
             android:textColor="@android:color/black"
             android:textSize="16sp"/>
 

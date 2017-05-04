@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:hint="Token ID"
-        android:inputType="number"
         android:textColor="@android:color/black"
         android:textColorHint="#cccccc"/>
 
@@ -53,4 +52,13 @@
         android:layout_gravity="center"
         android:layout_marginTop="50dp"
         android:text="Authenticate"/>
+
+    <TextView
+        android:id="@+id/result_AuthenticationActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textIsSelectable="true"/>
 </LinearLayout>

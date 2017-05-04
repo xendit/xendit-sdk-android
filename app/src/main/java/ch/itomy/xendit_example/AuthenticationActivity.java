@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xendit.Models.Card;
@@ -17,6 +18,8 @@ import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Sergey on 4/3/17.
@@ -28,6 +31,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private EditText amountEditText;
     private EditText cardCvnEditText;
     private Button authenticateBtn;
+    private TextView resultTextView;
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, AuthenticationActivity.class);
@@ -44,6 +48,10 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         amountEditText = (EditText) findViewById(R.id.amountEditText_AuthenticationActivity);
         cardCvnEditText = (EditText) findViewById(R.id.cardCvnEditText_AuthenticationActivity);
         authenticateBtn = (Button) findViewById(R.id.authenticateBtn_AuthenticationActivity);
+        resultTextView = (TextView) findViewById(R.id.result_AuthenticationActivity);
+
+        amountEditText.setText("123000");
+        cardCvnEditText.setText("123");
 
         authenticateBtn.setOnClickListener(this);
     }
@@ -59,12 +67,12 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onClick(View view) {
-        Card card = new Card("4000000000000002", "12", "2017", cardCvnEditText.getText().toString());
 
         Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISH_KEY);
-        xendit.createAuthentication(card, tokenIdEditText.getText().toString(), amountEditText.getText().toString(), new TokenCallback() {
+        xendit.createAuthentication(tokenIdEditText.getText().toString(), cardCvnEditText.getText().toString(), amountEditText.getText().toString(), new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
+                resultTextView.setText(token.getAuthentication().toString());
                 Toast.makeText(AuthenticationActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
             }
 

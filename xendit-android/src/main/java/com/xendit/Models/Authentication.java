@@ -61,4 +61,9 @@ public class Authentication implements Parcelable {
         parcel.writeString(status);
         parcel.writeString(payerAuthenticationUrl);
     }
+
+    @Override
+    public String toString() {
+        return "{"+this.id+","+this.status+"}";
+    }
 }

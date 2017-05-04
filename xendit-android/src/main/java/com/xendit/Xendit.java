@@ -14,7 +14,8 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
-import com.xendit.Models.TokenCredentials;
+import com.xendit.Models.Token;
+import com.xendit.Models.TokenConfiguration;
 import com.xendit.Models.TokenCreditCard;
 import com.xendit.Models.XenditError;
 import com.xendit.network.BaseRequest;
@@ -39,16 +40,13 @@ public class Xendit {
 
     private static final String NUMBER_REGEX = "^\\d+$";
 
-    private static final String PRODUCTION_FLEX_BASE_URL = "https://api.visa.com";
-    private static final String DEVELOPMENT_FLEX_BASE_URL = "https://sandbox.api.visa.com";
-//    private static final String PUBLIC_DEVELOPMENT_FLEX_BASE_URL = "https://sandbox.webapi.visa.com";
-
     private static final String STAGING_XENDIT_BASE_URL = "https://api-staging.xendit.co";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
 
-    private static final String GET_TOKEN_CREDENTIALS_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_credentials";
-    private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/payments/flex/v1/tokens?apikey=";
+    private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
+
+    private static final String GET_TOKEN_CONFIGURATION_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_configuration";
 
     static final String ACTION_KEY = "ACTION_KEY";
 
@@ -234,7 +232,8 @@ public class Xendit {
         }
     }
 
-    public void createToken(final Card card, final String amount, final TokenCallback tokenCallback) {
+    public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+
         if (card != null && tokenCallback != null) {
             if (!isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
@@ -251,10 +250,10 @@ public class Xendit {
                 return;
             }
 
-            getTokenizationCredentials(new NetworkHandler<TokenCredentials>().setResultListener(new ResultListener<TokenCredentials>() {
+            getTokenizationConfiguration(new NetworkHandler<TokenConfiguration>().setResultListener(new ResultListener<TokenConfiguration>() {
                 @Override
-                public void onSuccess(TokenCredentials tokenCredentials) {
-                    tokenizeCreditCardRequest(tokenCredentials.getFlexApiKey(), tokenCredentials.getTokenizationAuthKeyId(), card, amount, tokenCallback);
+                public void onSuccess(TokenConfiguration tokenConfiguration) {
+                    tokenizeCreditCardRequest(tokenConfiguration, card, amount, isMultipleUse, tokenCallback);
                 }
 
                 @Override
@@ -265,11 +264,48 @@ public class Xendit {
         }
     }
 
-    private void tokenizeCreditCardRequest(String flexApiKey, String tokenizationAuthKeyId, final Card card, final String amount, final TokenCallback tokenCallback) {
-        tokenizeCreditCard(flexApiKey, tokenizationAuthKeyId, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
+    public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
+            if (tokenId == null || tokenId == "") {
+                System.out.println("token");
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+                return;
+            }
+
+            if (amount == null || Integer.parseInt(amount) <= 0) {
+                System.out.println("amount");
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+                return;
+            }
+
+            if (!isCvnValid(cardCvn)) {
+                System.out.println("cvn");
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+                return;
+            }
+
+            _createAuthentication(tokenId, cardCvn, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+                @Override
+                public void onSuccess(Authentication authentication) {
+                    if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                        registerBroadcastReceiver(tokenCallback);
+                        context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                    } else {
+                        tokenCallback.onSuccess(new Token(authentication));
+                    }
+                }
+
+                @Override
+                public void onFailure(NetworkError error) {
+                    tokenCallback.onError(new XenditError(context.getString(R.string.create_auth_error), error.getMessage()));
+                }
+            }));
+    }
+
+    private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+        tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
             @Override
             public void onSuccess(TokenCreditCard tokenCreditCard) {
-                createAuthentication(card, tokenCreditCard.getToken(), amount, tokenCallback);
+                createCreditCardToken(card, tokenCreditCard.getToken(), amount, isMultipleUse, tokenCallback);
             }
 
             @Override
@@ -279,17 +315,21 @@ public class Xendit {
         }));
     }
 
-    public void createAuthentication(Card card, String token, String amount, final TokenCallback tokenCallback) {
+    public void createCreditCardToken(Card card, String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
         }
 
-        createCreditCardToken(card, token, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+        _createToken(card, token, amount, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
-                registerBroadcastReceiver(tokenCallback);
-                context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                    registerBroadcastReceiver(tokenCallback);
+                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                } else {
+                    tokenCallback.onSuccess(new Token(authentication));
+                }
             }
 
             @Override
@@ -308,36 +348,53 @@ public class Xendit {
         });
     }
 
-    private void getTokenizationCredentials(NetworkHandler<TokenCredentials> handler) {
+    private void getTokenizationConfiguration(NetworkHandler<TokenConfiguration> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
-        BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CREDENTIALS_URL, TokenCredentials.class, new DefaultResponseHandler<>(handler));
+        BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CONFIGURATION_URL, TokenConfiguration.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         sendRequest(request, handler);
     }
 
-    private void tokenizeCreditCard(String flexApiKey, String tokenizationAuthKeyId, Card card, NetworkHandler<TokenCreditCard> handler) {
-        String baseUrl = getEnvironment() ? PRODUCTION_FLEX_BASE_URL : DEVELOPMENT_FLEX_BASE_URL;
-        BaseRequest request = new BaseRequest<>(Request.Method.POST, baseUrl + TOKENIZE_CREDIT_CARD_URL + flexApiKey, TokenCreditCard.class, new DefaultResponseHandler<>(handler));
+    private void tokenizeCreditCard(TokenConfiguration tokenConfig, Card card, NetworkHandler<TokenCreditCard> handler) {
+        String baseUrl = getEnvironment() ? tokenConfig.getFlexProductionUrl() : tokenConfig.getFlexDevelopmentUrl();
+        String flexUrl = baseUrl + TOKENIZE_CREDIT_CARD_URL + tokenConfig.getFlexApiKey();
+
+        BaseRequest request = new BaseRequest<>(Request.Method.POST, flexUrl, TokenCreditCard.class, new DefaultResponseHandler<>(handler));
+
         JsonObject cardInfoJson = new JsonObject();
         cardInfoJson.addProperty("cardNumber", card.getCreditCardNumber());
         cardInfoJson.addProperty("cardExpirationMonth", card.getCardExpirationMonth());
         cardInfoJson.addProperty("cardExpirationYear", card.getCardExpirationYear());
         cardInfoJson.addProperty("cardType", getCardType(card.getCreditCardNumber()).getCardKey());
-        request.addParam("keyId", tokenizationAuthKeyId);
+
+        request.addParam("keyId", tokenConfig.getTokenizationAuthKeyId());
         request.addJsonParam("cardInfo", cardInfoJson);
         sendRequest(request, handler);
     }
 
-    private void createCreditCardToken(Card card, String token, String amount, NetworkHandler<Authentication> handler) {
+    private void _createToken(Card card, String token, String amount, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
+
         BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_URL, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
-        request.addParam("is_authentication_bundled", "true");
+        request.addParam("is_authentication_bundled", String.valueOf(!isMultipleUse));
         request.addParam("amount", amount);
         request.addParam("credit_card_token", token);
         request.addParam("card_cvn", card.getCreditCardCVN());
+        sendRequest(request, handler);
+    }
+
+    private void _createAuthentication(String tokenId, String cardCvn, String amount, NetworkHandler<Authentication> handler) {
+        String encodedKey = encodeBase64(publishableKey + ":");
+        String basicAuthCredentials = "Basic " + encodedKey;
+        String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
+
+        BaseRequest request = new BaseRequest<>(Request.Method.POST, requestUrl , Authentication.class, new DefaultResponseHandler<>(handler));
+        request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
+        request.addParam("amount", amount);
+        request.addParam("card_cvn", cardCvn);
         sendRequest(request, handler);
     }
 
