@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/white"
+              android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/tokenIdEditText_AuthenticationActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Token ID"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/amountEditText_AuthenticationActivity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:hint="Amount"
+            android:inputType="number"
+            android:textColor="@android:color/black"
+            android:textColorHint="#cccccc"/>
+
+        <EditText
+            android:id="@+id/cardCvnEditText_AuthenticationActivity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:hint="Card CVN"
+            android:inputType="number"
+            android:textColor="@android:color/black"
+            android:textColorHint="#cccccc"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/authenticateBtn_AuthenticationActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:text="Authenticate"/>
+
+    <TextView
+        android:id="@+id/result_AuthenticationActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textIsSelectable="true"/>
+</LinearLayout>

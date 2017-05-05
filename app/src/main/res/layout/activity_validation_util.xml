@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/white"
+              android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/cardNumberEditText_ValidationUtilActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Card number"
+        android:inputType="number"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/expMonthEditText_ValidationUtilActivity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:hint="Exp Month"
+            android:inputType="number"
+            android:textColor="@android:color/black"
+            android:textColorHint="#cccccc"/>
+
+        <EditText
+            android:id="@+id/expYearEditText_ValidationUtilActivity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:hint="Exp Year"
+            android:inputType="number"
+            android:textColor="@android:color/black"
+            android:textColorHint="#cccccc"/>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/cvnEditText_ValidationUtilActivity"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="CVN"
+        android:inputType="number"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc"/>
+
+    <Button
+        android:id="@+id/validateBtn_ValidationUtilActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:text="Validate"/>
+</LinearLayout>
