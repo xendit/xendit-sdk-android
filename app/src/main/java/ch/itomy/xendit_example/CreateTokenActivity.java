@@ -96,7 +96,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onError(XenditError xenditError) {
-                Toast.makeText(CreateTokenActivity.this, xenditError.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
             }
         });
     }
