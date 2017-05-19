@@ -25,6 +25,8 @@ import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
 
+import org.json.JSONException;
+
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -258,7 +260,7 @@ public class Xendit {
 
                 @Override
                 public void onFailure(NetworkError error) {
-                    tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation), error.getMessage()));
+                    tokenCallback.onError(new XenditError(error));
                 }
             }));
         }
@@ -266,19 +268,16 @@ public class Xendit {
 
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
             if (tokenId == null || tokenId == "") {
-                System.out.println("token");
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
                 return;
             }
 
             if (amount == null || Integer.parseInt(amount) <= 0) {
-                System.out.println("amount");
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
                 return;
             }
 
             if (!isCvnValid(cardCvn)) {
-                System.out.println("cvn");
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
@@ -296,7 +295,7 @@ public class Xendit {
 
                 @Override
                 public void onFailure(NetworkError error) {
-                    tokenCallback.onError(new XenditError(context.getString(R.string.create_auth_error), error.getMessage()));
+                    tokenCallback.onError(new XenditError(error));
                 }
             }));
     }
@@ -310,12 +309,12 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_tokenization), error.getMessage()));
+                tokenCallback.onError(new XenditError(error));
             }
         }));
     }
 
-    public void createCreditCardToken(Card card, String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
+    public void createCreditCardToken(Card card, final String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
@@ -334,7 +333,7 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_tokenization), error.getMessage()));
+                tokenCallback.onError(new XenditError(error));
             }
         }));
     }

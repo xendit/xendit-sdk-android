@@ -78,7 +78,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
             @Override
             public void onError(XenditError xenditError) {
-                Toast.makeText(AuthenticationActivity.this, xenditError.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
             }
         });
     }

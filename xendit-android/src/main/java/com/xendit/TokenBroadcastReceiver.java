@@ -9,6 +9,9 @@ import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Sergey on 3/30/17.
  */
@@ -32,7 +35,15 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
             if (authentication.getStatus().equals("VERIFIED")) {
                 tokenCallback.onSuccess(new Token(authentication));
             } else {
-                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation), authentication));
+                try {
+                    JSONObject errorJson = new JSONObject(message);
+                    String errorMessage = errorJson.getString("failure_reason");
+                    tokenCallback.onError(new XenditError(errorMessage, authentication));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    tokenCallback.onError(new XenditError(context.getString(R.string.tokenization_error)));
+                }
+
             }
         }
 

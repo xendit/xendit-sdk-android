@@ -75,7 +75,7 @@ public class XenditActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        sendBroadcastReceiver(getString(R.string.create_token_error_validation));
+        sendBroadcastReceiver(getString(R.string.tokenization_error));
     }
 
     private void sendBroadcastReceiver(String message) {
