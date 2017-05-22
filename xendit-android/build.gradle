@@ -1,5 +1,30 @@
 apply plugin: 'com.android.library'
 
+ext {
+    bintrayOrg = 'xendit'
+    bintrayRepo = 'android'
+    bintrayName = 'xendit-sdk-android'
+
+    publishedGroupId = 'com.xendit'
+    libraryName = 'Xendit'
+    artifact = 'xendit-android'
+
+    libraryDescription = 'Xendit makes it simple to collect credit card information securely, without it having to touch your server'
+
+    siteUrl = 'https://github.com/xendit/xendit-sdk-android'
+    gitUrl = 'https://github.com/xendit/xendit-sdk-android.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = '0505gonzalez'
+    developerName = 'Juan Gonzalez.'
+    developerEmail = 'juan@xendit.co'
+
+    licenseName = 'MIT'
+    licenseUrl = ''
+    allLicenses = ["MIT"]
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -29,3 +54,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
 }
+
+apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/bintrayv1.gradle'
