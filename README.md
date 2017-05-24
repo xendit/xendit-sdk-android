@@ -37,12 +37,28 @@ Visit and try the `app` module to see an example of how the SDK works. Additiona
 Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==");
 ```
 
-### Creating a token
+### Creating a single use token
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
-boolean isMultipleUse = false;
 
-xendit.createToken(card, "75000", isMultipleUse, new TokenCallback() {
+xendit.createToken(card, "75000", new TokenCallback() {
+    @Override
+    public void onSuccess(Token token) {
+        // Handle successful tokenization
+    }
+
+    @Override
+    public void onError(XenditError xenditError) {
+        // Handle error
+    }
+});
+```
+
+### Creating a multiple use token
+```
+Card card = new Card("4000000000000002", "12", "2017", "123");
+
+xendit.createMultipleUseToken(card, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
