@@ -36,9 +36,13 @@ public class XenditActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_xendit);
+
+        Authentication authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
         WebView webView = (WebView) findViewById(R.id.webView_XenditActivity);
         progressBar = (ProgressBar) findViewById(R.id.progressBar_XenditActivity);
+
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
@@ -56,10 +60,23 @@ public class XenditActivity extends Activity {
             }
 
         });
+
         webView.addJavascriptInterface(new WebViewJavaScriptInterface(), "MobileBridge");
-        Authentication authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
+
         String baseUrl = "https://api.xendit.co";
-        String data = "<script>addEventListener('message', function(e){ try {MobileBridge.postMessage(e['data']);} catch(err) {console.log('Android call error');} }, false);</script> <iframe style='border: 0; width: 100%; height: 100%' src='" + authentication.getPayerAuthenticationUrl() + "'></iframe>";
+        String data = "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
+                "<style type=\"text/css\">" +
+                    "html, body {margin: 0; padding: 0;}" +
+                    "iframe {border: none;width: 100%;height: 100%;position: fixed;left: 0;top: 0;}" +
+                "</style>" +
+                "<script>addEventListener('message', function(e){ try {MobileBridge.postMessage(e['data']);} catch(err) {console.log('Android call error');} }, false);</script>" +
+            "</head>" +
+            "<body><iframe src='" + authentication.getPayerAuthenticationUrl() + "'></iframe></body>" +
+            "</html>";
+
         webView.loadDataWithBaseURL(baseUrl, data, "text/html", "utf-8", null);
     }
 
