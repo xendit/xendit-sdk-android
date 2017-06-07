@@ -69,3 +69,6 @@ xendit.createAuthentication("sample-token-id", "123", "75000", new TokenCallback
     }
 });
 ```
+
+## Creating a charge
+When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
