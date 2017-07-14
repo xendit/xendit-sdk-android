@@ -24,6 +24,19 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# xendit
 -keep public class com.xendit.** { public *;}
-
+-keep class com.xendit.Models.** { *; }
+-keepattributes *Annotation*
 -keepattributes LocalVariableTable,LocalVariableTypeTable
+
+#volley
+-keep class com.android.volley.** { *; }
+-keep interface com.android.volley.** { *; }
+-keep class org.apache.commons.logging.**
+
+-keepattributes EnclosingMethod
+
+# Gson
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.stream.** { *; }
