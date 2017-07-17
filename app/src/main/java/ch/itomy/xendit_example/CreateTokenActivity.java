@@ -87,18 +87,34 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         isMultipleUse = multipleUseCheckBox.isChecked();
 
         Xendit xendit = new Xendit(getApplicationContext(), PUBLISH_KEY);
-        xendit.createToken(card, amountEditText.getText().toString(), isMultipleUse, new TokenCallback() {
-            @Override
-            public void onSuccess(Token token) {
-                resultTextView.setText(token.getAuthentication().toString());
-                Toast.makeText(CreateTokenActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onError(XenditError xenditError) {
-                Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (isMultipleUse) {
+            xendit.createMultipleUseToken(card, new TokenCallback() {
+                @Override
+                public void onSuccess(Token token) {
+                    resultTextView.setText(token.getAuthentication().toString());
+                    Toast.makeText(CreateTokenActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(XenditError xenditError) {
+                    Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            xendit.createToken(card, amountEditText.getText().toString(), new TokenCallback() {
+                @Override
+                public void onSuccess(Token token) {
+                    resultTextView.setText(token.getAuthentication().toString());
+                    Toast.makeText(CreateTokenActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(XenditError xenditError) {
+                    Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override

@@ -42,7 +42,6 @@ public class Xendit {
 
     private static final String NUMBER_REGEX = "^\\d+$";
 
-    private static final String STAGING_XENDIT_BASE_URL = "https://api-staging.xendit.co";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
 
     private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
@@ -234,8 +233,40 @@ public class Xendit {
         }
     }
 
-    public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+    public void createToken(final Card card, final String amount, final TokenCallback tokenCallback) {
+        if (card != null && tokenCallback != null && amount != null) {
+            if (!isCardNumberValid(card.getCreditCardNumber())) {
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
+                return;
+            }
 
+            if (!isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
+                return;
+            }
+
+            if (!isCvnValid(card.getCreditCardCVN())) {
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+                return;
+            }
+
+            getTokenizationConfiguration(new NetworkHandler<TokenConfiguration>().setResultListener(new ResultListener<TokenConfiguration>() {
+                @Override
+                public void onSuccess(TokenConfiguration tokenConfiguration) {
+                    tokenizeCreditCardRequest(tokenConfiguration, card, amount, false, tokenCallback);
+                }
+
+                @Override
+                public void onFailure(NetworkError error) {
+                    tokenCallback.onError(new XenditError(error));
+                }
+            }));
+        } else {
+            tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+        }
+    }
+
+    public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
         if (card != null && tokenCallback != null) {
             if (!isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
@@ -255,7 +286,7 @@ public class Xendit {
             getTokenizationConfiguration(new NetworkHandler<TokenConfiguration>().setResultListener(new ResultListener<TokenConfiguration>() {
                 @Override
                 public void onSuccess(TokenConfiguration tokenConfiguration) {
-                    tokenizeCreditCardRequest(tokenConfiguration, card, amount, isMultipleUse, tokenCallback);
+                    tokenizeCreditCardRequest(tokenConfiguration, card, null, true, tokenCallback);
                 }
 
                 @Override
@@ -379,7 +410,9 @@ public class Xendit {
         BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_URL, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addParam("is_authentication_bundled", String.valueOf(!isMultipleUse));
-        request.addParam("amount", amount);
+        if (!isMultipleUse) {
+            request.addParam("amount", amount);
+        }
         request.addParam("credit_card_token", token);
         request.addParam("card_cvn", card.getCreditCardCVN());
         sendRequest(request, handler);

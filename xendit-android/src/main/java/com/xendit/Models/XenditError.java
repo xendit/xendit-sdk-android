@@ -18,6 +18,11 @@ public class XenditError {
         this.errorMessage = error;
     }
 
+    public XenditError(String error, String message) {
+        this.errorCode = error;
+        this.errorMessage = message;
+    }
+
     public XenditError(NetworkError networkError) {
         try {
             this.errorCode =  networkError.errorResponse.getString("error_code");
