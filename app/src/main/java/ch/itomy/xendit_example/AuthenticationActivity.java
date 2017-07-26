@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xendit.AuthenticationCallback;
+import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
@@ -66,11 +68,11 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     public void onClick(View view) {
 
         Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY);
-        xendit.createAuthentication(tokenIdEditText.getText().toString(), cardCvnEditText.getText().toString(), amountEditText.getText().toString(), new TokenCallback() {
+        xendit.createAuthentication(tokenIdEditText.getText().toString(), cardCvnEditText.getText().toString(), amountEditText.getText().toString(), new AuthenticationCallback() {
             @Override
-            public void onSuccess(Token token) {
-                resultTextView.setText(token.getAuthentication().toString());
-                Toast.makeText(AuthenticationActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
+            public void onSuccess(Authentication authentication) {
+                resultTextView.setText("{ id: \"" + authentication.getId() + "\", status: \"" + authentication.getStatus() + "\" }");
+                Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

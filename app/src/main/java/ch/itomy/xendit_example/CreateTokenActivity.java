@@ -91,8 +91,8 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
-                resultTextView.setText(token.getAuthentication().toString());
-                Toast.makeText(CreateTokenActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
+                resultTextView.setText("{ id: \"" + token.getId() + "\", status: \"" + token.getStatus() + "\" }");
+                Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

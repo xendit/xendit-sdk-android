@@ -45,6 +45,7 @@ xendit.createSingleUseToken(card, 75000, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
+        System.out.println("Token ID: " + token.getId());
     }
 
     @Override
@@ -62,6 +63,7 @@ xendit.createMultipleUseToken(card, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
+        System.out.println("Token ID: " + token.getId());
     }
 
     @Override
@@ -73,10 +75,11 @@ xendit.createMultipleUseToken(card, new TokenCallback() {
 
 ### Creating a 3ds authentication
 ```
-xendit.createAuthentication("sample-token-id", "123", "75000", new TokenCallback() {
+xendit.createAuthentication("sample-token-id", "123", "75000", new AuthenticationCallback() {
     @Override
-    public void onSuccess(Token token) {
-        // Handle successful tokenization
+    public void onSuccess(Authentication authentication) {
+        // Handle successful authentication
+        System.out.println("Authentication ID: " + authentication.getId());
     }
 
     @Override

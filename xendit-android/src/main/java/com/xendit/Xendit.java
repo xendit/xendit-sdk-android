@@ -325,9 +325,44 @@ public class Xendit {
      * @param  cardCvn The credit card CVN
      * @param  amount The amount that will eventually be charged. This number is displayed to the
      *                user in the 3DS authentication view
-     * @param tokenCallback The callback that will be called when the token creation completes or
-     *                      fails
+     * @param authenticationCallback The callback that will be called when the authentication
+     *                               creation completes or fails
      */
+    public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final AuthenticationCallback authenticationCallback) {
+        if (tokenId == null || tokenId == "") {
+            authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+            return;
+        }
+
+        if (amount == null || Integer.parseInt(amount) <= 0) {
+            authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+            return;
+        }
+
+        if (!isCvnValid(cardCvn)) {
+            authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+            return;
+        }
+
+        _createAuthentication(tokenId, cardCvn, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+            @Override
+            public void onSuccess(Authentication authentication) {
+                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                    registerBroadcastReceiver(authenticationCallback);
+                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                } else {
+                    authenticationCallback.onSuccess(authentication);
+                }
+            }
+
+            @Override
+            public void onFailure(NetworkError error) {
+                authenticationCallback.onError(new XenditError(error));
+            }
+        }));
+    }
+
+    @Deprecated
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
             if (tokenId == null || tokenId == "") {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
@@ -423,6 +458,15 @@ public class Xendit {
                 tokenCallback.onError(new XenditError(error));
             }
         }));
+    }
+
+    private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                context.registerReceiver(new AuthenticationBroadcastReceiver(authenticationCallback), new IntentFilter(ACTION_KEY));
+            }
+        });
     }
 
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
