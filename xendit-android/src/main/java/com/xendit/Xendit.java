@@ -234,8 +234,22 @@ public class Xendit {
         }
     }
 
-    public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+    public void createSingleUseToken(final Card card, final int amount, final TokenCallback tokenCallback) {
+        String amountStr = Integer.toString(amount);
 
+        createSingleOrMultipleUseToken(card, amountStr, false, tokenCallback);
+    }
+
+    public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
+        createSingleOrMultipleUseToken(card, "0", true, tokenCallback);
+    }
+
+    @Deprecated
+    public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+        createSingleOrMultipleUseToken(card, amount, isMultipleUse, tokenCallback);
+    }
+
+    private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (card != null && tokenCallback != null) {
             if (!isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
@@ -379,9 +393,13 @@ public class Xendit {
         BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_URL, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addParam("is_authentication_bundled", String.valueOf(!isMultipleUse));
-        request.addParam("amount", amount);
         request.addParam("credit_card_token", token);
         request.addParam("card_cvn", card.getCreditCardCVN());
+
+        if (!isMultipleUse) {
+            request.addParam("amount", amount);
+        }
+
         sendRequest(request, handler);
     }
 

@@ -13,13 +13,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by Sergey on 4/3/17.
@@ -68,7 +65,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View view) {
 
-        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISH_KEY);
+        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY);
         xendit.createAuthentication(tokenIdEditText.getText().toString(), cardCvnEditText.getText().toString(), amountEditText.getText().toString(), new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
