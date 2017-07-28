@@ -13,13 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xendit.Models.Card;
+import com.xendit.AuthenticationCallback;
+import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by Sergey on 4/3/17.
@@ -68,12 +67,16 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View view) {
 
-        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISH_KEY);
-        xendit.createAuthentication(tokenIdEditText.getText().toString(), cardCvnEditText.getText().toString(), amountEditText.getText().toString(), new TokenCallback() {
+        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY);
+
+        String tokenId = tokenIdEditText.getText().toString();
+        int amount = Integer.parseInt(amountEditText.getText().toString());
+
+        xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
             @Override
-            public void onSuccess(Token token) {
-                resultTextView.setText(token.getAuthentication().toString());
-                Toast.makeText(AuthenticationActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
+            public void onSuccess(Authentication authentication) {
+                resultTextView.setText("{ id: \"" + authentication.getId() + "\", status: \"" + authentication.getStatus() + "\" }");
+                Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

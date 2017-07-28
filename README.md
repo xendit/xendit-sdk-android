@@ -37,15 +37,33 @@ Visit and try the `app` module to see an example of how the SDK works. Additiona
 Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==");
 ```
 
-### Creating a token
+### Creating a single-use token
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
-boolean isMultipleUse = false;
 
-xendit.createToken(card, "75000", isMultipleUse, new TokenCallback() {
+xendit.createSingleUseToken(card, 75000, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
+        System.out.println("Token ID: " + token.getId());
+    }
+
+    @Override
+    public void onError(XenditError xenditError) {
+        // Handle error
+    }
+});
+```
+
+### Creating a multiple-use token
+```
+Card card = new Card("4000000000000002", "12", "2017", "123");
+
+xendit.createMultipleUseToken(card, new TokenCallback() {
+    @Override
+    public void onSuccess(Token token) {
+        // Handle successful tokenization
+        System.out.println("Token ID: " + token.getId());
     }
 
     @Override
@@ -57,10 +75,14 @@ xendit.createToken(card, "75000", isMultipleUse, new TokenCallback() {
 
 ### Creating a 3ds authentication
 ```
-xendit.createAuthentication("sample-token-id", "123", "75000", new TokenCallback() {
+String tokenId = "sample-token-id";
+int amount = 50000;
+
+xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
     @Override
-    public void onSuccess(Token token) {
-        // Handle successful tokenization
+    public void onSuccess(Authentication authentication) {
+        // Handle successful authentication
+        System.out.println("Authentication ID: " + authentication.getId());
     }
 
     @Override

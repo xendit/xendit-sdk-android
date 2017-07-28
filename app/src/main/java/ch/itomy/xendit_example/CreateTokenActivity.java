@@ -26,7 +26,7 @@ import com.xendit.Xendit;
 
 public class CreateTokenActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String PUBLISH_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+    public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
 
     private EditText cardNumberEditText;
     private EditText expMonthEditText;
@@ -79,26 +79,35 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view) {
+        Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
+
+        isMultipleUse = multipleUseCheckBox.isChecked();
+
         Card card = new Card(cardNumberEditText.getText().toString(),
                 expMonthEditText.getText().toString(),
                 expYearEditText.getText().toString(),
                 cvnEditText.getText().toString());
 
-        isMultipleUse = multipleUseCheckBox.isChecked();
-
-        Xendit xendit = new Xendit(getApplicationContext(), PUBLISH_KEY);
-        xendit.createToken(card, amountEditText.getText().toString(), isMultipleUse, new TokenCallback() {
+        TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
-                resultTextView.setText(token.getAuthentication().toString());
-                Toast.makeText(CreateTokenActivity.this, "Status: " + token.getAuthentication().getStatus(), Toast.LENGTH_SHORT).show();
+                resultTextView.setText("{ id: \"" + token.getId() + "\", status: \"" + token.getStatus() + "\" }");
+                Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(XenditError xenditError) {
                 Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+
+        if (isMultipleUse) {
+            xendit.createMultipleUseToken(card, callback);
+        } else {
+            int amount = Integer.parseInt(amountEditText.getText().toString());
+
+            xendit.createSingleUseToken(card, amount, callback);
+        }
     }
 
     @Override
