@@ -299,7 +299,7 @@ public class Xendit {
                 return;
             }
 
-            if (!isCvnValid(card.getCreditCardCVN())) {
+            if (card.getCreditCardCVN() != null && !isCvnValid(card.getCreditCardCVN())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
@@ -433,11 +433,6 @@ public class Xendit {
     }
 
     private void _createCreditCardToken(Card card, final String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        if (!isCvnValid(card.getCreditCardCVN())) {
-            tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
-            return;
-        }
-
         _createToken(card, token, amount, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
