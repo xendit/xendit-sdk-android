@@ -75,7 +75,10 @@ xendit.createMultipleUseToken(card, new TokenCallback() {
 
 ### Creating a 3ds authentication
 ```
-xendit.createAuthentication("sample-token-id", "123", "75000", new AuthenticationCallback() {
+String tokenId = "sample-token-id";
+int amount = 50000;
+
+xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
     @Override
     public void onSuccess(Authentication authentication) {
         // Handle successful authentication

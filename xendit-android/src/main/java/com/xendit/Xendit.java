@@ -322,29 +322,25 @@ public class Xendit {
      * Creates a 3DS authentication for a multiple-use token
      *
      * @param  tokenId The id of a multiple-use token
-     * @param  cardCvn The credit card CVN
      * @param  amount The amount that will eventually be charged. This number is displayed to the
      *                user in the 3DS authentication view
      * @param authenticationCallback The callback that will be called when the authentication
      *                               creation completes or fails
      */
-    public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final AuthenticationCallback authenticationCallback) {
+    public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
         if (tokenId == null || tokenId == "") {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
-        if (amount == null || Integer.parseInt(amount) <= 0) {
+        if (amount <= 0) {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
-        if (!isCvnValid(cardCvn)) {
-            authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
-            return;
-        }
+        String amountStr = Integer.toString(amount);
 
-        _createAuthentication(tokenId, cardCvn, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+        _createAuthentication(tokenId, amountStr, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
@@ -379,7 +375,7 @@ public class Xendit {
                 return;
             }
 
-            _createAuthentication(tokenId, cardCvn, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+            _createAuthentication(tokenId, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
                 @Override
                 public void onSuccess(Authentication authentication) {
                     if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
@@ -520,7 +516,7 @@ public class Xendit {
         sendRequest(request, handler);
     }
 
-    private void _createAuthentication(String tokenId, String cardCvn, String amount, NetworkHandler<Authentication> handler) {
+    private void _createAuthentication(String tokenId, String amount, NetworkHandler<Authentication> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
@@ -528,7 +524,6 @@ public class Xendit {
         BaseRequest request = new BaseRequest<>(Request.Method.POST, requestUrl , Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addParam("amount", amount);
-        request.addParam("card_cvn", cardCvn);
         sendRequest(request, handler);
     }
 
