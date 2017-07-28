@@ -6,5 +6,6 @@
     <string name="create_token_error_card_expiration">Card expiration date is invalid</string>
     <string name="create_token_error_card_cvn">Card CVN is invalid</string>
     <string name="create_token_error_validation">Validation Error</string>
-    <string name="tokenization_error">Tokenization Error</string>
+    <string name="tokenization_error">Error occurred while creating credit card token</string>
+    <string name="authentication_error">Error occurred while creating 3ds authentication</string>
 </resources>

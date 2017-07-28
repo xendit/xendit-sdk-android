@@ -41,7 +41,7 @@ public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
                     authenticationCallback.onError(new XenditError(errorMessage, authentication));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    authenticationCallback.onError(new XenditError(context.getString(R.string.tokenization_error)));
+                    authenticationCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.authentication_error)));
                 }
 
             }

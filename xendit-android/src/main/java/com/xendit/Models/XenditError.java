@@ -15,7 +15,13 @@ public class XenditError {
     private Authentication authentication;
 
     public XenditError(String error) {
+        this.errorCode = "API_VALIDATION_ERROR";
         this.errorMessage = error;
+    }
+
+    public XenditError(String errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
     }
 
     public XenditError(NetworkError networkError) {
