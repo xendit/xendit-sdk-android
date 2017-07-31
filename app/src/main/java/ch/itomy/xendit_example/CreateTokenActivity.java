@@ -35,9 +35,11 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     private EditText amountEditText;
     private Button createTokenBtn;
     private CheckBox multipleUseCheckBox;
+    private CheckBox shouldAuthenticateCheckBox;
     private TextView resultTextView;
 
     private boolean isMultipleUse;
+    private boolean shouldAuthenticate;
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, CreateTokenActivity.class);
@@ -57,6 +59,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         amountEditText = (EditText) findViewById(R.id.amountEditText_CreateTokenActivity);
         createTokenBtn = (Button) findViewById(R.id.createTokenBtn_CreateTokenActivity);
         multipleUseCheckBox = (CheckBox) findViewById(R.id.multipleUseCheckBox_CreateTokenActivity);
+        shouldAuthenticateCheckBox = (CheckBox) findViewById(R.id.shouldAuthenticate_CreateTokenActivity);
         resultTextView = (TextView) findViewById(R.id.result_CreateTokenActivity);
 
         createTokenBtn.setOnClickListener(this);
@@ -82,6 +85,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
 
         isMultipleUse = multipleUseCheckBox.isChecked();
+        shouldAuthenticate = shouldAuthenticateCheckBox.isChecked();
 
         Card card = new Card(cardNumberEditText.getText().toString(),
                 expMonthEditText.getText().toString(),
@@ -102,11 +106,11 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         };
 
         if (isMultipleUse) {
-            xendit.createMultipleUseToken(card, callback);
+            xendit.createMultipleUseToken(card, shouldAuthenticate, callback);
         } else {
             int amount = Integer.parseInt(amountEditText.getText().toString());
 
-            xendit.createSingleUseToken(card, amount, callback);
+            xendit.createSingleUseToken(card, amount, shouldAuthenticate, callback);
         }
     }
 
