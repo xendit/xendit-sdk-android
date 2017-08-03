@@ -85,7 +85,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
 
         isMultipleUse = multipleUseCheckBox.isChecked();
-        shouldAuthenticate = shouldAuthenticateCheckBox.isChecked();
+        shouldAuthenticate = !shouldAuthenticateCheckBox.isChecked();
 
         Card card = new Card(cardNumberEditText.getText().toString(),
                 expMonthEditText.getText().toString(),
@@ -106,7 +106,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         };
 
         if (isMultipleUse) {
-            xendit.createMultipleUseToken(card, shouldAuthenticate, callback);
+            xendit.createMultipleUseToken(card, callback);
         } else {
             int amount = Integer.parseInt(amountEditText.getText().toString());
 
