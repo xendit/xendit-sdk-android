@@ -78,6 +78,14 @@
         android:text="Is Multiple Use?"
         android:textColor="@android:color/black" />
 
+    <CheckBox
+        android:id="@+id/shouldAuthenticate_CreateTokenActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Skip authentication?"
+        android:textColor="@android:color/black" />
+
     <Button
         android:id="@+id/createTokenBtn_CreateTokenActivity"
         android:layout_width="wrap_content"
