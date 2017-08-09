@@ -3,6 +3,7 @@ package com.xendit.Models;
 import com.xendit.network.errors.NetworkError;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by Sergey on 3/16/17.
@@ -28,9 +29,15 @@ public class XenditError {
         try {
             this.errorCode =  networkError.errorResponse.getString("error_code");
             this.errorMessage = networkError.errorResponse.getString("message");
-        } catch (JSONException e) {
-            this.errorCode = "SERVER_ERROR";
-            this.errorMessage = "Something unexpected happened, we are investigating this issue right now";
+        } catch (Exception e) {
+            try {
+                JSONObject flexResponseStatus = networkError.errorResponse.getJSONObject("responseStatus");
+                this.errorCode = flexResponseStatus.getString("reason");
+                this.errorMessage = flexResponseStatus.getString("message");
+            } catch (JSONException ex) {
+                this.errorCode = "SERVER_ERROR";
+                this.errorMessage = "Something unexpected happened, we are investigating this issue right now";
+            }
         }
 
         this.authentication = null;
