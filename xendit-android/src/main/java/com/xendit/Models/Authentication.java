@@ -17,6 +17,9 @@ public class Authentication implements Parcelable {
     @SerializedName("status")
     private String status;
 
+    @SerializedName("authentication_id")
+    private String authentication_id;
+
     @SerializedName("payer_authentication_url")
     private String payerAuthenticationUrl;
 
@@ -50,6 +53,8 @@ public class Authentication implements Parcelable {
         return payerAuthenticationUrl;
     }
 
+    public String getAuthenticationId() { return authentication_id; }
+
     @Override
     public int describeContents() {
         return 0;
@@ -59,6 +64,7 @@ public class Authentication implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(id);
         parcel.writeString(status);
+        parcel.writeString(authentication_id);
         parcel.writeString(payerAuthenticationUrl);
     }
 
