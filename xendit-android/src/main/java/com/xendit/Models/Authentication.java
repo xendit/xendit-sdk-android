@@ -64,7 +64,6 @@ public class Authentication implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(id);
         parcel.writeString(status);
-        parcel.writeString(authentication_id);
         parcel.writeString(payerAuthenticationUrl);
     }
 
