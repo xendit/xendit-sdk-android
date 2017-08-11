@@ -10,19 +10,19 @@ Maven:
 <dependency>
   <groupId>com.xendit</groupId>
   <artifactId>xendit-android</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 Gradle:
 ```
-compile 'com.xendit:xendit-android:1.0.0'
+compile 'com.xendit:xendit-android:1.1.0'
 ```
 
 Ivy:
 ```
-<dependency org='com.xendit' name='xendit-android' rev='1.0.0'>
+<dependency org='com.xendit' name='xendit-android' rev='1.1.0'>
   <artifact name='xendit-android' ext='pom' ></artifact>
 </dependency>
 ```
@@ -41,7 +41,7 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
 
-xendit.createSingleUseToken(card, 75000, new TokenCallback() {
+xendit.createSingleUseToken(card, 75000, true, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -54,6 +54,8 @@ xendit.createSingleUseToken(card, 75000, new TokenCallback() {
     }
 });
 ```
+
+`createSingleUseToken` accept 4 parameters: `Card` object, amount, an optional `shouldAuthenticate` boolean, and a `TokenCallback`. `shouldAuthenticate` will be set to true if you don't pass this value.
 
 ### Creating a multiple-use token
 ```
