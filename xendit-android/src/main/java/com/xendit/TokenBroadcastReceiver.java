@@ -29,6 +29,8 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
         String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
         if (message != null && message.equals(context.getString(R.string.create_token_error_validation))) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+        } else if (message != null && message.equals(context.getString(R.string.tokenization_error))) {
+            tokenCallback.onError(new XenditError("TOKENIZATION_ERROR", context.getString(R.string.tokenization_error)));
         } else {
             Gson gson = new Gson();
             Authentication authentication = gson.fromJson(message, Authentication.class);
