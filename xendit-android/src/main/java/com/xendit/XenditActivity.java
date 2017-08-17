@@ -90,8 +90,8 @@ public class XenditActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onBackPressed() {
+        super.onBackPressed();
         sendBroadcastReceiver(getString(R.string.tokenization_error));
     }
 
