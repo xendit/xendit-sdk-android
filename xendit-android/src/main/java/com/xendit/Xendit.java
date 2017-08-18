@@ -125,7 +125,7 @@ public class Xendit {
     public static boolean isCvnValid(String creditCardCVN) {
         return creditCardCVN != null
                 && creditCardCVN.matches(NUMBER_REGEX)
-                && number(creditCardCVN) > 0
+                && number(creditCardCVN) >= 0
                 && creditCardCVN.length() > 2
                 && creditCardCVN.length() <= 4;
     }
@@ -171,6 +171,7 @@ public class Xendit {
 
     private static int number(String sNumber) {
         int number = -1;
+
         if (sNumber != null) {
             try {
                 number = Integer.parseInt(sNumber);
@@ -178,6 +179,7 @@ public class Xendit {
                 e.printStackTrace();
             }
         }
+
         return number;
     }
 
