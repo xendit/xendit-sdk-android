@@ -1,4 +1,4 @@
-package ch.itomy.xendit_example;
+package com.xendit.example;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

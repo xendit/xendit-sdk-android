@@ -1,10 +1,12 @@
-package ch.itomy.xendit_example;
+package com.xendit.example;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+
+import ch.itomy.xendit_example.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

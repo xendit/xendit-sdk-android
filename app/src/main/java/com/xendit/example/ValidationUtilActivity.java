@@ -1,4 +1,4 @@
-package ch.itomy.xendit_example;
+package com.xendit.example;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.xendit.Xendit;
+
+import ch.itomy.xendit_example.R;
 
 /**
  * Created by Sergey on 4/3/17.

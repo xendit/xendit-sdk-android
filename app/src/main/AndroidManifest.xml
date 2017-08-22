@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.xendit.example.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -21,15 +21,15 @@
         </activity>
 
         <activity
-            android:name=".CreateTokenActivity"
+            android:name="com.xendit.example.CreateTokenActivity"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name=".AuthenticationActivity"
+            android:name="com.xendit.example.AuthenticationActivity"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name=".ValidationUtilActivity"
+            android:name="com.xendit.example.ValidationUtilActivity"
             android:theme="@style/AppTheme"/>
 
         <activity android:name="com.xendit.XenditActivity"/>
