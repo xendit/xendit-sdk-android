@@ -54,7 +54,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.volley:volley:1.0.0'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
-    //    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
 }
 
 apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'

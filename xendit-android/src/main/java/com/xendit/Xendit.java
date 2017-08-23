@@ -24,15 +24,9 @@ import com.xendit.network.NetworkHandler;
 import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
-
-import org.json.JSONException;
+import com.xendit.utils.CardValidator;
 
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by Dimon_GDA on 3/7/17.
@@ -40,14 +34,9 @@ import java.util.Locale;
 
 public class Xendit {
 
-    private static final String NUMBER_REGEX = "^\\d+$";
-
-    private static final String STAGING_XENDIT_BASE_URL = "https://api-staging.xendit.co";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
-
     private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
-
     private static final String GET_TOKEN_CONFIGURATION_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_configuration";
 
     static final String ACTION_KEY = "ACTION_KEY";
@@ -69,13 +58,11 @@ public class Xendit {
      *
      * @param  creditCardNumber A credit card number
      * @return true if the credit card number is valid, false otherwise
+     * @deprecated Use CardValidator.isCardNumberValid
      */
+    @Deprecated
     public static boolean isCardNumberValid(String creditCardNumber) {
-        return creditCardNumber != null
-                && creditCardNumber.length()
-                >= 12 && creditCardNumber.length()
-                <= 19 && creditCardNumber.matches(NUMBER_REGEX)
-                && getCardType(creditCardNumber) != null;
+        return CardValidator.isCardNumberValid(creditCardNumber);
     }
 
     /**
@@ -84,36 +71,11 @@ public class Xendit {
      * @param  cardExpirationMonth The month a card expired represented by digits (e.g. 12)
      * @param  cardExpirationYear The year a card expires represented by digits (e.g. 2026)
      * @return true if both the expiration month and year are valid
+     * @deprecated Use CardValidator.isExpiryValid
      */
+    @Deprecated
     public static boolean isExpiryValid(String cardExpirationMonth, String cardExpirationYear) {
-        return cardExpirationMonth != null
-                && cardExpirationYear != null
-                && cardExpirationMonth.matches(NUMBER_REGEX)
-                && cardExpirationYear.matches(NUMBER_REGEX)
-                && number(cardExpirationMonth) >= 1
-                && number(cardExpirationMonth) <= 12
-                && number(cardExpirationYear) >= 2017
-                && number(cardExpirationYear) <= 2100
-                && getCurrentMonth(cardExpirationMonth, cardExpirationYear);
-    }
-
-    private static boolean getCurrentMonth(String cardExpirationMonth, String cardExpirationYear) {
-        DateFormat monthFormat = new SimpleDateFormat("MM", Locale.US);
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        Date monthDate = new Date();
-        int currentMonth = number(monthFormat.format(monthDate));
-        int expMonth = number(cardExpirationMonth);
-        int expYear = number(cardExpirationYear);
-
-        if (expYear == currentYear) {
-            if (expMonth >= currentMonth) {
-                return true;
-            }
-        } else if (expYear > currentYear) {
-            return true;
-        }
-
-        return false;
+        return CardValidator.isExpiryValid(cardExpirationMonth, cardExpirationYear);
     }
 
     /**
@@ -121,13 +83,11 @@ public class Xendit {
      *
      * @param  creditCardCVN The credit card CVN
      * @return true if the cvn is valid, false otherwise
+     * @deprecated Use CardValidator.isCvnValid
      */
+    @Deprecated
     public static boolean isCvnValid(String creditCardCVN) {
-        return creditCardCVN != null
-                && creditCardCVN.matches(NUMBER_REGEX)
-                && number(creditCardCVN) >= 0
-                && creditCardCVN.length() > 2
-                && creditCardCVN.length() <= 4;
+        return CardValidator.isCvnValid(creditCardCVN);
     }
 
     private static CYBCardTypes getCardType(String cardNumber) {
