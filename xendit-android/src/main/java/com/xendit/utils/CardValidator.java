@@ -23,12 +23,12 @@ public class CardValidator {
             return false;
         }
 
-        String normalizedCardNumber = cardNumber.replaceAll("\\s", "");
+        String cleanCardNumber = cleanCardNumber(cardNumber);
 
-        return normalizedCardNumber.length() >= 12 &&
-                normalizedCardNumber.length() <= 19 &&
-                isNumeric(normalizedCardNumber) &&
-                isValidLuhnNumber(normalizedCardNumber);
+        return cleanCardNumber.length() >= 12 &&
+                cleanCardNumber.length() <= 19 &&
+                isNumeric(cleanCardNumber) &&
+                isValidLuhnNumber(cleanCardNumber);
     }
 
     /**
@@ -43,15 +43,15 @@ public class CardValidator {
             return false;
         }
 
-        String normalizedMonth = expirationMonth.replaceAll("\\s", "");
-        String normalizedYear = expirationYear.replaceAll("\\s", "");
+        String cleanMonth = removeWhitespace(expirationMonth);
+        String cleanYear = removeWhitespace(expirationYear);
 
-        return isNumeric(normalizedMonth) && isNumeric(normalizedYear) &&
-                parseNumberSafely(normalizedMonth) >= 1 &&
-                parseNumberSafely(normalizedMonth) <= 12 &&
-                parseNumberSafely(normalizedYear) >= 2017 &&
-                parseNumberSafely(normalizedYear) <= 2100 &&
-                isNotInThePast(normalizedMonth, normalizedYear);
+        return isNumeric(cleanMonth) && isNumeric(cleanYear) &&
+                parseNumberSafely(cleanMonth) >= 1 &&
+                parseNumberSafely(cleanMonth) <= 12 &&
+                parseNumberSafely(cleanYear) >= 2017 &&
+                parseNumberSafely(cleanYear) <= 2100 &&
+                isNotInThePast(cleanMonth, cleanYear);
     }
 
     /**
@@ -65,12 +65,40 @@ public class CardValidator {
             return false;
         }
 
-        String normalizedCvn = cardCVN.replaceAll("\\s", "");
+        String cleanCvn = cleanCvn(cardCVN);
 
-        return isNumeric(normalizedCvn)
-                && Integer.parseInt(normalizedCvn) >= 0
-                && normalizedCvn.length() >= 3
-                && normalizedCvn.length() <= 4;
+        return isNumeric(cleanCvn)
+                && Integer.parseInt(cleanCvn) >= 0
+                && cleanCvn.length() >= 3
+                && cleanCvn.length() <= 4;
+    }
+
+    /**
+     * Removes whitespaces from credit card number
+     *
+     * @param  cardNumber The credit card number
+     * @return Returns cardNumber without whitepaces
+     */
+    public static String cleanCardNumber(String cardNumber) {
+        return removeWhitespace(cardNumber);
+    }
+
+    /**
+     * Removes whitespaces from cvn
+     *
+     * @param  cardCvn The credit card number
+     * @return Returns cardCvn without whitepaces
+     */
+    public static String cleanCvn(String cardCvn) {
+        return removeWhitespace(cardCvn);
+    }
+
+    private static String removeWhitespace(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        return str.replaceAll("\\s", "");
     }
 
     private static boolean isNumeric(String str) {

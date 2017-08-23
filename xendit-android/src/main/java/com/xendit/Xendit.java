@@ -274,17 +274,17 @@ public class Xendit {
 
     private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (card != null && tokenCallback != null) {
-            if (!isCardNumberValid(card.getCreditCardNumber())) {
+            if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
                 return;
             }
 
-            if (!isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
+            if (!CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
                 return;
             }
 
-            if (card.getCreditCardCVN() != null && !isCvnValid(card.getCreditCardCVN())) {
+            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }

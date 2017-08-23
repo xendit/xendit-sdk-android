@@ -156,4 +156,23 @@ public class CardValidatorTests {
         Assert.assertTrue(CardValidator.isCvnValid("  123  "));
     }
 
+    @Test
+    public void cleanCardNumber_shouldTrimAndRemoveSpaces() {
+        Assert.assertEquals(CardValidator.cleanCardNumber("     1234 1234 1234 1234     "), "1234123412341234");
+    }
+
+    @Test
+    public void cleanCardNumber_shouldReturnNullIfCardNumberIsNull() {
+        Assert.assertEquals(CardValidator.cleanCardNumber(null), null);
+    }
+
+    @Test
+    public void cleanCvn_shouldTrimAndRemoveSpaces() {
+        Assert.assertEquals(CardValidator.cleanCvn("  1 2 3  "), "123");
+    }
+
+    @Test
+    public void cleanCvn_shouldReturnNullIfCardNumberIsNull() {
+        Assert.assertEquals(CardValidator.cleanCvn(null), null);
+    }
 }

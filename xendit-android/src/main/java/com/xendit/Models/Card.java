@@ -1,5 +1,7 @@
 package com.xendit.Models;
 
+import com.xendit.utils.CardValidator;
+
 /**
  * Created by Dimon_GDA on 3/7/17.
  */
@@ -13,10 +15,10 @@ public class Card {
 
 
     public Card(String creditCardNumber, String cardExpirationMonth, String cardExpirationYear, String creditCardCVN) {
-        this.creditCardNumber = creditCardNumber;
+        this.creditCardNumber = CardValidator.cleanCardNumber(creditCardNumber);
         this.cardExpirationMonth = cardExpirationMonth;
         this.cardExpirationYear = cardExpirationYear;
-        this.creditCardCVN = creditCardCVN;
+        this.creditCardCVN = CardValidator.cleanCvn(creditCardCVN);
     }
 
     public String getCreditCardNumber() {
