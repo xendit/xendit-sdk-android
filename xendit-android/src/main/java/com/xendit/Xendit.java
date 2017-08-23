@@ -313,7 +313,7 @@ public class Xendit {
      *                               creation completes or fails
      */
     public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
-        if (tokenId == null || tokenId == "") {
+        if (tokenId == null || tokenId.equals("")) {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
