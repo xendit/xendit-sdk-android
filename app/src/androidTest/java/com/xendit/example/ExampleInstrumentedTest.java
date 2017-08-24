@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("ch.itomy.xendit_example", appContext.getPackageName());
+        assertEquals("com.xendit.example", appContext.getPackageName());
     }
 }

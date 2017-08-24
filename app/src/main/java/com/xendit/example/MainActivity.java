@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import ch.itomy.xendit_example.R;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView createTokenTextView;

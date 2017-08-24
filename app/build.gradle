@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "ch.itomy.xendit_example"
+        applicationId "com.xendit.example"
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1

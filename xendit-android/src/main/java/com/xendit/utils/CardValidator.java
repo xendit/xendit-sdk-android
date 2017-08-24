@@ -102,13 +102,11 @@ public class CardValidator {
     }
 
     private static boolean isNumeric(String str) {
-        try {
-            Double.parseDouble(str);
-        } catch (Exception e) {
+        if (str == null) {
             return false;
         }
 
-        return true;
+        return str.matches("[0-9]+");
     }
 
     private static boolean isValidLuhnNumber(String cardNumber) {

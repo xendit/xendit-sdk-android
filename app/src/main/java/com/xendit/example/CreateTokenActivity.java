@@ -20,8 +20,6 @@ import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
 
-import ch.itomy.xendit_example.R;
-
 /**
  * Created by Sergey on 4/3/17.
  */
