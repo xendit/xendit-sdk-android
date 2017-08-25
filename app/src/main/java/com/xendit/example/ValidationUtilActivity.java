@@ -1,4 +1,4 @@
-package ch.itomy.xendit_example;
+package com.xendit.example;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.xendit.Xendit;
+import com.xendit.utils.CardValidator;
 
 /**
  * Created by Sergey on 4/3/17.
@@ -59,15 +59,15 @@ public class ValidationUtilActivity extends AppCompatActivity implements View.On
     public void onClick(View view) {
 
 
-        if (!Xendit.isCardNumberValid(cardNumberEditText.getText().toString())) {
+        if (!CardValidator.isCardNumberValid(cardNumberEditText.getText().toString())) {
             Toast.makeText(this, "Card number is invalid", Toast.LENGTH_SHORT).show();
-        } else if (!Xendit.isExpiryValid(expMonthEditText.getText().toString(), expYearEditText.getText().toString())) {
+        } else if (!CardValidator.isExpiryValid(expMonthEditText.getText().toString(), expYearEditText.getText().toString())) {
             Toast.makeText(this, "Card expiration date is invalid", Toast.LENGTH_SHORT).show();
-        } else if (!Xendit.isCvnValid(cvnEditText.getText().toString())) {
+        } else if (!CardValidator.isCvnValid(cvnEditText.getText().toString())) {
             Toast.makeText(this, "Card cvn is invalid", Toast.LENGTH_SHORT).show();
-        } else if (Xendit.isCardNumberValid(cardNumberEditText.getText().toString())
-                && Xendit.isExpiryValid(expMonthEditText.getText().toString(), expYearEditText.getText().toString())
-                && Xendit.isCvnValid(cvnEditText.getText().toString())) {
+        } else if (CardValidator.isCardNumberValid(cardNumberEditText.getText().toString())
+                && CardValidator.isExpiryValid(expMonthEditText.getText().toString(), expYearEditText.getText().toString())
+                && CardValidator.isCvnValid(cvnEditText.getText().toString())) {
             Toast.makeText(this, "Card is valid", Toast.LENGTH_SHORT).show();
         }
     }

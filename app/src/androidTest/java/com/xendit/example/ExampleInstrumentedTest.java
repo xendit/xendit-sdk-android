@@ -1,4 +1,4 @@
-package ch.itomy.xendit_example;
+package com.xendit.example;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("ch.itomy.xendit_example", appContext.getPackageName());
+        assertEquals("com.xendit.example", appContext.getPackageName());
     }
 }
