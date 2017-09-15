@@ -30,13 +30,18 @@ public class XenditError {
             this.errorCode =  networkError.errorResponse.getString("error_code");
             this.errorMessage = networkError.errorResponse.getString("message");
         } catch (Exception e) {
-            try {
-                JSONObject flexResponseStatus = networkError.errorResponse.getJSONObject("responseStatus");
-                this.errorCode = flexResponseStatus.getString("reason");
-                this.errorMessage = flexResponseStatus.getString("message");
-            } catch (JSONException ex) {
-                this.errorCode = "SERVER_ERROR";
-                this.errorMessage = "Something unexpected happened, we are investigating this issue right now";
+            if (networkError.errorResponse == null) {
+                this.errorCode = "NETWORK_ERROR";
+                this.errorMessage = networkError.getMessage();
+            } else {
+                try {
+                    JSONObject flexResponseStatus = networkError.errorResponse.getJSONObject("responseStatus");
+                    this.errorCode = flexResponseStatus.getString("reason");
+                    this.errorMessage = flexResponseStatus.getString("message");
+                } catch (JSONException ex) {
+                    this.errorCode = "SERVER_ERROR";
+                    this.errorMessage = "Something unexpected happened, we are investigating this issue right now";
+                }
             }
         }
 
