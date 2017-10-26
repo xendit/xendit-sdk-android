@@ -12,6 +12,35 @@ import java.util.Locale;
 
 public class CardValidator {
 
+    public enum CardType {
+        VISA("VISA", "001"),
+        MASTERCARD("MASTERCARD", "002"),
+        AMEX("AMEX", "003"),
+        DISCOVER("DISCOVER", "004"),
+        JCB("JCB", "007"),
+        VISA_ELECTRON("VISA_ELECTRON", "033"),
+        DANKORT("DANKORT", "034"),
+        MAESTRO("MAESTRO", "042"),
+        OTHER("OTHER", null);
+
+        private String cardName;
+        private String cardKey;
+
+        CardType(String cardName, String cardKey) {
+            this.cardName = cardName;
+            this.cardKey = cardKey;
+        }
+
+        public String toString() {
+            return cardName;
+        }
+
+        public String getCardTypeKey() {
+            return cardKey;
+        }
+    }
+
+
     /**
      * Determines whether the credit card number provided is valid
      *
@@ -24,11 +53,13 @@ public class CardValidator {
         }
 
         String cleanCardNumber = cleanCardNumber(cardNumber);
+        CardType cardType = getCardType(cleanCardNumber);
 
         return cleanCardNumber.length() >= 12 &&
                 cleanCardNumber.length() <= 19 &&
                 isNumeric(cleanCardNumber) &&
-                isValidLuhnNumber(cleanCardNumber);
+                isValidLuhnNumber(cleanCardNumber) &&
+                cardType != null && !cardType.equals(CardType.OTHER);
     }
 
     /**
@@ -91,6 +122,40 @@ public class CardValidator {
      */
     public static String cleanCvn(String cardCvn) {
         return removeWhitespace(cardCvn);
+    }
+
+    /**
+     * Computes the card type based on the card number
+     *
+     * @param  cardNumber The credit card number
+     * @return CardType The card type, e.g. VISA
+     */
+    public static CardType getCardType(String cardNumber) {
+        String cleanCardNumber = cleanCardNumber(cardNumber);
+
+        if (cleanCardNumber == null) {
+            return null;
+        } else if (cleanCardNumber.indexOf("4") == 0) {
+            if (isCardVisaElectron(cleanCardNumber)) {
+                return CardType.VISA_ELECTRON;
+            } else {
+                return CardType.VISA;
+            }
+        } else if (isCardAmex(cleanCardNumber)) {
+            return CardType.AMEX;
+        } else if (isCardMastercard(cleanCardNumber)) {
+            return CardType.MASTERCARD;
+        } else if (isCardDiscover(cleanCardNumber)) {
+            return CardType.DISCOVER;
+        } else if (isCardJCB(cleanCardNumber)) {
+            return CardType.JCB;
+        } else if (isCardDankort(cleanCardNumber)) {
+            return CardType.DANKORT;
+        } else if (isCardMaestro(cleanCardNumber)) {
+            return CardType.MAESTRO;
+        } else {
+            return CardType.OTHER;
+        }
     }
 
     private static String removeWhitespace(String str) {
@@ -161,6 +226,80 @@ public class CardValidator {
                 number = Integer.parseInt(numberStr);
             }
             catch (Exception e) {}
+        }
+
+        return number;
+    }
+
+    private static boolean isCardAmex(String cardNumber) {
+        return cardNumber != null && (cardNumber.indexOf("34") == 0 || cardNumber.indexOf("37") == 0);
+    }
+
+    private static boolean isCardMastercard(String cardNumber) {
+        if (cardNumber != null && cardNumber.length() >= 2) {
+            int startingNumber = number(cardNumber.substring(0, 2));
+            return startingNumber >= 51 && startingNumber <= 55;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isCardDiscover(String cardNumber) {
+        if (cardNumber != null && cardNumber.length() >= 6) {
+            int firstStartingNumber = number(cardNumber.substring(0, 3));
+            int secondStartingNumber = number(cardNumber.substring(0, 6));
+            return (firstStartingNumber >= 644 && firstStartingNumber <= 649)
+                    || (secondStartingNumber >= 622126 && secondStartingNumber <= 622925)
+                    || cardNumber.indexOf("65") == 0
+                    || cardNumber.indexOf("6011") == 0;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isCardMaestro(String cardNumber) {
+        if (cardNumber != null && cardNumber.length() >= 2) {
+            int startingNumber = number(cardNumber.substring(0, 2));
+            return startingNumber == 50
+                    || (startingNumber >= 56 && startingNumber <= 64)
+                    || (startingNumber >= 66 && startingNumber <= 69);
+        }
+
+        return false;
+    }
+
+    private static boolean isCardDankort(String cardNumber) {
+        return cardNumber != null && cardNumber.indexOf("5019") == 0;
+    }
+
+    private static boolean isCardJCB(String cardNumber) {
+        if (cardNumber != null && cardNumber.length() >= 4) {
+            int startingNumber = number(cardNumber.substring(0, 4));
+            return startingNumber >= 3528 && startingNumber <= 3589;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isCardVisaElectron(String cardNumber) {
+        return cardNumber != null && (cardNumber.indexOf("4026") == 0
+                || cardNumber.indexOf("417500") == 0
+                || cardNumber.indexOf("4405") == 0
+                || cardNumber.indexOf("4508") == 0
+                || cardNumber.indexOf("4844") == 0
+                || cardNumber.indexOf("4913") == 0
+                || cardNumber.indexOf("4917") == 0);
+    }
+
+    private static int number(String sNumber) {
+        int number = -1;
+
+        if (sNumber != null) {
+            try {
+                number = Integer.parseInt(sNumber);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return number;

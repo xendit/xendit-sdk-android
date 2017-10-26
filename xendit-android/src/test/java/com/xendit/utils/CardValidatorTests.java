@@ -54,12 +54,6 @@ public class CardValidatorTests {
     }
 
     @Test
-    public void isCardNumberValid_shouldPassDinersClub() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("30569309025904"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("38520000023237"));
-    }
-
-    @Test
     public void isCardNumberValid_shouldPassAMEX() {
         Assert.assertTrue(CardValidator.isCardNumberValid("378282246310005"));
         Assert.assertTrue(CardValidator.isCardNumberValid("371449635398431"));
@@ -88,6 +82,11 @@ public class CardValidatorTests {
     @Test
     public void isCardNumberValid_shouldNotAllowNullCardNumber() {
         Assert.assertFalse(CardValidator.isCardNumberValid(null));
+    }
+
+    @Test
+    public void isCardNumberValid_shouldNotAllowCardOfUnkownType() {
+        Assert.assertFalse(CardValidator.isCardNumberValid("122000000000003"));
     }
 
     @Test
@@ -174,5 +173,47 @@ public class CardValidatorTests {
     @Test
     public void cleanCvn_shouldReturnNullIfCardNumberIsNull() {
         Assert.assertEquals(CardValidator.cleanCvn(null), null);
+    }
+
+    @Test
+    public void getCardType_shouldHandleAmex() {
+        Assert.assertEquals(CardValidator.getCardType("378282246310005"), CardValidator.CardType.AMEX);
+        Assert.assertEquals(CardValidator.getCardType("371449635398431"), CardValidator.CardType.AMEX);
+        Assert.assertEquals(CardValidator.getCardType("378734493671000"), CardValidator.CardType.AMEX);
+    }
+
+    @Test
+    public void getCardType_shouldHandleDiscover() {
+        Assert.assertEquals(CardValidator.getCardType("6011111111111117"), CardValidator.CardType.DISCOVER);
+        Assert.assertEquals(CardValidator.getCardType("6011000990139424"), CardValidator.CardType.DISCOVER);
+    }
+
+    @Test
+    public void getCardType_shouldHandleJCB() {
+        Assert.assertEquals(CardValidator.getCardType("3530111333300000"), CardValidator.CardType.JCB);
+        Assert.assertEquals(CardValidator.getCardType("3566002020360505"), CardValidator.CardType.JCB);
+    }
+
+    @Test
+    public void getCardType_shouldHandleMastercard() {
+        Assert.assertEquals(CardValidator.getCardType("5555555555554444"), CardValidator.CardType.MASTERCARD);
+        Assert.assertEquals(CardValidator.getCardType("5105105105105100"), CardValidator.CardType.MASTERCARD);
+    }
+
+    @Test
+    public void getCardType_shouldHandleVisa() {
+        Assert.assertEquals(CardValidator.getCardType("4111111111111111"), CardValidator.CardType.VISA);
+        Assert.assertEquals(CardValidator.getCardType("4012888888881881"), CardValidator.CardType.VISA);
+        Assert.assertEquals(CardValidator.getCardType("4222222222222"), CardValidator.CardType.VISA);
+    }
+
+    @Test
+    public void getCardType_shouldHandleDankort() {
+        Assert.assertEquals(CardValidator.getCardType("5019717010103742"), CardValidator.CardType.DANKORT);
+    }
+
+    @Test
+    public void getCardType_shouldHandleUnknownCardType() {
+        Assert.assertEquals(CardValidator.getCardType("000000000000"), CardValidator.CardType.OTHER);
     }
 }

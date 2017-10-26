@@ -90,133 +90,6 @@ public class Xendit {
         return CardValidator.isCvnValid(creditCardCVN);
     }
 
-    private static CYBCardTypes getCardType(String cardNumber) {
-        if (cardNumber == null) {
-            return null;
-        } else if (cardNumber.indexOf("4") == 0) {
-            if (isCardVisaElectron(cardNumber)) {
-                return CYBCardTypes.VISA_ELECTRON;
-            } else {
-                return CYBCardTypes.VISA;
-            }
-        } else if (isCardAmex(cardNumber)) {
-            return CYBCardTypes.AMEX;
-        } else if (isCardMastercard(cardNumber)) {
-            return CYBCardTypes.MASTERCARD;
-        } else if (isCardDiscover(cardNumber)) {
-            return CYBCardTypes.DISCOVER;
-        } else if (isCardJCB(cardNumber)) {
-            return CYBCardTypes.JCB;
-        } else if (isCardDankort(cardNumber)) {
-            return CYBCardTypes.DANKORT;
-        } else if (isCardMaestro(cardNumber)) {
-            return CYBCardTypes.MAESTRO;
-        } else {
-            return null;
-        }
-    }
-
-    private static boolean isCardAmex(String cardNumber) {
-        return cardNumber != null && (cardNumber.indexOf("34") == 0 || cardNumber.indexOf("37") == 0);
-    }
-
-    private static boolean isCardMastercard(String cardNumber) {
-        if (cardNumber != null && cardNumber.length() >= 2) {
-            int startingNumber = number(cardNumber.substring(0, 2));
-            return startingNumber >= 51 && startingNumber <= 55;
-        } else {
-            return false;
-        }
-    }
-
-    private static int number(String sNumber) {
-        int number = -1;
-
-        if (sNumber != null) {
-            try {
-                number = Integer.parseInt(sNumber);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return number;
-    }
-
-    private static boolean isCardDiscover(String cardNumber) {
-        if (cardNumber != null && cardNumber.length() >= 6) {
-            int firstStartingNumber = number(cardNumber.substring(0, 3));
-            int secondStartingNumber = number(cardNumber.substring(0, 6));
-            return (firstStartingNumber >= 644 && firstStartingNumber <= 649)
-                    || (secondStartingNumber >= 622126 && secondStartingNumber <= 622925)
-                    || cardNumber.indexOf("65") == 0
-                    || cardNumber.indexOf("6011") == 0;
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isCardMaestro(String cardNumber) {
-        if (cardNumber != null && cardNumber.length() >= 2) {
-            int startingNumber = number(cardNumber.substring(0, 2));
-            return startingNumber == 50
-                    || (startingNumber >= 56 && startingNumber <= 64)
-                    || (startingNumber >= 66 && startingNumber <= 69);
-        }
-
-        return false;
-    }
-
-    private static boolean isCardDankort(String cardNumber) {
-        return cardNumber != null && cardNumber.indexOf("5019") == 0;
-    }
-
-    private static boolean isCardJCB(String cardNumber) {
-        if (cardNumber != null && cardNumber.length() >= 4) {
-            int startingNumber = number(cardNumber.substring(0, 4));
-            return startingNumber >= 3528 && startingNumber <= 3589;
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean isCardVisaElectron(String cardNumber) {
-        return cardNumber != null && (cardNumber.indexOf("4026") == 0
-                || cardNumber.indexOf("417500") == 0
-                || cardNumber.indexOf("4405") == 0
-                || cardNumber.indexOf("4508") == 0
-                || cardNumber.indexOf("4844") == 0
-                || cardNumber.indexOf("4913") == 0
-                || cardNumber.indexOf("4917") == 0);
-    }
-
-    public enum CYBCardTypes {
-        VISA("VISA", "001"),
-        MASTERCARD("MASTERCARD", "002"),
-        AMEX("AMEX", "003"),
-        DISCOVER("DISCOVER", "004"),
-        JCB("JCB", "007"),
-        VISA_ELECTRON("VISA_ELECTRON", "033"),
-        DANKORT("DANKORT", "034"),
-        MAESTRO("MAESTRO", "042");
-
-        private String cardName;
-        private String cardKey;
-
-        CYBCardTypes(String cardName, String cardKey) {
-            this.cardName = cardName;
-            this.cardKey = cardKey;
-        }
-
-        public String getCardName() {
-            return cardName;
-        }
-
-        public String getCardKey() {
-            return cardKey;
-        }
-    }
-
     /**
      * Creates a single-use token. 3DS authentication will be bundled into this method unless you
      * set shouldAuthenticate as false.
@@ -479,7 +352,7 @@ public class Xendit {
         cardInfoJson.addProperty("cardNumber", card.getCreditCardNumber());
         cardInfoJson.addProperty("cardExpirationMonth", card.getCardExpirationMonth());
         cardInfoJson.addProperty("cardExpirationYear", card.getCardExpirationYear());
-        cardInfoJson.addProperty("cardType", getCardType(card.getCreditCardNumber()).getCardKey());
+        cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
 
         request.addParam("keyId", tokenConfig.getTokenizationAuthKeyId());
         request.addJsonParam("cardInfo", cardInfoJson);
