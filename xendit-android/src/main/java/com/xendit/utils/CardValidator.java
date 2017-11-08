@@ -100,11 +100,7 @@ public class CardValidator {
         String cleanCardNumber = cleanCardNumber(cardNumber);
 
         if (isNumeric(cleanCvn) && Integer.parseInt(cleanCvn) >= 0) {
-            if ((isCardAmex(cleanCardNumber) && cleanCvn.length() == 4) || (!isCardAmex(cleanCardNumber) && cleanCvn.length() == 3)) {
-                return true;
-            }
-
-            return false;
+            return ((isCardAmex(cleanCardNumber) && cleanCvn.length() == 4) || (!isCardAmex(cleanCardNumber) && cleanCvn.length() == 3));
         }
 
         return false;
