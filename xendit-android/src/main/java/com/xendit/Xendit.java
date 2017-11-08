@@ -157,8 +157,13 @@ public class Xendit {
                 return;
             }
 
-            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN(), card.getCreditCardNumber())) {
+            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+                return;
+            }
+
+            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
+                tokenCallback.onError(new XenditError("Card cvn is invalid for this card type"));
                 return;
             }
 

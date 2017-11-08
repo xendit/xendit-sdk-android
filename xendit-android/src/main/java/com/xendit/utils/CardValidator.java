@@ -86,12 +86,13 @@ public class CardValidator {
     }
 
     /**
-     * Determines whether the card CVN is valid
+     * Determines whether the card CVN length is valid
      *
      * @param  cardCVN The credit card CVN
-     * @return true if the cvn is valid, false otherwise
+     * @param  cardNumber The credit card number
+     * @return true if the cvn length is valid for this card type, false otherwise
      */
-    public static boolean isCvnValid(String cardCVN, String cardNumber) {
+    public static boolean isCvnValidForCardType (String cardCVN, String cardNumber) {
         if (cardCVN == null || cardNumber == null) {
             return false;
         }
@@ -100,17 +101,18 @@ public class CardValidator {
         String cleanCardNumber = cleanCardNumber(cardNumber);
 
         if (isNumeric(cleanCvn) && Integer.parseInt(cleanCvn) >= 0) {
-            return ((isCardAmex(cleanCardNumber) && cleanCvn.length() == 4) || (!isCardAmex(cleanCardNumber) && cleanCvn.length() == 3));
+            return isCardAmex(cleanCardNumber) ? cleanCvn.length() == 4 : cleanCvn.length() == 3;
         }
 
         return false;
     }
 
     /**
-     * @deprecated As of v.1.1.8, replaced by {@link #isCvnValid(String, String)}
-     * cardCvn can be sent at creating charge
+     * Determines whether the card CVN is valid
+     *
+     * @param  cardCVN The credit card CVN
+     * @return true if the cvn is valid, false otherwise
      */
-    @Deprecated
     public static boolean isCvnValid(String cardCVN) {
         if (cardCVN == null) {
             return false;
