@@ -216,4 +216,16 @@ public class CardValidatorTests {
     public void getCardType_shouldHandleUnknownCardType() {
         Assert.assertEquals(CardValidator.getCardType("000000000000"), CardValidator.CardType.OTHER);
     }
+
+    @Test
+    public void isCvnValidForCardType_shouldHandleAMEX() {
+        Assert.assertTrue(CardValidator.isCvnValidForCardType("1234", "378282246310005"));
+        Assert.assertFalse(CardValidator.isCvnValidForCardType("123", "378282246310005"));
+    }
+
+    @Test
+    public void isCvnValidForCardType_shouldHandleNonAMEX() {
+        Assert.assertTrue(CardValidator.isCvnValidForCardType("123", "4012888888881881"));
+        Assert.assertFalse(CardValidator.isCvnValidForCardType("1234", "4012888888881881"));
+    }
 }
