@@ -86,6 +86,28 @@ public class CardValidator {
     }
 
     /**
+     * Determines whether the card CVN length is valid
+     *
+     * @param  cardCVN The credit card CVN
+     * @param  cardNumber The credit card number
+     * @return true if the cvn length is valid for this card type, false otherwise
+     */
+    public static boolean isCvnValidForCardType (String cardCVN, String cardNumber) {
+        if (cardCVN == null || cardNumber == null) {
+            return false;
+        }
+
+        String cleanCvn = cleanCvn(cardCVN);
+        String cleanCardNumber = cleanCardNumber(cardNumber);
+
+        if (isNumeric(cleanCvn) && Integer.parseInt(cleanCvn) >= 0) {
+            return isCardAmex(cleanCardNumber) ? cleanCvn.length() == 4 : cleanCvn.length() == 3;
+        }
+
+        return false;
+    }
+
+    /**
      * Determines whether the card CVN is valid
      *
      * @param  cardCVN The credit card CVN

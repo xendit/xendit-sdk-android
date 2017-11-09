@@ -65,9 +65,12 @@ public class ValidationUtilActivity extends AppCompatActivity implements View.On
             Toast.makeText(this, "Card expiration date is invalid", Toast.LENGTH_SHORT).show();
         } else if (!CardValidator.isCvnValid(cvnEditText.getText().toString())) {
             Toast.makeText(this, "Card cvn is invalid", Toast.LENGTH_SHORT).show();
+        } else if (!CardValidator.isCvnValidForCardType(cvnEditText.getText().toString(), cardNumberEditText.getText().toString())){
+            Toast.makeText(this, "Card cvn is invalid for this card type", Toast.LENGTH_SHORT).show();
         } else if (CardValidator.isCardNumberValid(cardNumberEditText.getText().toString())
                 && CardValidator.isExpiryValid(expMonthEditText.getText().toString(), expYearEditText.getText().toString())
-                && CardValidator.isCvnValid(cvnEditText.getText().toString())) {
+                && CardValidator.isCvnValid(cvnEditText.getText().toString())
+                && CardValidator.isCvnValidForCardType(cvnEditText.getText().toString(), cardNumberEditText.getText().toString())) {
             Toast.makeText(this, "Card is valid", Toast.LENGTH_SHORT).show();
         }
     }

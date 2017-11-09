@@ -162,6 +162,11 @@ public class Xendit {
                 return;
             }
 
+            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
+                tokenCallback.onError(new XenditError("Card cvn is invalid for this card type"));
+                return;
+            }
+
             getTokenizationConfiguration(new NetworkHandler<TokenConfiguration>().setResultListener(new ResultListener<TokenConfiguration>() {
                 @Override
                 public void onSuccess(TokenConfiguration tokenConfiguration) {
