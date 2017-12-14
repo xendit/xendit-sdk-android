@@ -23,10 +23,14 @@ public class Authentication implements Parcelable {
     @SerializedName("payer_authentication_url")
     private String payerAuthenticationUrl;
 
+    @SerializedName("masked_card_number")
+    private String maskedCardNumber;
+
     private Authentication(Parcel in) {
         id = in.readString();
         status = in.readString();
         payerAuthenticationUrl = in.readString();
+        maskedCardNumber = in.readString();
     }
 
     public static final Creator<Authentication> CREATOR = new Creator<Authentication>() {
@@ -55,6 +59,8 @@ public class Authentication implements Parcelable {
 
     public String getAuthenticationId() { return authentication_id; }
 
+    public String getMaskedCardNumber() { return maskedCardNumber; }
+
     @Override
     public int describeContents() {
         return 0;
@@ -65,6 +71,7 @@ public class Authentication implements Parcelable {
         parcel.writeString(id);
         parcel.writeString(status);
         parcel.writeString(payerAuthenticationUrl);
+        parcel.writeString(maskedCardNumber);
     }
 
     @Override
