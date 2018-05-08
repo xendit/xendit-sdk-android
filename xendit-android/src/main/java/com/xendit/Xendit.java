@@ -4,14 +4,18 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.HttpStack;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
+
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
@@ -21,12 +25,15 @@ import com.xendit.Models.XenditError;
 import com.xendit.network.BaseRequest;
 import com.xendit.network.DefaultResponseHandler;
 import com.xendit.network.NetworkHandler;
+import com.xendit.network.TLSSocketFactory;
 import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
 import com.xendit.utils.CardValidator;
 
 import java.io.UnsupportedEncodingException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by Dimon_GDA on 3/7/17.
@@ -49,7 +56,25 @@ public class Xendit {
     public Xendit(Context context, String publishableKey) {
         this.context = context;
         this.publishableKey = publishableKey;
-        requestQueue = Volley.newRequestQueue(context);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
+                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+
+            HttpStack stack = null;
+            try {
+                stack = new HurlStack(null, new TLSSocketFactory());
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+                stack = new HurlStack();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                stack = new HurlStack();
+            }
+            requestQueue = Volley.newRequestQueue(context, stack);
+        } else {
+            requestQueue = Volley.newRequestQueue(context);
+        }
+
         connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
