@@ -14,9 +14,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.security.ProviderInstaller;
 import com.google.gson.JsonObject;
 
 import com.xendit.Models.Authentication;
@@ -62,15 +59,6 @@ public class Xendit {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            try {
-                ProviderInstaller.installIfNeeded(context);
-            } catch (GooglePlayServicesRepairableException e) {
-                System.out.println("error");
-                return;
-            } catch (GooglePlayServicesNotAvailableException e) {
-                System.out.println("need install google play");
-                return;
-            }
 
             HttpStack stack = null;
             try {
