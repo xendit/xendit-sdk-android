@@ -55,7 +55,10 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     testCompile 'junit:junit:4.12'
+    compile 'com.google.android.gms:play-services:9.6.1'
 }
 
 apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/bintrayv1.gradle'
+
+apply plugin: 'com.google.gms.google-services'

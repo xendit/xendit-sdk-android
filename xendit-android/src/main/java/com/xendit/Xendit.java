@@ -14,10 +14,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
+import com.google.gson.JsonObject;
 
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
@@ -63,19 +63,12 @@ public class Xendit {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             try {
-                ProviderInstaller.installIfNeeded(getContext());
+                ProviderInstaller.installIfNeeded(context);
             } catch (GooglePlayServicesRepairableException e) {
-                // Indicates that Google Play services is out of date, disabled, etc.
-                // Prompt the user to install/update/enable Google Play services.
-                GooglePlayServicesUtil.showErrorNotification(e.getConnectionStatusCode(), getContext());
-                // Notify the SyncManager that a soft error occurred.
-                syncResult.stats.numIOExceptions++;
+                System.out.println("error");
                 return;
             } catch (GooglePlayServicesNotAvailableException e) {
-                // Indicates a non-recoverable error; the ProviderInstaller is not able
-                // to install an up-to-date Provider.
-                // Notify the SyncManager that a hard error occurred.
-                syncResult.stats.numAuthExceptions++;
+                System.out.println("need install google play");
                 return;
             }
 
