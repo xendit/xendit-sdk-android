@@ -197,30 +197,24 @@ public class CardValidator {
     }
 
     private static boolean isValidLuhnNumber(String cardNumber) {
-        String numberSequence = new StringBuilder(cardNumber).reverse().toString();
+        int sum = 0;
+        boolean alternate = false;
 
-        int total = 0;
+        for (int i = cardNumber.length() - 1; i >= 0; i--) {
+            int n = Integer.parseInt(cardNumber.substring(i, i + 1));
 
-        for (int i = 0; i < numberSequence.length(); i++) {
-            int num = Integer.parseInt(numberSequence.substring(i, i + 1));
+            if (alternate) {
+                n *= 2;
 
-            if (i % 2 == 0) {
-                total += num;
-            } else {
-                int numDouble = num * 2;
-
-                switch (numDouble) {
-                    case 10: total += 1; break;
-                    case 12: total += 3; break;
-                    case 14: total += 5; break;
-                    case 16: total += 7; break;
-                    case 18: total += 9; break;
-                    default: total += numDouble; break;
+                if (n > 9) {
+                    n = (n % 10) + 1;
                 }
             }
+            sum += n;
+            alternate = !alternate;
         }
 
-        return (total % 10) == 0;
+        return (sum % 10 == 0);
     }
 
     private static boolean isNotInThePast(String expirationMonth, String expirationYear) {

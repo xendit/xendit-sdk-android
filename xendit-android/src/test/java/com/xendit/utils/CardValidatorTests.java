@@ -31,6 +31,9 @@ public class CardValidatorTests {
     public void isCardNumberValid_shouldPassMasterCard() {
         Assert.assertTrue(CardValidator.isCardNumberValid("5555555555554444"));
         Assert.assertTrue(CardValidator.isCardNumberValid("5105105105105100"));
+        Assert.assertTrue(CardValidator.isCardNumberValid("5213724373543245"));
+        Assert.assertTrue(CardValidator.isCardNumberValid("5513799778027330"));
+        Assert.assertTrue(CardValidator.isCardNumberValid("5404666842103888"));
     }
 
     @Test
@@ -39,6 +42,9 @@ public class CardValidatorTests {
         Assert.assertTrue(CardValidator.isCardNumberValid("4111111111111111"));
         Assert.assertTrue(CardValidator.isCardNumberValid("4012888888881881"));
         Assert.assertTrue(CardValidator.isCardNumberValid("4222222222222"));
+        Assert.assertTrue(CardValidator.isCardNumberValid("4929950253805473"));
+        Assert.assertTrue(CardValidator.isCardNumberValid("4916154524086329"));
+        Assert.assertTrue(CardValidator.isCardNumberValid("4556564166261021533"));
     }
 
     @Test
