@@ -1,5 +1,6 @@
 package com.xendit;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ public class XenditActivity extends Activity {
         return intent;
     }
 
+    @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +42,8 @@ public class XenditActivity extends Activity {
         setContentView(R.layout.activity_xendit);
 
         Authentication authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
-        WebView webView = (WebView) findViewById(R.id.webView_XenditActivity);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar_XenditActivity);
+        WebView webView = findViewById(R.id.webView_XenditActivity);
+        progressBar = findViewById(R.id.progressBar_XenditActivity);
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());

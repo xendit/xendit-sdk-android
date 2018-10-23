@@ -26,8 +26,13 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
-        if (message != null && message.equals(context.getString(R.string.create_token_error_validation))) {
+        String message = "";
+        try {
+            message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
         } else if (message != null && message.equals(context.getString(R.string.tokenization_error))) {
             tokenCallback.onError(new XenditError("TOKENIZATION_ERROR", context.getString(R.string.tokenization_error)));

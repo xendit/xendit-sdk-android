@@ -19,8 +19,7 @@ public class NetworkError extends Exception {
             if (networkResponse.data != null) {
                 String errorString = new String(networkResponse.data);
                 try {
-                    JSONObject errorJson = new JSONObject(errorString);
-                    errorResponse = errorJson;
+                    errorResponse = new JSONObject(errorString);
                 } catch (JSONException exception) {
                     exception.printStackTrace();
                     errorResponse = null;

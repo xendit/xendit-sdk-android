@@ -60,7 +60,7 @@ public class Xendit {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 
-            HttpStack stack = null;
+            HttpStack stack;
             try {
                 stack = new HurlStack(null, new TLSSocketFactory());
             } catch (KeyManagementException e) {
@@ -252,7 +252,7 @@ public class Xendit {
      */
     @Deprecated
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
-            if (tokenId == null || tokenId == "") {
+            if (tokenId == null || tokenId.isEmpty()) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
                 return;
             }
@@ -382,7 +382,11 @@ public class Xendit {
         cardInfoJson.addProperty("cardNumber", card.getCreditCardNumber());
         cardInfoJson.addProperty("cardExpirationMonth", card.getCardExpirationMonth());
         cardInfoJson.addProperty("cardExpirationYear", card.getCardExpirationYear());
-        cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
+        try {
+            cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         request.addParam("keyId", tokenConfig.getTokenizationAuthKeyId());
         request.addJsonParam("cardInfo", cardInfoJson);

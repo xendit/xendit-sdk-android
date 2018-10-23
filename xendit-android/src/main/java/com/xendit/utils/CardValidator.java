@@ -227,11 +227,8 @@ public class CardValidator {
         int expMonth = parseNumberSafely(expirationMonth);
         int expYear = parseNumberSafely(expirationYear);
 
-        if ((expYear == currentYear && expMonth >= currentMonth) || expYear > currentYear) {
-            return true;
-        }
+        return (expYear == currentYear && expMonth >= currentMonth) || expYear > currentYear;
 
-        return false;
     }
 
     private static int parseNumberSafely(String numberStr) {
@@ -241,7 +238,9 @@ public class CardValidator {
             try {
                 number = Integer.parseInt(numberStr);
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return number;
