@@ -1,5 +1,6 @@
 package com.xendit.Models;
 
+import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.utils.CardValidator;
 
 /**
@@ -15,6 +16,7 @@ public class Card {
 
 
     public Card(String creditCardNumber, String cardExpirationMonth, String cardExpirationYear, String creditCardCVN) {
+        HyperLog.d("Card","Card consturct");
         this.creditCardNumber = CardValidator.cleanCardNumber(creditCardNumber);
         this.cardExpirationMonth = cardExpirationMonth;
         this.cardExpirationYear = cardExpirationYear;

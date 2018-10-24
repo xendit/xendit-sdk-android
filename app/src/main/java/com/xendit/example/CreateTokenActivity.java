@@ -66,7 +66,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
         cardNumberEditText.setText("4000000000000002");
         expMonthEditText.setText("12");
-        expYearEditText.setText("2017");
+        expYearEditText.setText("2018");
         cvnEditText.setText("123");
         amountEditText.setText("123000");
     }

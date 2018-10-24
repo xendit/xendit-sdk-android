@@ -7,7 +7,9 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -16,6 +18,9 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
+import com.hypertrack.hyperlog.HLCallback;
+import com.hypertrack.hyperlog.HyperLog;
+import com.hypertrack.hyperlog.error.HLErrorResponse;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
@@ -31,6 +36,7 @@ import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
 import com.xendit.utils.CardValidator;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -57,6 +63,27 @@ public class Xendit {
         this.context = context;
         this.publishableKey = publishableKey;
 
+        // init hyperlog
+        HyperLog.initialize(context);
+        HyperLog.setLogLevel(Log.VERBOSE);
+
+        // set log server
+        //HyperLog.setURL("https://guarded-atoll-27271.herokuapp.com");
+
+        /*HyperLog.pushLogs(context, false, new HLCallback() {
+            @Override
+            public void onSuccess(@NonNull Object response) {
+                HyperLog.d("Xendit", "Successfully pushed logs.");
+            }
+
+            @Override
+            public void onError(@NonNull HLErrorResponse HLErrorResponse) {
+
+            }
+        });*/
+        HyperLog.d("Xendit","Debug Log");
+
+        File file = HyperLog.getDeviceLogsInFile(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 
@@ -87,6 +114,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCardNumberValid(String creditCardNumber) {
+        HyperLog.d("Xendit","isCardNumberValid");
         return CardValidator.isCardNumberValid(creditCardNumber);
     }
 
@@ -167,10 +195,12 @@ public class Xendit {
      */
     @Deprecated
     public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+        HyperLog.d("Xendit","createToken");
         createSingleOrMultipleUseToken(card, amount, true, isMultipleUse, tokenCallback);
     }
 
     private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+        HyperLog.d("Xendit","createSingleOrMultipleUseToken");
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
