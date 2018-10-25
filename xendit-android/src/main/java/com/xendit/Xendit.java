@@ -1,7 +1,10 @@
 package com.xendit;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -40,6 +43,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Permission;
 
 /**
  * Created by Dimon_GDA on 3/7/17.
@@ -47,6 +51,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Xendit {
 
+    private static final String TAG = "Xendit";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
     private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
@@ -68,9 +73,8 @@ public class Xendit {
         HyperLog.setLogLevel(Log.VERBOSE);
 
         // set log server
-        //HyperLog.setURL("https://guarded-atoll-27271.herokuapp.com");
-
-        /*HyperLog.pushLogs(context, false, new HLCallback() {
+        /*HyperLog.setURL("http://localhost:9600");
+        HyperLog.pushLogs(context, false, new HLCallback() {
             @Override
             public void onSuccess(@NonNull Object response) {
                 HyperLog.d("Xendit", "Successfully pushed logs.");
@@ -80,10 +84,14 @@ public class Xendit {
             public void onError(@NonNull HLErrorResponse HLErrorResponse) {
 
             }
-        });*/
+        });
         HyperLog.d("Xendit","Debug Log");
+        */
 
-        File file = HyperLog.getDeviceLogsInFile(context);
+        // file location of logs
+        //File file = HyperLog.getDeviceLogsInFile(context);
+
+        HyperLog.i(TAG, "Start debugging");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 
@@ -114,7 +122,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCardNumberValid(String creditCardNumber) {
-        HyperLog.d("Xendit","isCardNumberValid");
+        HyperLog.i(TAG,"isCardNumberValid");
         return CardValidator.isCardNumberValid(creditCardNumber);
     }
 
@@ -200,25 +208,29 @@ public class Xendit {
     }
 
     private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.d("Xendit","createSingleOrMultipleUseToken");
+        HyperLog.i(TAG,"createSingleOrMultipleUseToken");
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
+                HyperLog.e(TAG, context.getString(R.string.create_token_error_card_number));
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
                 return;
             }
 
             if (!CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
+                HyperLog.e(TAG, context.getString(R.string.create_token_error_card_expiration));
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
+                HyperLog.e(TAG, context.getString(R.string.create_token_error_card_cvn));
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
-                tokenCallback.onError(new XenditError("Card cvn is invalid for this card type"));
+                HyperLog.e(TAG, context.getString(R.string.error_card_cvn_invalid_for_type));
+                tokenCallback.onError(new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)));
                 return;
             }
 
@@ -395,6 +407,7 @@ public class Xendit {
     }
 
     private void getTokenizationConfiguration(NetworkHandler<TokenConfiguration> handler) {
+        HyperLog.i(TAG, "getTokenizationConfiguration");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CONFIGURATION_URL, TokenConfiguration.class, new DefaultResponseHandler<>(handler));
@@ -403,6 +416,7 @@ public class Xendit {
     }
 
     private void tokenizeCreditCard(TokenConfiguration tokenConfig, Card card, NetworkHandler<TokenCreditCard> handler) {
+        HyperLog.i(TAG, "tokenizeCreditCard");
         String baseUrl = getEnvironment() ? tokenConfig.getFlexProductionUrl() : tokenConfig.getFlexDevelopmentUrl();
         String flexUrl = baseUrl + TOKENIZE_CREDIT_CARD_URL + tokenConfig.getFlexApiKey();
 
@@ -415,6 +429,7 @@ public class Xendit {
         try {
             cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
         } catch (NullPointerException e) {
+            HyperLog.e(TAG, e.getMessage());
             e.printStackTrace();
         }
 
@@ -424,6 +439,7 @@ public class Xendit {
     }
 
     private void _createToken(Card card, String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
+        HyperLog.i(TAG, "_createToken");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
 
@@ -442,6 +458,7 @@ public class Xendit {
     }
 
     private void _createAuthentication(String tokenId, String amount, NetworkHandler<Authentication> handler) {
+        HyperLog.i(TAG, "_createAuthentication");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
@@ -463,6 +480,7 @@ public class Xendit {
     }
 
     private void sendRequest(BaseRequest request, NetworkHandler<?> handler) {
+        HyperLog.i(TAG, "sendRequest");
         if (isConnectionAvailable()) {
             requestQueue.add(request);
         } else if (handler != null) {
@@ -471,12 +489,24 @@ public class Xendit {
     }
 
     private boolean isConnectionAvailable() {
-        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        HyperLog.i(TAG, "isConnectionAvailable");
+        if (hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)) {
+            @SuppressLint("MissingPermission") NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        } else {
+            HyperLog.e(TAG, context.getString(R.string.not_granted_access_network_state));
+            return false;
+        }
+
     }
 
     private boolean getEnvironment() {
         String publishKey = publishableKey.toUpperCase();
         return publishKey.contains("PRODUCTION");
+    }
+
+    private boolean hasPermission(Context context, String permission) {
+        int result = context.checkCallingOrSelfPermission(permission);
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 }

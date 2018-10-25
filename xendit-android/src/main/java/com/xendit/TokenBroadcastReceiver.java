@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
+import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 
 public class TokenBroadcastReceiver extends BroadcastReceiver {
 
+    private final String TAG = "TokenBroadcastReceiver";
     private TokenCallback tokenCallback;
 
     public TokenBroadcastReceiver(TokenCallback tokenCallback) {
@@ -26,32 +28,34 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String message = "";
+        HyperLog.i(TAG, "onReceive");
         try {
-            message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
-            tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
-        } else if (message != null && message.equals(context.getString(R.string.tokenization_error))) {
-            tokenCallback.onError(new XenditError("TOKENIZATION_ERROR", context.getString(R.string.tokenization_error)));
-        } else {
-            Gson gson = new Gson();
-            Authentication authentication = gson.fromJson(message, Authentication.class);
-            if (authentication.getStatus().equals("VERIFIED")) {
-                tokenCallback.onSuccess(new Token(authentication));
+            String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
+            if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+            } else if (message.equals(context.getString(R.string.tokenization_error))) {
+                tokenCallback.onError(new XenditError("TOKENIZATION_ERROR", context.getString(R.string.tokenization_error)));
             } else {
-                try {
-                    JSONObject errorJson = new JSONObject(message);
-                    String errorMessage = errorJson.getString("failure_reason");
-                    tokenCallback.onError(new XenditError(errorMessage, authentication));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    tokenCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.tokenization_error)));
-                }
+                Gson gson = new Gson();
+                Authentication authentication = gson.fromJson(message, Authentication.class);
+                if (authentication.getStatus().equals("VERIFIED")) {
+                    tokenCallback.onSuccess(new Token(authentication));
+                } else {
+                    try {
+                        JSONObject errorJson = new JSONObject(message);
+                        String errorMessage = errorJson.getString("failure_reason");
+                        tokenCallback.onError(new XenditError(errorMessage, authentication));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        tokenCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.tokenization_error)));
+                    }
 
+                }
             }
+        } catch (NullPointerException e) {
+            HyperLog.e(TAG, e.getMessage());
+            e.printStackTrace();
+            tokenCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
         }
 
         context.unregisterReceiver(this);

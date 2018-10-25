@@ -1,5 +1,9 @@
 package com.xendit.utils;
 
+import android.support.annotation.NonNull;
+
+import com.hypertrack.hyperlog.HyperLog;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,6 +15,8 @@ import java.util.Locale;
  */
 
 public class CardValidator {
+
+    private static final String TAG = "CardValidator";
 
     public enum CardType {
         VISA("VISA", "001"),
@@ -31,6 +37,7 @@ public class CardValidator {
             this.cardKey = cardKey;
         }
 
+        @NonNull
         public String toString() {
             return cardName;
         }
@@ -48,6 +55,7 @@ public class CardValidator {
      * @return true if the credit card number is valid, false otherwise
      */
     public static boolean isCardNumberValid(String cardNumber) {
+        HyperLog.d(TAG,"isCardNumberValid");
         if (cardNumber == null) {
             return false;
         }
@@ -153,29 +161,39 @@ public class CardValidator {
      * @return CardType The card type, e.g. VISA
      */
     public static CardType getCardType(String cardNumber) {
+        HyperLog.i(TAG,"getCardType");
         String cleanCardNumber = cleanCardNumber(cardNumber);
 
         if (cleanCardNumber == null) {
             return null;
         } else if (cleanCardNumber.indexOf("4") == 0) {
             if (isCardVisaElectron(cleanCardNumber)) {
+                HyperLog.i(TAG,"getCardType return VISA_ELECTRON");
                 return CardType.VISA_ELECTRON;
             } else {
+                HyperLog.i(TAG,"getCardType return VISA");
                 return CardType.VISA;
             }
         } else if (isCardAmex(cleanCardNumber)) {
+            HyperLog.i(TAG,"getCardType return AMEX");
             return CardType.AMEX;
         } else if (isCardMastercard(cleanCardNumber)) {
+            HyperLog.i(TAG,"getCardType return MASTERCARD");
             return CardType.MASTERCARD;
         } else if (isCardDiscover(cleanCardNumber)) {
+            HyperLog.i(TAG,"getCardType return DISCOVER");
             return CardType.DISCOVER;
         } else if (isCardJCB(cleanCardNumber)) {
+            HyperLog.i(TAG,"getCardType return JCB");
             return CardType.JCB;
         } else if (isCardDankort(cleanCardNumber)) {
+            HyperLog.i(TAG,"getCardType return DANKORT");
             return CardType.DANKORT;
         } else if (isCardMaestro(cleanCardNumber)) {
+            HyperLog.i(TAG,"getCardType return MAESTRO");
             return CardType.MAESTRO;
         } else {
+            HyperLog.i(TAG,"getCardType return OTHER");
             return CardType.OTHER;
         }
     }

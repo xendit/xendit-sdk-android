@@ -8,4 +8,6 @@
     <string name="create_token_error_validation">Validation Error</string>
     <string name="tokenization_error">Error occurred while creating credit card token</string>
     <string name="authentication_error">Error occurred while creating 3ds authentication</string>
+    <string name="error_card_cvn_invalid_for_type">Card cvn is invalid for this card type</string>
+    <string name="not_granted_access_network_state">ACCESS_NETWORK_STATE not granted</string>
 </resources>
