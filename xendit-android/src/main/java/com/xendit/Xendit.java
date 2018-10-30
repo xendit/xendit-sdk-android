@@ -10,7 +10,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -21,15 +20,15 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
-import com.hypertrack.hyperlog.HLCallback;
 import com.hypertrack.hyperlog.HyperLog;
-import com.hypertrack.hyperlog.error.HLErrorResponse;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.TokenConfiguration;
 import com.xendit.Models.TokenCreditCard;
 import com.xendit.Models.XenditError;
+import com.xendit.deviceInfo.AdInfo;
+import com.xendit.deviceInfo.DeviceInfo;
 import com.xendit.network.BaseRequest;
 import com.xendit.network.DefaultResponseHandler;
 import com.xendit.network.NetworkHandler;
@@ -43,7 +42,18 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Permission;
+import java.util.Map;
+
+import io.sentry.Sentry;
+import io.sentry.SentryClient;
+import io.sentry.event.BreadcrumbBuilder;
+import io.sentry.event.Event;
+import io.sentry.event.UserBuilder;
+import io.sentry.event.helper.ShouldSendEventCallback;
+import io.sentry.event.interfaces.ExceptionInterface;
+import io.sentry.event.interfaces.SentryException;
+import io.sentry.event.interfaces.SentryInterface;
+import io.sentry.event.interfaces.SentryStackTraceElement;
 
 /**
  * Created by Dimon_GDA on 3/7/17.
@@ -64,13 +74,29 @@ public class Xendit {
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
 
-    public Xendit(Context context, String publishableKey) {
+    public Xendit(final Context context, String publishableKey) {
         this.context = context;
         this.publishableKey = publishableKey;
 
         // init hyperlog
         HyperLog.initialize(context);
         HyperLog.setLogLevel(Log.VERBOSE);
+
+        // init sentry
+        // Use the Sentry DSN (client key) from the Project Settings page on Sentry
+
+        //String sentryDsn = "https://publicKey:secretKey@host:port/1?options";
+        //Sentry.init(sentryDsn, new AndroidSentryClientFactory(context));
+
+        // Alternatively, if you configured your DSN in a `sentry.properties`
+        // file (see the configuration documentation).
+
+        //Sentry.init(new AndroidSentryClientFactory(context));
+
+        // test sentry
+
+        //logWithStaticAPI();
+        //example();
 
         // set log server
         /*HyperLog.setURL("http://localhost:9600");
@@ -89,9 +115,23 @@ public class Xendit {
         */
 
         // file location of logs
-        //File file = HyperLog.getDeviceLogsInFile(context);
+        File logsLocationFile = HyperLog.getDeviceLogsInFile(context);
 
         HyperLog.i(TAG, "Start debugging");
+
+        //get device info
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    AdInfo adInfo = DeviceInfo.getAdvertisingIdInfo(context);
+                    String advertisingId = adInfo.getId();
+                    HyperLog.d(TAG, "ADID: " + advertisingId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 
@@ -482,6 +522,7 @@ public class Xendit {
     private void sendRequest(BaseRequest request, NetworkHandler<?> handler) {
         HyperLog.i(TAG, "sendRequest");
         if (isConnectionAvailable()) {
+            HyperLog.d(TAG, "Connected!");
             requestQueue.add(request);
         } else if (handler != null) {
             handler.handleError(new ConnectionError());
@@ -492,6 +533,7 @@ public class Xendit {
         HyperLog.i(TAG, "isConnectionAvailable");
         if (hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)) {
             @SuppressLint("MissingPermission") NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            HyperLog.d(TAG, "Had access network state");
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         } else {
             HyperLog.e(TAG, context.getString(R.string.not_granted_access_network_state));
@@ -508,5 +550,72 @@ public class Xendit {
     private boolean hasPermission(Context context, String permission) {
         int result = context.checkCallingOrSelfPermission(permission);
         return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * An example method that throws an exception.
+     */
+    void unsafeMethod() {
+        throw new UnsupportedOperationException("You shouldn't call this!");
+    }
+
+    /**
+     * Note that the ``Sentry.init`` method must be called before the static API
+     * is used, otherwise a ``NullPointerException`` will be thrown.
+     */
+    void logWithStaticAPI() {
+        /*
+         Record a breadcrumb in the current context which will be sent
+         with the next event(s). By default the last 100 breadcrumbs are kept.
+         */
+        Sentry.getContext().recordBreadcrumb(
+                new BreadcrumbBuilder().setMessage("User made an action").build()
+        );
+
+        // Set the user in the current context.
+        Sentry.getContext().setUser(
+                new UserBuilder().setEmail("hello@sentry.io").build()
+        );
+
+        /*
+         This sends a simple event to Sentry using the statically stored instance
+         that was created in the ``main`` method.
+         */
+        Sentry.capture("This is a test");
+
+        try {
+            unsafeMethod();
+        } catch (Exception e) {
+            // This sends an exception event to Sentry using the statically stored instance
+            // that was created in the ``main`` method.
+            Sentry.capture(e);
+        }
+    }
+
+    public static void example() {
+        SentryClient client = Sentry.getStoredClient();
+
+        client.addShouldSendEventCallback(new ShouldSendEventCallback() {
+            @Override
+            public boolean shouldSend(Event event) {
+                // decide whether to send the event
+
+                for (Map.Entry<String, SentryInterface> interfaceEntry : event.getSentryInterfaces().entrySet()) {
+                    if (interfaceEntry.getValue() instanceof ExceptionInterface) {
+                        ExceptionInterface i = (ExceptionInterface) interfaceEntry.getValue();
+                        for (SentryException sentryException : i.getExceptions()) {
+                            for (SentryStackTraceElement element : sentryException.getStackTraceInterface().getStackTrace()) {
+                                if (element.getModule().contains("com.xendit")) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // send event
+                return true;
+            }
+        });
     }
 }
