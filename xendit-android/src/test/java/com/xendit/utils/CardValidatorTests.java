@@ -1,14 +1,42 @@
 package com.xendit.utils;
 
+import android.content.Context;
+import android.support.test.filters.MediumTest;
+import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
+
+import com.hypertrack.hyperlog.HyperLog;
+
+
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import static com.google.common.truth.Truth.assertThat;
+
 
 /**
  * Created by gonzalez on 8/22/17.
  */
 
+@RunWith(AndroidJUnit4.class)
+@MediumTest
 public class CardValidatorTests {
+
+    private Context context = ApplicationProvider.getApplicationContext();
+
+    @Before
+    public void setup() {
+        // init hyperlog
+        HyperLog.initialize(context);
+        HyperLog.setLogLevel(Log.VERBOSE);
+    }
+
+
 
     private static String VALID_CARD_NUMBER = "4012111111111111";
 
@@ -220,7 +248,8 @@ public class CardValidatorTests {
 
     @Test
     public void getCardType_shouldHandleUnknownCardType() {
-        Assert.assertEquals(CardValidator.getCardType("000000000000"), CardValidator.CardType.OTHER);
+        assertThat(CardValidator.getCardType("000000000000")).isEqualTo(CardValidator.CardType.OTHER);
+        //Assert.assertEquals(CardValidator.getCardType("000000000000"), CardValidator.CardType.OTHER);
     }
 
     @Test
