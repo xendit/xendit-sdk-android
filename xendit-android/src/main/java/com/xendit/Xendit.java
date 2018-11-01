@@ -10,17 +10,21 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
+import com.hypertrack.hyperlog.HLCallback;
 import com.hypertrack.hyperlog.HyperLog;
+import com.hypertrack.hyperlog.error.HLErrorResponse;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
@@ -46,6 +50,7 @@ import java.util.Map;
 
 import io.sentry.Sentry;
 import io.sentry.SentryClient;
+import io.sentry.android.AndroidSentryClientFactory;
 import io.sentry.event.BreadcrumbBuilder;
 import io.sentry.event.Event;
 import io.sentry.event.UserBuilder;
@@ -66,7 +71,7 @@ public class Xendit {
     private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String GET_TOKEN_CONFIGURATION_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_configuration";
-
+    private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
     static final String ACTION_KEY = "ACTION_KEY";
 
     private Context context;
@@ -84,22 +89,18 @@ public class Xendit {
 
         // init sentry
         // Use the Sentry DSN (client key) from the Project Settings page on Sentry
-
-        //String sentryDsn = "https://publicKey:secretKey@host:port/1?options";
-        //Sentry.init(sentryDsn, new AndroidSentryClientFactory(context));
-
-        // Alternatively, if you configured your DSN in a `sentry.properties`
-        // file (see the configuration documentation).
-
-        //Sentry.init(new AndroidSentryClientFactory(context));
+        String sentryDsn = DNS_SERVER;
+        Sentry.init(sentryDsn, new AndroidSentryClientFactory(context));
+        // filter out exceptions
+        shouldSendException();
 
         // test sentry
-
         //logWithStaticAPI();
-        //example();
+
+
 
         // set log server
-        /*HyperLog.setURL("http://localhost:9600");
+        HyperLog.setURL("http://192.168.99.100:8000/12tn93m1");
         HyperLog.pushLogs(context, false, new HLCallback() {
             @Override
             public void onSuccess(@NonNull Object response) {
@@ -108,15 +109,15 @@ public class Xendit {
 
             @Override
             public void onError(@NonNull HLErrorResponse HLErrorResponse) {
-
+                HyperLog.e(TAG, HLErrorResponse.getErrorMessage());
+                new XenditError(HLErrorResponse.getErrorMessage());
             }
         });
-        HyperLog.d("Xendit","Debug Log");
-        */
 
         // file location of logs
         File logsLocationFile = HyperLog.getDeviceLogsInFile(context);
 
+        // start debugging, info debug log
         HyperLog.i(TAG, "Start debugging");
 
         //get device info
@@ -127,6 +128,7 @@ public class Xendit {
                     String advertisingId = adInfo.getId();
                     HyperLog.d(TAG, "ADID: " + advertisingId);
                 } catch (Exception e) {
+                    HyperLog.e(TAG, e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -139,9 +141,11 @@ public class Xendit {
             try {
                 stack = new HurlStack(null, new TLSSocketFactory());
             } catch (KeyManagementException e) {
+                HyperLog.e(TAG, e.getMessage());
                 e.printStackTrace();
                 stack = new HurlStack();
             } catch (NoSuchAlgorithmException e) {
+                HyperLog.e(TAG, e.getMessage());
                 e.printStackTrace();
                 stack = new HurlStack();
             }
@@ -176,6 +180,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isExpiryValid(String cardExpirationMonth, String cardExpirationYear) {
+        HyperLog.i(TAG,"isExpiryValid");
         return CardValidator.isExpiryValid(cardExpirationMonth, cardExpirationYear);
     }
 
@@ -188,6 +193,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCvnValid(String creditCardCVN) {
+        HyperLog.i(TAG,"isCvnValid");
         return CardValidator.isCvnValid(creditCardCVN);
     }
 
@@ -202,6 +208,7 @@ public class Xendit {
      *                      fails
      */
     public void createSingleUseToken(final Card card, final int amount, final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"createSingleUseToken");
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, true, false, tokenCallback);
@@ -219,6 +226,7 @@ public class Xendit {
      *                      fails
      */
     public void createSingleUseToken(final Card card, final int amount, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"createSingleUseToken");
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, false, tokenCallback);
@@ -233,6 +241,7 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"createMultipleUseToken");
         createSingleOrMultipleUseToken(card, "0", false, true, tokenCallback);
     }
 
@@ -243,7 +252,7 @@ public class Xendit {
      */
     @Deprecated
     public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.d("Xendit","createToken");
+        HyperLog.i(TAG,"createToken");
         createSingleOrMultipleUseToken(card, amount, true, isMultipleUse, tokenCallback);
     }
 
@@ -251,25 +260,25 @@ public class Xendit {
         HyperLog.i(TAG,"createSingleOrMultipleUseToken");
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
-                HyperLog.e(TAG, context.getString(R.string.create_token_error_card_number));
+                HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_number)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
                 return;
             }
 
             if (!CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
-                HyperLog.e(TAG, context.getString(R.string.create_token_error_card_expiration));
+                HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_expiration)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
-                HyperLog.e(TAG, context.getString(R.string.create_token_error_card_cvn));
+                HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
-                HyperLog.e(TAG, context.getString(R.string.error_card_cvn_invalid_for_type));
+                HyperLog.e(TAG, new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)));
                 return;
             }
@@ -278,10 +287,12 @@ public class Xendit {
                 @Override
                 public void onSuccess(TokenConfiguration tokenConfiguration) {
                     tokenizeCreditCardRequest(tokenConfiguration, card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
+                    HyperLog.d(TAG, "Successfully tokenize configuration");
                 }
 
                 @Override
                 public void onFailure(NetworkError error) {
+                    HyperLog.e(TAG, error.getMessage());
                     tokenCallback.onError(new XenditError(error));
                 }
             }));
@@ -298,12 +309,15 @@ public class Xendit {
      *                               creation completes or fails
      */
     public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
+        HyperLog.i(TAG,"createAuthentication");
         if (tokenId == null || tokenId.equals("")) {
+            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (amount <= 0) {
+            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
@@ -319,10 +333,12 @@ public class Xendit {
                 } else {
                     authenticationCallback.onSuccess(authentication);
                 }
+                HyperLog.d(TAG, "Successfully created auth!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
+                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
                 authenticationCallback.onError(new XenditError(error));
             }
         }));
@@ -334,48 +350,59 @@ public class Xendit {
      */
     @Deprecated
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
-            if (tokenId == null || tokenId.isEmpty()) {
-                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
-                return;
-            }
+        HyperLog.i(TAG,"createAuthentication");
+        if (tokenId == null || tokenId.isEmpty()) {
+            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
+            tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+            return;
+        }
 
-            if (amount == null || Integer.parseInt(amount) <= 0) {
-                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
-                return;
-            }
+        if (amount == null || Integer.parseInt(amount) <= 0) {
 
-            if (!isCvnValid(cardCvn)) {
-                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
-                return;
-            }
+            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
+            tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+            return;
+        }
 
-            _createAuthentication(tokenId, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-                @Override
-                public void onSuccess(Authentication authentication) {
-                    if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
-                        registerBroadcastReceiver(tokenCallback);
-                        context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
-                    } else {
-                        tokenCallback.onSuccess(new Token(authentication));
-                    }
-                }
+        if (!isCvnValid(cardCvn)) {
 
-                @Override
-                public void onFailure(NetworkError error) {
-                    tokenCallback.onError(new XenditError(error));
-                }
-            }));
-    }
+            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
+            tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+            return;
+        }
 
-    private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
+        _createAuthentication(tokenId, amount, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
-            public void onSuccess(TokenCreditCard tokenCreditCard) {
-                _createCreditCardToken(card, tokenCreditCard.getToken(), amount, shouldAuthenticate, isMultipleUse, tokenCallback);
+            public void onSuccess(Authentication authentication) {
+                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                    registerBroadcastReceiver(tokenCallback);
+                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                } else {
+                    tokenCallback.onSuccess(new Token(authentication));
+                }
+                HyperLog.d(TAG, "Successfully created auth!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
+                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
+                tokenCallback.onError(new XenditError(error));
+            }
+        }));
+    }
+
+    private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"tokenizeCreditCardRequest");
+        tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
+            @Override
+            public void onSuccess(TokenCreditCard tokenCreditCard) {
+                _createCreditCardToken(card, tokenCreditCard.getToken(), amount, shouldAuthenticate, isMultipleUse, tokenCallback);
+                HyperLog.d(TAG, "Successfully tokenize credit card!");
+            }
+
+            @Override
+            public void onFailure(NetworkError error) {
+                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
@@ -386,6 +413,7 @@ public class Xendit {
      */
     @Deprecated
     public void createCreditCardToken(Card card, final String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"createCreditCardToken");
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
@@ -400,16 +428,19 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
+                HyperLog.d(TAG, "Successfully created token!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
+                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
     }
 
     private void _createCreditCardToken(Card card, final String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"createCreditCardToken");
         _createToken(card, token, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
@@ -419,16 +450,19 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
+                HyperLog.d(TAG, "Successfully created token!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
+                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
     }
 
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
+        HyperLog.i(TAG,"registerBroadcastReceiver");
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -438,6 +472,7 @@ public class Xendit {
     }
 
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
+        HyperLog.i(TAG,"registerBroadcastReceiver");
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -471,6 +506,7 @@ public class Xendit {
         } catch (NullPointerException e) {
             HyperLog.e(TAG, e.getMessage());
             e.printStackTrace();
+            handler.handleError(new NetworkError(new VolleyError(e.getMessage(), e.getCause())));
         }
 
         request.addParam("keyId", tokenConfig.getTokenizationAuthKeyId());
@@ -510,10 +546,12 @@ public class Xendit {
     }
 
     private String encodeBase64(String key) {
+        HyperLog.i(TAG,"encodeBase64");
         try {
             byte[] keyData = key.getBytes("UTF-8");
             return Base64.encodeToString(keyData, Base64.DEFAULT);
         } catch (UnsupportedEncodingException e) {
+            HyperLog.e(TAG, e.getCause() + " " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -525,6 +563,7 @@ public class Xendit {
             HyperLog.d(TAG, "Connected!");
             requestQueue.add(request);
         } else if (handler != null) {
+            HyperLog.e(TAG, new ConnectionError().getMessage());
             handler.handleError(new ConnectionError());
         }
     }
@@ -543,11 +582,13 @@ public class Xendit {
     }
 
     private boolean getEnvironment() {
+        HyperLog.i(TAG, "getEnvironment");
         String publishKey = publishableKey.toUpperCase();
         return publishKey.contains("PRODUCTION");
     }
 
     private boolean hasPermission(Context context, String permission) {
+        HyperLog.i(TAG, "hasPermission");
         int result = context.checkCallingOrSelfPermission(permission);
         return result == PackageManager.PERMISSION_GRANTED;
     }
@@ -555,7 +596,7 @@ public class Xendit {
     /**
      * An example method that throws an exception.
      */
-    void unsafeMethod() {
+    private void unsafeMethod() {
         throw new UnsupportedOperationException("You shouldn't call this!");
     }
 
@@ -563,7 +604,7 @@ public class Xendit {
      * Note that the ``Sentry.init`` method must be called before the static API
      * is used, otherwise a ``NullPointerException`` will be thrown.
      */
-    void logWithStaticAPI() {
+    private void logWithStaticAPI() {
         /*
          Record a breadcrumb in the current context which will be sent
          with the next event(s). By default the last 100 breadcrumbs are kept.
@@ -592,14 +633,17 @@ public class Xendit {
         }
     }
 
-    public static void example() {
+    /**
+     * Method that will filter that only exception that are generated with our library
+     * are sent to sentry
+     */
+    private void shouldSendException() {
         SentryClient client = Sentry.getStoredClient();
 
         client.addShouldSendEventCallback(new ShouldSendEventCallback() {
             @Override
             public boolean shouldSend(Event event) {
                 // decide whether to send the event
-
                 for (Map.Entry<String, SentryInterface> interfaceEntry : event.getSentryInterfaces().entrySet()) {
                     if (interfaceEntry.getValue() instanceof ExceptionInterface) {
                         ExceptionInterface i = (ExceptionInterface) interfaceEntry.getValue();
