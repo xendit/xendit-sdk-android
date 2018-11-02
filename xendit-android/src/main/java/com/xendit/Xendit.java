@@ -104,7 +104,7 @@ public class Xendit {
         HyperLog.pushLogs(context, false, new HLCallback() {
             @Override
             public void onSuccess(@NonNull Object response) {
-                HyperLog.d("Xendit", "Successfully pushed logs.");
+                HyperLog.d(TAG, "Successfully pushed logs.");
             }
 
             @Override
