@@ -103,4 +103,12 @@
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textIsSelectable="true" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </ProgressBar>
+
 </LinearLayout>

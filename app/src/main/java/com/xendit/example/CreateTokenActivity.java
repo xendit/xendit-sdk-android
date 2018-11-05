@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,7 +83,10 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view) {
-        Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
+        final Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
+
+        final ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         isMultipleUse = multipleUseCheckBox.isChecked();
         shouldAuthenticate = !shouldAuthenticateCheckBox.isChecked();
@@ -95,13 +99,16 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
+                progressBar.setVisibility(View.GONE);
                 resultTextView.setText("{ id: \"" + token.getId() + "\", authentication_id: \"" + token.getAuthenticationId() + "\", status: \"" + token.getStatus() + "\", masked_card_number: \"" + token.getMaskedCardNumber() + "\" }");
                 Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(XenditError xenditError) {
-                Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode() + " " +
+                        xenditError.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         };
 

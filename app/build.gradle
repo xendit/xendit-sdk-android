@@ -5,12 +5,24 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.xendit.example"
-        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    flavorDimensions "api"
+
+    productFlavors {
+        product{
+            dimension "api"
+            minSdkVersion 16
+        }
+        minApi18 {
+            dimension "api"
+            minSdkVersion 18
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
