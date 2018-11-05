@@ -1,4 +1,4 @@
-package com.xendit.deviceInfo;
+package com.xendit.DeviceInfo;
 
 
 public final class AdInfo {

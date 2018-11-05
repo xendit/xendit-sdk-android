@@ -1,4 +1,4 @@
-package com.xendit.deviceInfo;
+package com.xendit.DeviceInfo;
 
 import android.content.ComponentName;
 import android.content.Context;
