@@ -100,19 +100,21 @@ public class Xendit {
 
 
         // set log server
-        HyperLog.setURL("http://192.168.99.100:8000/12tn93m1");
+        // uncomment once you have server
+        /*HyperLog.setURL("http://192.168.99.100:8000/12tn93m1");
         HyperLog.pushLogs(context, false, new HLCallback() {
             @Override
             public void onSuccess(@NonNull Object response) {
-                HyperLog.d(TAG, "Successfully pushed logs.");
+                HyperLog.d(TAG, "Successfully pushed logs." + response);
             }
 
             @Override
             public void onError(@NonNull HLErrorResponse HLErrorResponse) {
-                HyperLog.e(TAG, HLErrorResponse.getErrorMessage());
+                HyperLog.e(TAG, "Error: " + HLErrorResponse.getErrorMessage());
                 new XenditError(HLErrorResponse.getErrorMessage());
             }
         });
+        */
 
         // file location of logs
         File logsLocationFile = HyperLog.getDeviceLogsInFile(context);
