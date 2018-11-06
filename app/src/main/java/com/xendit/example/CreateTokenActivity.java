@@ -21,6 +21,8 @@ import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
 
+import java.util.Calendar;
+
 /**
  * Created by Sergey on 4/3/17.
  */
@@ -41,6 +43,8 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     private boolean isMultipleUse;
     private boolean shouldAuthenticate;
+
+    private static String tokenId;
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, CreateTokenActivity.class);
@@ -65,11 +69,12 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
         createTokenBtn.setOnClickListener(this);
 
-        cardNumberEditText.setText("4000000000000002");
-        expMonthEditText.setText("12");
-        expYearEditText.setText("2018");
-        cvnEditText.setText("123");
-        amountEditText.setText("123000");
+        cardNumberEditText.setText(R.string.cardNumbTest);
+        expMonthEditText.setText(R.string.expMonthTest);
+        String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 1);
+        expYearEditText.setText(year);
+        cvnEditText.setText(R.string.cvnTest);
+        amountEditText.setText(R.string.amountTest);
     }
 
     private void setActionBarTitle(String title) {
@@ -100,6 +105,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onSuccess(Token token) {
                 progressBar.setVisibility(View.GONE);
+                setTokenId(token.getId());
                 resultTextView.setText("{ id: \"" + token.getId() + "\", authentication_id: \"" + token.getAuthenticationId() + "\", status: \"" + token.getStatus() + "\", masked_card_number: \"" + token.getMaskedCardNumber() + "\" }");
                 Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
@@ -130,5 +136,13 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public static String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 }

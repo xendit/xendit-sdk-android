@@ -6,6 +6,8 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Calendar;
+
 import static com.google.common.truth.Truth.assertThat;
 
 
@@ -110,26 +112,30 @@ public class CardValidatorTests {
 
     @Test
     public void isExpiryValid_shouldNotPassInvalidMonths() {
-        assertThat(CardValidator.isExpiryValid("00", "2020")).isFalse();
-        assertThat(CardValidator.isExpiryValid("-1", "2020")).isFalse();
-        assertThat(CardValidator.isExpiryValid("13", "2020")).isFalse();
+        assertThat(CardValidator.isExpiryValid("00",
+                Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
+        assertThat(CardValidator.isExpiryValid("-1",
+                Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
+        assertThat(CardValidator.isExpiryValid("13",
+                Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
     }
 
     @Test
     public void isExpiryValid_shouldPassValidMonthAndYear() {
-        assertThat(CardValidator.isExpiryValid("12", "2020")).isTrue();
-        assertThat(CardValidator.isExpiryValid("01", "2020")).isTrue();
-        assertThat(CardValidator.isExpiryValid("1", "2020")).isTrue();
+        assertThat(CardValidator.isExpiryValid("12", Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isTrue();
+        assertThat(CardValidator.isExpiryValid("01", Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isTrue();
+        assertThat(CardValidator.isExpiryValid("1", Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isTrue();
     }
 
     @Test
     public void isExpiryValid_shouldTrimMonthAndYear() {
-        assertThat(CardValidator.isExpiryValid("  12  ", "  2020  ")).isTrue();
+        String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2);
+        assertThat(CardValidator.isExpiryValid("  12  ", "   " + year + "     ")).isTrue();
     }
 
     @Test
     public void isExpiryValid_shouldNotAllowNullValues() {
-        assertThat(CardValidator.isExpiryValid(null, "2020")).isFalse();
+        assertThat(CardValidator.isExpiryValid(null, Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
         assertThat(CardValidator.isExpiryValid("12", null)).isFalse();
     }
 

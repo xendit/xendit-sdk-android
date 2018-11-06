@@ -18,6 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Calendar;
+
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.*;
 
@@ -26,6 +28,8 @@ import static org.junit.Assert.*;
 public class SampleAppDefaultTest {
 
     private UiDevice mDevice;
+
+    private Context appContext = InstrumentationRegistry.getTargetContext();
 
     @Rule
     public ActivityTestRule mActivityRule = new ActivityTestRule<>(
@@ -47,8 +51,6 @@ public class SampleAppDefaultTest {
     @Test
     public void useAppContext() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-
         assertEquals("com.xendit.example", appContext.getPackageName());
     }
 
@@ -71,7 +73,7 @@ public class SampleAppDefaultTest {
                         100);
         assertThat(yearText, notNullValue());
 
-        yearText.setText("2019");
+        yearText.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 1));
 
         createTokenButton.click();
 
@@ -103,30 +105,54 @@ public class SampleAppDefaultTest {
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "cardNumberEditText_ValidationUtilActivity")),
                         100);
         assertThat(cardNumberEditText, notNullValue());
-        cardNumberEditText.setText("4000000000000002");
+        cardNumberEditText.setText(appContext.getString(R.string.cardNumbTest));
 
         UiObject2 expMonthEditText = mDevice
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "expMonthEditText_ValidationUtilActivity")),
                         100);
         assertThat(expMonthEditText, notNullValue());
-        expMonthEditText.setText("12");
+        expMonthEditText.setText(appContext.getString(R.string.expMonthTest));
 
         UiObject2 expYearEditText = mDevice
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "expYearEditText_ValidationUtilActivity")),
                         100);
         assertThat(expYearEditText, notNullValue());
-        expYearEditText.setText("2019");
+        expYearEditText.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 1));
 
         UiObject2 cvnEditText = mDevice
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "cvnEditText_ValidationUtilActivity")),
                         100);
         assertThat(cvnEditText, notNullValue());
-        cvnEditText.setText("123");
+        cvnEditText.setText(appContext.getString(R.string.cvnTest));
 
         UiObject2 validateBtn = mDevice
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "validateBtn_ValidationUtilActivity")),
                         100);
         validateBtn.click();
+
+        Sleep(3000);
+
+        mDevice.pressBack();
+    }
+
+    @Test
+    public void testAuthActivity() {
+        UiObject2 auth = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "authenticationTextView_MainActivity")),
+                        100);
+        auth.click();
+
+        Sleep(3000);
+
+        String id = CreateTokenActivity.getTokenId();
+
+        UiObject2 tokenIdEditText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "tokenIdEditText_AuthenticationActivity")),
+                        100);
+        assertThat(tokenIdEditText, notNullValue());
+        tokenIdEditText.setText(id);
+
+        Sleep(3000);
 
         mDevice.pressBack();
     }
