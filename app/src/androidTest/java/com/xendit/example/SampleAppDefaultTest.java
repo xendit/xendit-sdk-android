@@ -11,6 +11,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
+import android.widget.Button;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,7 +54,6 @@ public class SampleAppDefaultTest {
 
     @Test
     public void testCreateToken() {
-        String name = getClass().getName();
         UiObject2 createToken = mDevice
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "createTokenTextView_MainActivity")),
                         100);
@@ -78,18 +78,58 @@ public class SampleAppDefaultTest {
         Sleep(35000);
 
         try {
-            mDevice.findObject(new UiSelector().textContains("Submit")).click();
+            mDevice.findObject(new UiSelector()
+                    .index(0)
+                    .className(Button.class)).click();
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
-
-        mDevice.pressBack();
 
         Sleep(20000);
 
         mDevice.pressBack();
     }
 
+    @Test
+    public void testValidateUtil() {
+        UiObject2 validationUtil = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "validationUtilTextView_MainActivity")),
+                        100);
+        validationUtil.click();
+
+        Sleep(3000);
+
+        UiObject2 cardNumberEditText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "cardNumberEditText_ValidationUtilActivity")),
+                        100);
+        assertThat(cardNumberEditText, notNullValue());
+        cardNumberEditText.setText("4000000000000002");
+
+        UiObject2 expMonthEditText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "expMonthEditText_ValidationUtilActivity")),
+                        100);
+        assertThat(expMonthEditText, notNullValue());
+        expMonthEditText.setText("12");
+
+        UiObject2 expYearEditText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "expYearEditText_ValidationUtilActivity")),
+                        100);
+        assertThat(expYearEditText, notNullValue());
+        expYearEditText.setText("2019");
+
+        UiObject2 cvnEditText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "cvnEditText_ValidationUtilActivity")),
+                        100);
+        assertThat(cvnEditText, notNullValue());
+        cvnEditText.setText("123");
+
+        UiObject2 validateBtn = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "validateBtn_ValidationUtilActivity")),
+                        100);
+        validateBtn.click();
+
+        mDevice.pressBack();
+    }
 
     private static void Sleep(int millis) {
         try {
