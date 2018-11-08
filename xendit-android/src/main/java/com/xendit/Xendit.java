@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -44,8 +46,14 @@ import com.xendit.utils.CardValidator;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Permission;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.sentry.Sentry;
@@ -101,7 +109,7 @@ public class Xendit {
 
         // set log server
         // uncomment once you have server
-        /*HyperLog.setURL("http://192.168.99.100:8000/12tn93m1");
+        HyperLog.setURL("http://192.168.99.100:8000/1bb30dj1");
         HyperLog.pushLogs(context, false, new HLCallback() {
             @Override
             public void onSuccess(@NonNull Object response) {
@@ -114,7 +122,7 @@ public class Xendit {
                 new XenditError(HLErrorResponse.getErrorMessage());
             }
         });
-        */
+
 
         // file location of logs
         File logsLocationFile = HyperLog.getDeviceLogsInFile(context);
@@ -135,6 +143,22 @@ public class Xendit {
                 }
             }
         }).start();
+        HyperLog.d(TAG, "OS version: " + System.getProperty("os.version") + "(" +
+                android.os.Build.VERSION.INCREMENTAL + ")" + "\n OS API Level: " +
+                android.os.Build.VERSION.SDK + "\n Device: " + android.os.Build.DEVICE +
+                "\n Model (and Product): " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")"
+        );
+
+        HyperLog.d(TAG, "Language: " + Locale.getDefault().getLanguage());
+
+        WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if (hasPermission(context, Manifest.permission.ACCESS_WIFI_STATE)) {
+            @SuppressLint("MissingPermission") WifiInfo info = manager.getConnectionInfo();
+        } else {
+            HyperLog.d(TAG, "Does not have ACCESS_WIFI_STATE permission");
+        }
+
+        HyperLog.d(TAG, "IP: " + getIPAddress(true));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
@@ -664,4 +688,37 @@ public class Xendit {
             }
         });
     }
+
+    /**
+     * Get IP address from first non-localhost interface
+     * @param useIPv4   true=return ipv4, false=return ipv6
+     * @return  address or empty string
+     */
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) { } // for now eat exceptions
+        return "";
+    }
+
 }
