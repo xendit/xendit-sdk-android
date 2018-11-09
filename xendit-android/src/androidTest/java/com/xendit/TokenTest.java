@@ -79,4 +79,59 @@ public class TokenTest {
         xendit.createMultipleUseToken(card, callback);
     }
 
+    @Test
+    public void test_createCardTokenNotMultipleUse_deprecated() {
+        Card card = new Card("4000000000000002",
+                "12",
+                "2020",
+                "123");
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        xendit.createCreditCardToken(card, "123456789", "300", false, callback);
+    }
+
+    @Test
+    public void test_createCardTokenMultipleUse_deprecated() {
+        Card card = new Card("4000000000000002",
+                "12",
+                "2020",
+                "123");
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        xendit.createCreditCardToken(card, "123456789", "300", true, callback);
+    }
+
+
+    @Test
+    public void test_createSingleUseToken() {
+
+        Card card = new Card("4000000000000002",
+                "12",
+                "2020",
+                "123");
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        xendit.createSingleUseToken(card, 450, callback);
+    }
 }

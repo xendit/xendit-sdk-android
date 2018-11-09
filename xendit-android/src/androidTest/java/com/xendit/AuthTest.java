@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.widget.Toast;
 
 import com.xendit.Models.Authentication;
+import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class AuthTest {
     private final Xendit xendit = new Xendit(appContext, PUBLISHABLE_KEY);
 
     @Test
-    public void test_createSingleUseTokenAuthFalse() {
+    public void test_createAuth() {
         AuthenticationCallback callback = new AuthenticationCallback() {
             @Override
             public void onSuccess(Authentication authentication) {
@@ -32,5 +33,20 @@ public class AuthTest {
             }
         };
         xendit.createAuthentication("9823104219412", 200, callback);
+    }
+
+
+    @Test
+    public void test_createAuth_deprecated() {
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        xendit.createAuthentication("9823104219412", "123", "250", callback);
     }
 }
