@@ -151,7 +151,7 @@ public class Xendit {
 
         HyperLog.d(TAG, "Language: " + Locale.getDefault().getLanguage());
 
-        WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (hasPermission(context, Manifest.permission.ACCESS_WIFI_STATE)) {
             @SuppressLint("MissingPermission") WifiInfo info = manager.getConnectionInfo();
         } else {

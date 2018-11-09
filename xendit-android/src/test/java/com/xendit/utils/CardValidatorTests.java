@@ -1,10 +1,6 @@
 package com.xendit.utils;
 
-import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.Calendar;
 
@@ -15,8 +11,6 @@ import static com.google.common.truth.Truth.assertThat;
  * Created by gonzalez on 8/22/17.
  */
 
-@RunWith(AndroidJUnit4.class)
-@MediumTest
 public class CardValidatorTests {
 
     private static String VALID_CARD_NUMBER = "4012111111111111";

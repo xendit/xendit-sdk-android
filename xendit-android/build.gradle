@@ -77,9 +77,9 @@ dependencies {
 
     testImplementation "com.google.truth:truth:0.42"
 
-    testImplementation 'com.android.support.test:rules:1.0.2'
-    testImplementation 'com.android.support.test:runner:1.0.2'
-    testImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
 apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'

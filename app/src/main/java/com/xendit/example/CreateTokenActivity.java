@@ -55,7 +55,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_token);
 
-        setActionBarTitle("Create Token");
+        setActionBarTitle(getString(R.string.create_token));
 
         cardNumberEditText = (EditText) findViewById(R.id.cardNumberEditText_CreateTokenActivity);
         expMonthEditText = (EditText) findViewById(R.id.expMonthEditText_CreateTokenActivity);
