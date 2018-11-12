@@ -43,25 +43,19 @@ import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
 import com.xendit.utils.CardValidator;
+import com.xendit.utils.PermissionUtils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Permission;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import io.sentry.Sentry;
 import io.sentry.SentryClient;
 import io.sentry.android.AndroidSentryClientFactory;
-import io.sentry.event.BreadcrumbBuilder;
 import io.sentry.event.Event;
-import io.sentry.event.UserBuilder;
 import io.sentry.event.helper.ShouldSendEventCallback;
 import io.sentry.event.interfaces.ExceptionInterface;
 import io.sentry.event.interfaces.SentryException;
@@ -102,11 +96,6 @@ public class Xendit {
         // filter out exceptions
         shouldSendException();
 
-        // test sentry
-        //logWithStaticAPI();
-
-
-
         // set log server
         // uncomment once you have server
         HyperLog.setURL("http://192.168.99.100:8000/1bb30dj1");
@@ -143,22 +132,14 @@ public class Xendit {
                 }
             }
         }).start();
-        HyperLog.d(TAG, "OS version: " + System.getProperty("os.version") + "(" +
-                android.os.Build.VERSION.INCREMENTAL + ")" + "\n OS API Level: " +
-                android.os.Build.VERSION.SDK + "\n Device: " + android.os.Build.DEVICE +
-                "\n Model (and Product): " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")"
+        HyperLog.d(TAG, "OS version: " + DeviceInfo.getOSVersion() + "\n OS API Level: " +
+                 DeviceInfo.getAPILevel() + "\n Device: " + DeviceInfo.getDevice() +
+                "\n Model (and Product): " + DeviceInfo.getModel() + " (" + DeviceInfo.getProduct() + ")"
         );
-
-        HyperLog.d(TAG, "Language: " + Locale.getDefault().getLanguage());
-
-        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (hasPermission(context, Manifest.permission.ACCESS_WIFI_STATE)) {
-            @SuppressLint("MissingPermission") WifiInfo info = manager.getConnectionInfo();
-        } else {
-            HyperLog.d(TAG, "Does not have ACCESS_WIFI_STATE permission");
-        }
-
-        HyperLog.d(TAG, "IP: " + getIPAddress(true));
+        DeviceInfo.getWifiSSID(context);
+        HyperLog.d(TAG, DeviceInfo.getLACCID(context));
+        HyperLog.d(TAG, "Language: " + DeviceInfo.getLanguage());
+        HyperLog.d(TAG, "IP: " + DeviceInfo.getIPAddress(true));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
@@ -596,7 +577,7 @@ public class Xendit {
 
     private boolean isConnectionAvailable() {
         HyperLog.i(TAG, "isConnectionAvailable");
-        if (hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)) {
+        if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)) {
             @SuppressLint("MissingPermission") NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
             HyperLog.d(TAG, "Had access network state");
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
@@ -613,51 +594,7 @@ public class Xendit {
         return publishKey.contains("PRODUCTION");
     }
 
-    private boolean hasPermission(Context context, String permission) {
-        HyperLog.i(TAG, "hasPermission");
-        int result = context.checkCallingOrSelfPermission(permission);
-        return result == PackageManager.PERMISSION_GRANTED;
-    }
 
-    /**
-     * An example method that throws an exception.
-     */
-    private void unsafeMethod() {
-        throw new UnsupportedOperationException("You shouldn't call this!");
-    }
-
-    /**
-     * Note that the ``Sentry.init`` method must be called before the static API
-     * is used, otherwise a ``NullPointerException`` will be thrown.
-     */
-    private void logWithStaticAPI() {
-        /*
-         Record a breadcrumb in the current context which will be sent
-         with the next event(s). By default the last 100 breadcrumbs are kept.
-         */
-        Sentry.getContext().recordBreadcrumb(
-                new BreadcrumbBuilder().setMessage("User made an action").build()
-        );
-
-        // Set the user in the current context.
-        Sentry.getContext().setUser(
-                new UserBuilder().setEmail("hello@sentry.io").build()
-        );
-
-        /*
-         This sends a simple event to Sentry using the statically stored instance
-         that was created in the ``main`` method.
-         */
-        Sentry.capture("This is a test");
-
-        try {
-            unsafeMethod();
-        } catch (Exception e) {
-            // This sends an exception event to Sentry using the statically stored instance
-            // that was created in the ``main`` method.
-            Sentry.capture(e);
-        }
-    }
 
     /**
      * Method that will filter that only exception that are generated with our library
@@ -688,37 +625,4 @@ public class Xendit {
             }
         });
     }
-
-    /**
-     * Get IP address from first non-localhost interface
-     * @param useIPv4   true=return ipv4, false=return ipv6
-     * @return  address or empty string
-     */
-    public static String getIPAddress(boolean useIPv4) {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
-
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ignored) { } // for now eat exceptions
-        return "";
-    }
-
 }
