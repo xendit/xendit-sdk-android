@@ -218,7 +218,4 @@ public final class DeviceInfo {
         }
         return info;
     }
-
-
-
 }
