@@ -10,6 +10,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 
 import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
@@ -20,6 +22,7 @@ import java.util.Locale;
 
 public class GPSLocation implements LocationListener {
 
+    private static final String TAG = "GPSLocation";
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
     private static final long MIN_TIME_BW_UPDATES = 0;
 
@@ -30,6 +33,9 @@ public class GPSLocation implements LocationListener {
     }
 
     @SuppressLint("MissingPermission")
+    /**
+     * Return latitude and longitude
+     */
     private Double[] getLocationLatLong() {
         Double[] latlong = new Double[2];
         latlong[0] = 0.0;
@@ -76,6 +82,12 @@ public class GPSLocation implements LocationListener {
         return latlong;
     }
 
+    /**
+     * Function to get correct address from lonitude and latitude
+     * @param latitude of device
+     * @param longitude of device
+     * @return DeviceLocation structure
+     */
     private DeviceLocation getAddressFromLocation(double latitude, double longitude) {
 
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
@@ -101,10 +113,15 @@ public class GPSLocation implements LocationListener {
         }
     }
 
+    /**
+     * Function which will return device location to calling method
+     * @return DeviceLocation structure
+     */
     public DeviceLocation getLocation() {
-        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION))
-            throw new RuntimeException("Access Fine Location permission not granted!");
-
+        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            HyperLog.d(TAG, "Access Fine Location permission is not granted");
+            return null;
+        }
         Double[] latlong = getLocationLatLong();
         return getAddressFromLocation(latlong[0], latlong[1]);
     }
@@ -128,4 +145,28 @@ public class GPSLocation implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+
+    private GsmCellLocation getGsmCellLocation(Context context) {
+        final TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephony != null && telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+            if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                    PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                @SuppressLint("MissingPermission")
+                final GsmCellLocation location = (GsmCellLocation) telephony.getCellLocation();
+                return location;
+            }
+        }
+        return null;
+    }
+
+    public int getLac(Context context) {
+        GsmCellLocation gsmCellLocation = getGsmCellLocation(context);
+        return gsmCellLocation != null ? gsmCellLocation.getLac() : 0;
+    }
+
+    public int getCid(Context context) {
+        GsmCellLocation gsmCellLocation = getGsmCellLocation(context);
+        return gsmCellLocation != null ? gsmCellLocation.getCid() : 0;
+    }
+
 }

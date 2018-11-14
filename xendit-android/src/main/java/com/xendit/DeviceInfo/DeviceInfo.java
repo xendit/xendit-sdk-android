@@ -191,31 +191,18 @@ public final class DeviceInfo {
         return Locale.getDefault().getLanguage();
     }
 
-    public static void getWifiSSID(Context context) {
+    public static String getWifiSSID(Context context) {
 
         WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_WIFI_STATE)) {
             @SuppressLint("MissingPermission")
             WifiInfo info = manager.getConnectionInfo();
-            HyperLog.d(TAG, "SSID: " + info.getSSID());
+            return info.getSSID();
         } else {
             HyperLog.d(TAG, "Does not have ACCESS_WIFI_STATE permission");
         }
+        return "";
     }
-    public static String getLACCID(Context context) {
-        String info = "";
-        final TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (telephony != null && telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
-            if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ||
-                    PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                @SuppressLint("MissingPermission") final GsmCellLocation location = (GsmCellLocation) telephony.getCellLocation();
-                if (location != null) {
-                    info = "LAC: " + location.getLac() + " CID: " + location.getCid();
-                }
-            } else {
-                info = "Does not have ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permission";
-            }
-        }
-        return info;
-    }
+
+
 }

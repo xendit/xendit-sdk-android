@@ -27,6 +27,8 @@ import com.google.gson.JsonObject;
 import com.hypertrack.hyperlog.HLCallback;
 import com.hypertrack.hyperlog.HyperLog;
 import com.hypertrack.hyperlog.error.HLErrorResponse;
+import com.xendit.DeviceInfo.GPSLocation;
+import com.xendit.DeviceInfo.Model.DeviceLocation;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
@@ -136,10 +138,24 @@ public class Xendit {
                  DeviceInfo.getAPILevel() + "\n Device: " + DeviceInfo.getDevice() +
                 "\n Model (and Product): " + DeviceInfo.getModel() + " (" + DeviceInfo.getProduct() + ")"
         );
-        DeviceInfo.getWifiSSID(context);
-        HyperLog.d(TAG, DeviceInfo.getLACCID(context));
+        if (!DeviceInfo.getWifiSSID(context).isEmpty()) {
+            HyperLog.d(TAG, "SSID: " + DeviceInfo.getWifiSSID(context));
+        }
         HyperLog.d(TAG, "Language: " + DeviceInfo.getLanguage());
         HyperLog.d(TAG, "IP: " + DeviceInfo.getIPAddress(true));
+
+        GPSLocation gpsLocation = new GPSLocation(context);
+        DeviceLocation deviceLocation = gpsLocation.getLocation();
+        if (deviceLocation != null) {
+            HyperLog.d(TAG, "Lat: " + deviceLocation.getLatitude());
+            HyperLog.d(TAG, "Longiude: " + deviceLocation.getLongitude());
+        }
+        if (gpsLocation.getLac(context) != 0) {
+            HyperLog.d(TAG, "Lac: " + gpsLocation.getLac(context));
+        }
+        if (gpsLocation.getCid(context) != 0) {
+            HyperLog.d(TAG, "Cid: " + gpsLocation.getCid(context));
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
