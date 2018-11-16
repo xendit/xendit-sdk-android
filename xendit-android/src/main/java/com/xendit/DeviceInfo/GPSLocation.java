@@ -1,6 +1,5 @@
 package com.xendit.DeviceInfo;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Address;
@@ -15,7 +14,6 @@ import android.telephony.gsm.GsmCellLocation;
 
 import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
-import com.xendit.utils.PermissionUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,14 +21,17 @@ import java.util.Locale;
 public class GPSLocation implements LocationListener {
 
     private static final String TAG = "GPSLocation";
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
-    private static final long MIN_TIME_BW_UPDATES = 0;
+    // The minimum distance to change Updates in meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 0 meters
+    // The minimum time between updates in milliseconds
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 28800; // 8 hours
 
     private Context context;
+    private Double longitude;
+    private Double latitude;
 
-    public GPSLocation(Context context) {
-        this.context = context;
-    }
+    @SuppressLint("MissingPermission")
+    public GPSLocation(Context context) { this.context = context; }
 
     @SuppressLint("MissingPermission")
     /**
@@ -43,37 +44,52 @@ public class GPSLocation implements LocationListener {
 
         try {
             // Get the location manager
-            LocationManager Locationm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             // ——–Gps provider—
-            Locationm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     MIN_TIME_BW_UPDATES,
                     MIN_DISTANCE_CHANGE_FOR_UPDATES, this, Looper.getMainLooper());
 
-            Location locationGPS = Locationm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (locationGPS != null) {
-                latlong[0] = locationGPS.getLatitude();
-                latlong[1] = locationGPS.getLongitude();
-                Locationm.removeUpdates(this);
-                return latlong;
+            // getting GPS status
+            Boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            Boolean isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (isGPSEnabled) {
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                if (location != null) {
+                    latlong[0] = location.getLatitude();
+                    latlong[1] = location.getLongitude();
+                    locationManager.removeUpdates(this);
+                    return latlong;
+                }
             }
 
-            // ——–Network provider—
-            Locationm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    MIN_TIME_BW_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this, Looper.getMainLooper());
-            Location locationNet = Locationm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (locationNet != null) {
-                latlong[0] = locationNet.getLatitude();
-                latlong[1] = locationNet.getLongitude();
-                Locationm.removeUpdates(this);
-                return latlong;
+            if (isNetworkEnabled) {
+                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                if (location != null) {
+                    latlong[0] = location.getLatitude();
+                    latlong[1] = location.getLongitude();
+                    locationManager.removeUpdates(this);
+                    return latlong;
+                }
             }
 
-            Location locationPassive = Locationm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-            if (locationPassive != null) {
-                latlong[0] = locationPassive.getLatitude();
-                latlong[1] = locationPassive.getLongitude();
-                Locationm.removeUpdates(this);
+            // use passive provider
+            Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+            if (location != null) {
+                latlong[0] = location.getLatitude();
+                latlong[1] = location.getLongitude();
+                locationManager.removeUpdates(this);
                 return latlong;
             }
         } catch (Exception e) {
@@ -118,17 +134,18 @@ public class GPSLocation implements LocationListener {
      * @return DeviceLocation structure
      */
     public DeviceLocation getLocation() {
-        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            HyperLog.d(TAG, "Access Fine Location permission is not granted");
-            return null;
-        }
         Double[] latlong = getLocationLatLong();
         return getAddressFromLocation(latlong[0], latlong[1]);
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        HyperLog.d(TAG, "Lat: " + location.getLatitude());
+        HyperLog.d(TAG, "Long: " + location.getLongitude());
 
+        // only latitude longitude to set up
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
     }
 
     @Override
@@ -149,12 +166,9 @@ public class GPSLocation implements LocationListener {
     private GsmCellLocation getGsmCellLocation(Context context) {
         final TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (telephony != null && telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
-            if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ||
-                    PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                @SuppressLint("MissingPermission")
-                final GsmCellLocation location = (GsmCellLocation) telephony.getCellLocation();
-                return location;
-            }
+            @SuppressLint("MissingPermission")
+            final GsmCellLocation location = (GsmCellLocation) telephony.getCellLocation();
+            return location;
         }
         return null;
     }
@@ -169,4 +183,11 @@ public class GPSLocation implements LocationListener {
         return gsmCellLocation != null ? gsmCellLocation.getCid() : 0;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
 }

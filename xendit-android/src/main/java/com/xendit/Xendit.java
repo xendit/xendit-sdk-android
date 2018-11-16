@@ -4,11 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -51,7 +48,6 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 import java.util.Map;
 
 import io.sentry.Sentry;
@@ -144,19 +140,27 @@ public class Xendit {
         HyperLog.d(TAG, "Language: " + DeviceInfo.getLanguage());
         HyperLog.d(TAG, "IP: " + DeviceInfo.getIPAddress(true));
 
-        GPSLocation gpsLocation = new GPSLocation(context);
-        DeviceLocation deviceLocation = gpsLocation.getLocation();
-        if (deviceLocation != null) {
-            HyperLog.d(TAG, "Lat: " + deviceLocation.getLatitude());
-            HyperLog.d(TAG, "Longiude: " + deviceLocation.getLongitude());
-        }
-        if (gpsLocation.getLac(context) != 0) {
-            HyperLog.d(TAG, "Lac: " + gpsLocation.getLac(context));
-        }
-        if (gpsLocation.getCid(context) != 0) {
-            HyperLog.d(TAG, "Cid: " + gpsLocation.getCid(context));
-        }
 
+        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+             HyperLog.d(TAG, "Access Fine Location permission is not granted");
+        } else {
+            GPSLocation gpsLocation = new GPSLocation(context);
+            DeviceLocation deviceLocation = gpsLocation.getLocation();
+            if (deviceLocation != null) {
+                HyperLog.d(TAG, "Lat: " + deviceLocation.getLatitude());
+                HyperLog.d(TAG, "Longitude: " + deviceLocation.getLongitude());
+            }
+
+            if (gpsLocation.getLac(context) != 0) {
+                HyperLog.d(TAG, "Lac: " + gpsLocation.getLac(context));
+            }
+            if (gpsLocation.getCid(context) != 0) {
+                HyperLog.d(TAG, "Cid: " + gpsLocation.getCid(context));
+            }
+
+            HyperLog.d(TAG, "Lat: " + gpsLocation.getLatitude());
+            HyperLog.d(TAG, "Longitude: " + gpsLocation.getLongitude());
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 
