@@ -11,10 +11,12 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.ActivityCompat;
 
 
+import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.DeviceInfo.AdInfo;
 import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.DeviceInfo.GPSLocation;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
+import com.xendit.utils.PermissionUtils;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,20 +65,29 @@ public class DeviceInfoTest {
         assertThat(fingerprint).isNotEmpty();
         String hardware = DeviceInfo.getHardware();
         assertThat(hardware).isNotEmpty();
-        String ipAddress = DeviceInfo.getIPAddress(true);
-        assertThat(ipAddress).isEmpty();
-
-        GPSLocation gpsLocation = new GPSLocation(appContext);
-        DeviceLocation deviceLocation = gpsLocation.getLocation();
-        if (deviceLocation != null) {
-            Double latitude = deviceLocation.getLatitude();
-            assertThat(latitude).isNonZero();
-            Double longitude = deviceLocation.getLongitude();
-            assertThat(longitude).isNonZero();
+        if(!PermissionUtils.hasPermission(appContext, Manifest.permission.ACCESS_WIFI_STATE)) {
+            HyperLog.d("DeviceInfoTest", "Access Wifi State permission is not granted");
+        } else {
+            String ipAddress = DeviceInfo.getIPAddress(true);
+            assertThat(ipAddress).isNotEmpty();
         }
-        int lac = gpsLocation.getLac(appContext);
-        assertThat(lac).isEqualTo(0);
-        int cid = gpsLocation.getCid(appContext);
-        assertThat(cid).isEqualTo(0);
+        if(!PermissionUtils.hasPermission(appContext, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            HyperLog.d("DeviceInfoTest", "Access Fine Location permission is not granted");
+        } else {
+            GPSLocation gpsLocation = new GPSLocation(appContext);
+            DeviceLocation deviceLocation = gpsLocation.getLocation();
+            if (deviceLocation != null && deviceLocation.getLatitude() != null) {
+                Double latitude = deviceLocation.getLatitude();
+                assertThat(latitude).isNonZero();
+                Double longitude = deviceLocation.getLongitude();
+                assertThat(longitude).isNonZero();
+            }
+            assertThat(gpsLocation.getLatitude()).isNonZero();
+            assertThat(gpsLocation.getLongitude()).isNonZero();
+            int lac = gpsLocation.getLac(appContext);
+            assertThat(lac).isAtLeast(0);
+            int cid = gpsLocation.getCid(appContext);
+            assertThat(cid).isAtLeast(0);
+        }
     }
 }

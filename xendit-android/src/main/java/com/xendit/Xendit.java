@@ -96,7 +96,7 @@ public class Xendit {
 
         // set log server
         // uncomment once you have server
-        HyperLog.setURL("http://192.168.99.100:8000/1bb30dj1");
+        /*HyperLog.setURL("http://192.168.99.100:8000/10miolo1");
         HyperLog.pushLogs(context, false, new HLCallback() {
             @Override
             public void onSuccess(@NonNull Object response) {
@@ -109,13 +109,14 @@ public class Xendit {
                 new XenditError(HLErrorResponse.getErrorMessage());
             }
         });
+        */
 
-
-        // file location of logs
+        // file location of logs on device, useful for testing / development
         File logsLocationFile = HyperLog.getDeviceLogsInFile(context);
 
         // start debugging, info debug log
         HyperLog.i(TAG, "Start debugging");
+        HyperLog.i(TAG, "Users publishable key: " + publishableKey);
 
         //get device info
         new Thread(new Runnable() {
@@ -146,20 +147,18 @@ public class Xendit {
         } else {
             GPSLocation gpsLocation = new GPSLocation(context);
             DeviceLocation deviceLocation = gpsLocation.getLocation();
-            if (deviceLocation != null) {
-                HyperLog.d(TAG, "Lat: " + deviceLocation.getLatitude());
+            if (deviceLocation != null && deviceLocation.getLatitude() != null) {
+                HyperLog.d(TAG, "Latitude: " + deviceLocation.getLatitude());
                 HyperLog.d(TAG, "Longitude: " + deviceLocation.getLongitude());
             }
-
+            HyperLog.d(TAG, "Latitude: " + gpsLocation.getLatitude());
+            HyperLog.d(TAG, "Longitude: " + gpsLocation.getLongitude());
             if (gpsLocation.getLac(context) != 0) {
                 HyperLog.d(TAG, "Lac: " + gpsLocation.getLac(context));
             }
             if (gpsLocation.getCid(context) != 0) {
                 HyperLog.d(TAG, "Cid: " + gpsLocation.getCid(context));
             }
-
-            HyperLog.d(TAG, "Lat: " + gpsLocation.getLatitude());
-            HyperLog.d(TAG, "Longitude: " + gpsLocation.getLongitude());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {

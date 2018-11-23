@@ -45,21 +45,45 @@ public class GPSLocation implements LocationListener {
         try {
             // Get the location manager
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            // ——–Gps provider—
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    MIN_TIME_BW_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this, Looper.getMainLooper());
+            if (locationManager != null) {
+                // getting GPS status
+                Boolean isGPSEnabled = locationManager
+                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            // getting GPS status
-            Boolean isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+                // getting network status
+                Boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            // getting network status
-            Boolean isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                // ——–Gps provider—
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this, Looper.getMainLooper());
 
-            if (isGPSEnabled) {
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (isGPSEnabled) {
+                    Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    if (location != null) {
+                        latlong[0] = location.getLatitude();
+                        latlong[1] = location.getLongitude();
+                        locationManager.removeUpdates(this);
+                        return latlong;
+                    }
+                }
+
+                if (isNetworkEnabled) {
+                    Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    if (location != null) {
+                        latlong[0] = location.getLatitude();
+                        latlong[1] = location.getLongitude();
+                        locationManager.removeUpdates(this);
+                        return latlong;
+                    }
+                }
+
+                // use passive provider
+                Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                 if (location != null) {
@@ -68,31 +92,11 @@ public class GPSLocation implements LocationListener {
                     locationManager.removeUpdates(this);
                     return latlong;
                 }
-            }
-
-            if (isNetworkEnabled) {
-                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                if (location != null) {
-                    latlong[0] = location.getLatitude();
-                    latlong[1] = location.getLongitude();
-                    locationManager.removeUpdates(this);
-                    return latlong;
-                }
-            }
-
-            // use passive provider
-            Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-            if (location != null) {
-                latlong[0] = location.getLatitude();
-                latlong[1] = location.getLongitude();
-                locationManager.removeUpdates(this);
-                return latlong;
+            } else {
+                HyperLog.e(TAG, "Location manager is null");
             }
         } catch (Exception e) {
+            HyperLog.e(TAG, e.getMessage());
             e.printStackTrace();
         }
         return latlong;
@@ -123,7 +127,7 @@ public class GPSLocation implements LocationListener {
                 return addressInfo;
             }
         } catch (Exception e) {
-            HyperLog.e("", "Unable connect to Geocoder", e);
+            HyperLog.e(TAG, "Unable connect to Geocoder" + e.getMessage());
         } finally {
             return addressInfo;
         }
@@ -135,6 +139,8 @@ public class GPSLocation implements LocationListener {
      */
     public DeviceLocation getLocation() {
         Double[] latlong = getLocationLatLong();
+        latitude = latlong[0];
+        longitude = latlong[1];
         return getAddressFromLocation(latlong[0], latlong[1]);
     }
 
