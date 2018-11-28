@@ -12,11 +12,13 @@ import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 
-import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
+import com.xendit.Logger.Logger;
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.xendit.Xendit.mLogger;
 
 public class GPSLocation implements LocationListener {
 
@@ -93,10 +95,10 @@ public class GPSLocation implements LocationListener {
                     return latlong;
                 }
             } else {
-                HyperLog.e(TAG, "Location manager is null");
+                mLogger.log(Logger.Level.ERROR, "Location manager is null");
             }
         } catch (Exception e) {
-            HyperLog.e(TAG, e.getMessage());
+            mLogger.log(Logger.Level.ERROR, e.getMessage());
             e.printStackTrace();
         }
         return latlong;
@@ -127,7 +129,7 @@ public class GPSLocation implements LocationListener {
                 return addressInfo;
             }
         } catch (Exception e) {
-            HyperLog.e(TAG, "Unable connect to Geocoder" + e.getMessage());
+            mLogger.log(Logger.Level.ERROR, "Unable connect to Geocoder" + e.getMessage());
         } finally {
             return addressInfo;
         }
@@ -146,8 +148,8 @@ public class GPSLocation implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        HyperLog.d(TAG, "Lat: " + location.getLatitude());
-        HyperLog.d(TAG, "Long: " + location.getLongitude());
+        mLogger.log(Logger.Level.DEBUG,  "Lat: " + location.getLatitude());
+        mLogger.log(Logger.Level.DEBUG,  "Long: " + location.getLongitude());
 
         // only latitude longitude to set up
         latitude = location.getLatitude();

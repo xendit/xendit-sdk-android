@@ -14,7 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
-import com.hypertrack.hyperlog.HyperLog;
+import com.xendit.Logger.Logger;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.TokenExpiredListener;
 
@@ -23,6 +23,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.xendit.Xendit.mLogger;
 
 public class BaseRequest<T> extends Request<T> {
 
@@ -87,7 +89,7 @@ public class BaseRequest<T> extends Request<T> {
 
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
-        HyperLog.i(TAG, "parseNetworkResponse");
+        mLogger.log(Logger.Level.INFO, "parseNetworkResponse");
         try {
             String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             return Response.success(parseResult(jsonString), HttpHeaderParser.parseCacheHeaders(response));

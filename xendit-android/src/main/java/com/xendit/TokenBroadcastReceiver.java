@@ -5,13 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
-import com.hypertrack.hyperlog.HyperLog;
+import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.xendit.Xendit.mLogger;
 
 /**
  * Created by Sergey on 3/30/17.
@@ -28,7 +30,7 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        HyperLog.i(TAG, "onReceive");
+        mLogger.log(Logger.Level.DEBUG, "TokenBroadcastReceiver onReceive");
         try {
             String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
             if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
@@ -53,7 +55,7 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
                 }
             }
         } catch (NullPointerException e) {
-            HyperLog.e(TAG, e.getMessage());
+            mLogger.log(Logger.Level.ERROR, e.getMessage());
             e.printStackTrace();
             tokenCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
         }

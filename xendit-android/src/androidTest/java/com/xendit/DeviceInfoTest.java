@@ -2,28 +2,20 @@ package com.xendit;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
-import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 
-import com.hypertrack.hyperlog.HyperLog;
 import com.xendit.DeviceInfo.AdInfo;
 import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.DeviceInfo.GPSLocation;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
 import com.xendit.utils.PermissionUtils;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -48,7 +40,7 @@ public class DeviceInfoTest {
         }).start();
 
         String wifiSSID = DeviceInfo.getWifiSSID(appContext);
-        assertThat(wifiSSID).isEmpty();
+        assertThat(wifiSSID).isNotEmpty();
         String language = DeviceInfo.getLanguage();
         assertThat(language).isNotEmpty();
         String product = DeviceInfo.getProduct();
@@ -66,13 +58,13 @@ public class DeviceInfoTest {
         String hardware = DeviceInfo.getHardware();
         assertThat(hardware).isNotEmpty();
         if(!PermissionUtils.hasPermission(appContext, Manifest.permission.ACCESS_WIFI_STATE)) {
-            HyperLog.d("DeviceInfoTest", "Access Wifi State permission is not granted");
+            Log.e("DeviceInfoTest", "DeviceInfoTest: Access Wifi State permission is not granted");
         } else {
             String ipAddress = DeviceInfo.getIPAddress(true);
             assertThat(ipAddress).isNotEmpty();
         }
         if(!PermissionUtils.hasPermission(appContext, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            HyperLog.d("DeviceInfoTest", "Access Fine Location permission is not granted");
+            Log.e("DeviceInfoTest", "DeviceInfoTest: Access Fine Location permission is not granted");
         } else {
             GPSLocation gpsLocation = new GPSLocation(appContext);
             DeviceLocation deviceLocation = gpsLocation.getLocation();

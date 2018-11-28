@@ -14,10 +14,9 @@ import android.os.IInterface;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.RemoteException;
-import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
-import com.hypertrack.hyperlog.HyperLog;
+import com.xendit.Logger.Logger;
 import com.xendit.utils.PermissionUtils;
 
 import java.io.IOException;
@@ -30,8 +29,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public final class DeviceInfo {
 
-    private final static String TAG = "DeviceInfo";
-
     public static AdInfo getAdvertisingIdInfo(Context context) throws Exception {
         if(Looper.myLooper() == Looper.getMainLooper())
             throw new IllegalStateException("Cannot be called from the main thread");
@@ -40,7 +37,6 @@ public final class DeviceInfo {
             PackageManager pm = context.getPackageManager();
             pm.getPackageInfo("com.android.vending", 0);
         } catch(Exception e) {
-            HyperLog.e(TAG,e.getMessage());
             throw e;
         }
 
@@ -53,7 +49,6 @@ public final class DeviceInfo {
                 return new AdInfo(adInterface.getId(), adInterface.isLimitAdTrackingEnabled(true));
             }
         } catch(Exception e) {
-            HyperLog.e(TAG,e.getMessage());
             throw e;
         } finally {
             context.unbindService(connection);
@@ -68,7 +63,7 @@ public final class DeviceInfo {
         public void onServiceConnected(ComponentName name, IBinder service) {
             try { this.queue.put(service); }
             catch (InterruptedException localInterruptedException){
-                HyperLog.e(TAG, localInterruptedException.getMessage());
+                Log.e("DeviceInfo", "Device info: Exception on service connected:" + localInterruptedException.getMessage());
             }
         }
 
@@ -198,11 +193,8 @@ public final class DeviceInfo {
             @SuppressLint("MissingPermission")
             WifiInfo info = manager.getConnectionInfo();
             return info.getSSID();
-        } else {
-            HyperLog.d(TAG, "Does not have ACCESS_WIFI_STATE permission");
         }
-        return "";
+        return "Does not have ACCESS_WIFI_STATE permission";
+
     }
-
-
 }

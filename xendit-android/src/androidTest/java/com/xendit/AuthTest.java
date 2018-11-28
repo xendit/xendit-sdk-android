@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
-import android.widget.Toast;
 
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;

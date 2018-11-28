@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -21,11 +20,9 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
-import com.hypertrack.hyperlog.HLCallback;
-import com.hypertrack.hyperlog.HyperLog;
-import com.hypertrack.hyperlog.error.HLErrorResponse;
 import com.xendit.DeviceInfo.GPSLocation;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
+import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
@@ -44,7 +41,6 @@ import com.xendit.network.interfaces.ResultListener;
 import com.xendit.utils.CardValidator;
 import com.xendit.utils.PermissionUtils;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -79,13 +75,14 @@ public class Xendit {
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
 
+    public static Logger mLogger;
     public Xendit(final Context context, String publishableKey) {
         this.context = context;
         this.publishableKey = publishableKey;
 
-        // init hyperlog
-        HyperLog.initialize(context);
-        HyperLog.setLogLevel(Log.VERBOSE);
+        // init logdna logger
+        mLogger = new Logger(context, publishableKey);
+        mLogger.log(Logger.Level.DEBUG, "Start debugging");
 
         // init sentry
         // Use the Sentry DSN (client key) from the Project Settings page on Sentry
@@ -94,70 +91,46 @@ public class Xendit {
         // filter out exceptions
         shouldSendException();
 
-        // set log server
-        // uncomment once you have server
-        /*HyperLog.setURL("http://192.168.99.100:8000/10miolo1");
-        HyperLog.pushLogs(context, false, new HLCallback() {
-            @Override
-            public void onSuccess(@NonNull Object response) {
-                HyperLog.d(TAG, "Successfully pushed logs." + response);
-            }
-
-            @Override
-            public void onError(@NonNull HLErrorResponse HLErrorResponse) {
-                HyperLog.e(TAG, "Error: " + HLErrorResponse.getErrorMessage());
-                new XenditError(HLErrorResponse.getErrorMessage());
-            }
-        });
-        */
-
-        // file location of logs on device, useful for testing / development
-        File logsLocationFile = HyperLog.getDeviceLogsInFile(context);
-
-        // start debugging, info debug log
-        HyperLog.i(TAG, "Start debugging");
-        HyperLog.i(TAG, "Users publishable key: " + publishableKey);
-
         //get device info
         new Thread(new Runnable() {
             public void run() {
                 try {
                     AdInfo adInfo = DeviceInfo.getAdvertisingIdInfo(context);
                     String advertisingId = adInfo.getId();
-                    HyperLog.d(TAG, "ADID: " + advertisingId);
+                    mLogger.log(Logger.Level.DEBUG, "ADID: " + advertisingId);
                 } catch (Exception e) {
-                    HyperLog.e(TAG, e.getMessage());
+                    mLogger.log(Logger.Level.ERROR, e.getMessage());
                     e.printStackTrace();
                 }
             }
         }).start();
-        HyperLog.d(TAG, "OS version: " + DeviceInfo.getOSVersion() + "\n OS API Level: " +
+        mLogger.log(Logger.Level.DEBUG, "OS version: " + DeviceInfo.getOSVersion() + "\n OS API Level: " +
                  DeviceInfo.getAPILevel() + "\n Device: " + DeviceInfo.getDevice() +
                 "\n Model (and Product): " + DeviceInfo.getModel() + " (" + DeviceInfo.getProduct() + ")"
         );
-        if (!DeviceInfo.getWifiSSID(context).isEmpty()) {
-            HyperLog.d(TAG, "SSID: " + DeviceInfo.getWifiSSID(context));
+        if (DeviceInfo.getWifiSSID(context).equals("Does not have ACCESS_WIFI_STATE permission")) {
+            mLogger.log(Logger.Level.DEBUG, "SSID: " + DeviceInfo.getWifiSSID(context));
         }
-        HyperLog.d(TAG, "Language: " + DeviceInfo.getLanguage());
-        HyperLog.d(TAG, "IP: " + DeviceInfo.getIPAddress(true));
+        mLogger.log(Logger.Level.DEBUG, "Language: " + DeviceInfo.getLanguage());
+        mLogger.log(Logger.Level.DEBUG, "IP: " + DeviceInfo.getIPAddress(true));
 
 
         if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-             HyperLog.d(TAG, "Access Fine Location permission is not granted");
+             mLogger.log(Logger.Level.DEBUG, "Access Fine Location permission is not granted");
         } else {
             GPSLocation gpsLocation = new GPSLocation(context);
             DeviceLocation deviceLocation = gpsLocation.getLocation();
             if (deviceLocation != null && deviceLocation.getLatitude() != null) {
-                HyperLog.d(TAG, "Latitude: " + deviceLocation.getLatitude());
-                HyperLog.d(TAG, "Longitude: " + deviceLocation.getLongitude());
+                mLogger.log(Logger.Level.DEBUG, "Latitude: " + deviceLocation.getLatitude());
+                mLogger.log(Logger.Level.DEBUG, "Longitude: " + deviceLocation.getLongitude());
             }
-            HyperLog.d(TAG, "Latitude: " + gpsLocation.getLatitude());
-            HyperLog.d(TAG, "Longitude: " + gpsLocation.getLongitude());
+            mLogger.log(Logger.Level.DEBUG, "Latitude: " + gpsLocation.getLatitude());
+            mLogger.log(Logger.Level.DEBUG, "Longitude: " + gpsLocation.getLongitude());
             if (gpsLocation.getLac(context) != 0) {
-                HyperLog.d(TAG, "Lac: " + gpsLocation.getLac(context));
+                mLogger.log(Logger.Level.DEBUG, "Lac: " + gpsLocation.getLac(context));
             }
             if (gpsLocation.getCid(context) != 0) {
-                HyperLog.d(TAG, "Cid: " + gpsLocation.getCid(context));
+                mLogger.log(Logger.Level.DEBUG, "Cid: " + gpsLocation.getCid(context));
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
@@ -167,11 +140,11 @@ public class Xendit {
             try {
                 stack = new HurlStack(null, new TLSSocketFactory());
             } catch (KeyManagementException e) {
-                HyperLog.e(TAG, e.getMessage());
+                mLogger.log(Logger.Level.ERROR, e.getMessage());
                 e.printStackTrace();
                 stack = new HurlStack();
             } catch (NoSuchAlgorithmException e) {
-                HyperLog.e(TAG, e.getMessage());
+                mLogger.log(Logger.Level.ERROR, e.getMessage());
                 e.printStackTrace();
                 stack = new HurlStack();
             }
@@ -192,7 +165,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCardNumberValid(String creditCardNumber) {
-        HyperLog.i(TAG,"isCardNumberValid");
+        mLogger.log(Logger.Level.INFO, "isCardNumberValid");
         return CardValidator.isCardNumberValid(creditCardNumber);
     }
 
@@ -206,7 +179,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isExpiryValid(String cardExpirationMonth, String cardExpirationYear) {
-        HyperLog.i(TAG,"isExpiryValid");
+        mLogger.log(Logger.Level.INFO,"isExpiryValid");
         return CardValidator.isExpiryValid(cardExpirationMonth, cardExpirationYear);
     }
 
@@ -219,7 +192,7 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCvnValid(String creditCardCVN) {
-        HyperLog.i(TAG,"isCvnValid");
+        mLogger.log(Logger.Level.INFO, "isCvnValid");
         return CardValidator.isCvnValid(creditCardCVN);
     }
 
@@ -234,7 +207,7 @@ public class Xendit {
      *                      fails
      */
     public void createSingleUseToken(final Card card, final int amount, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createSingleUseToken");
+        mLogger.log(Logger.Level.INFO, "createSingleUseToken");
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, true, false, tokenCallback);
@@ -252,7 +225,7 @@ public class Xendit {
      *                      fails
      */
     public void createSingleUseToken(final Card card, final int amount, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createSingleUseToken");
+        mLogger.log(Logger.Level.INFO,  "createSingleUseToken");
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, false, tokenCallback);
@@ -267,7 +240,7 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createMultipleUseToken");
+        mLogger.log(Logger.Level.INFO, "createMultipleUseToken");
         createSingleOrMultipleUseToken(card, "0", false, true, tokenCallback);
     }
 
@@ -278,33 +251,33 @@ public class Xendit {
      */
     @Deprecated
     public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createToken");
+        mLogger.log(Logger.Level.INFO, "createToken");
         createSingleOrMultipleUseToken(card, amount, true, isMultipleUse, tokenCallback);
     }
 
     private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createSingleOrMultipleUseToken");
+        mLogger.log(Logger.Level.INFO, "createSingleOrMultipleUseToken");
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
-                HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_number)).getErrorMessage());
+                mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_card_number)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
                 return;
             }
 
             if (!CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
-                HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_expiration)).getErrorMessage());
+                mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_card_expiration)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
-                HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
+                mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
-                HyperLog.e(TAG, new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)).getErrorMessage());
+                mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)));
                 return;
             }
@@ -313,12 +286,12 @@ public class Xendit {
                 @Override
                 public void onSuccess(TokenConfiguration tokenConfiguration) {
                     tokenizeCreditCardRequest(tokenConfiguration, card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-                    HyperLog.d(TAG, "Successfully tokenize configuration");
+                    mLogger.log(Logger.Level.DEBUG,  "Successfully tokenize configuration");
                 }
 
                 @Override
                 public void onFailure(NetworkError error) {
-                    HyperLog.e(TAG, error.getMessage());
+                    mLogger.log(Logger.Level.ERROR,  error.getMessage());
                     tokenCallback.onError(new XenditError(error));
                 }
             }));
@@ -335,15 +308,15 @@ public class Xendit {
      *                               creation completes or fails
      */
     public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
-        HyperLog.i(TAG,"createAuthentication");
+        mLogger.log(Logger.Level.INFO,  "createAuthentication");
         if (tokenId == null || tokenId.equals("")) {
-            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
+            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (amount <= 0) {
-            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
+            mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
@@ -359,12 +332,12 @@ public class Xendit {
                 } else {
                     authenticationCallback.onSuccess(authentication);
                 }
-                HyperLog.d(TAG, "Successfully created auth!");
+                mLogger.log(Logger.Level.DEBUG,  "Successfully created auth!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
                 authenticationCallback.onError(new XenditError(error));
             }
         }));
@@ -376,23 +349,23 @@ public class Xendit {
      */
     @Deprecated
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createAuthentication");
+        mLogger.log(Logger.Level.INFO,  "createAuthentication");
         if (tokenId == null || tokenId.isEmpty()) {
-            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
+            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (amount == null || Integer.parseInt(amount) <= 0) {
 
-            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
+            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (!isCvnValid(cardCvn)) {
 
-            HyperLog.e(TAG, new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
+            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
         }
@@ -406,29 +379,29 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
-                HyperLog.d(TAG, "Successfully created auth!");
+                mLogger.log(Logger.Level.DEBUG,  "Successfully created auth!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
     }
 
     private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"tokenizeCreditCardRequest");
+        mLogger.log(Logger.Level.INFO, "tokenizeCreditCardRequest");
         tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
             @Override
             public void onSuccess(TokenCreditCard tokenCreditCard) {
                 _createCreditCardToken(card, tokenCreditCard.getToken(), amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-                HyperLog.d(TAG, "Successfully tokenize credit card!");
+                mLogger.log(Logger.Level.DEBUG,  "Successfully tokenize credit card!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
@@ -439,7 +412,7 @@ public class Xendit {
      */
     @Deprecated
     public void createCreditCardToken(Card card, final String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createCreditCardToken");
+        mLogger.log(Logger.Level.INFO, "createCreditCardToken");
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
@@ -454,19 +427,19 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
-                HyperLog.d(TAG, "Successfully created token!");
+                mLogger.log(Logger.Level.DEBUG,  "Successfully created token!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR, error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
     }
 
     private void _createCreditCardToken(Card card, final String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"createCreditCardToken");
+        mLogger.log(Logger.Level.INFO, "createCreditCardToken");
         _createToken(card, token, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
@@ -476,19 +449,19 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
-                HyperLog.d(TAG, "Successfully created token!");
+                mLogger.log(Logger.Level.DEBUG,  "Successfully created token!");
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                HyperLog.e(TAG, error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
     }
 
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
-        HyperLog.i(TAG,"registerBroadcastReceiver");
+        mLogger.log(Logger.Level.INFO, "registerBroadcastReceiver");
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -498,7 +471,7 @@ public class Xendit {
     }
 
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
-        HyperLog.i(TAG,"registerBroadcastReceiver");
+        mLogger.log(Logger.Level.INFO, "registerBroadcastReceiver");
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -508,7 +481,7 @@ public class Xendit {
     }
 
     private void getTokenizationConfiguration(NetworkHandler<TokenConfiguration> handler) {
-        HyperLog.i(TAG, "getTokenizationConfiguration");
+        mLogger.log(Logger.Level.INFO, "getTokenizationConfiguration");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CONFIGURATION_URL, TokenConfiguration.class, new DefaultResponseHandler<>(handler));
@@ -517,7 +490,7 @@ public class Xendit {
     }
 
     private void tokenizeCreditCard(TokenConfiguration tokenConfig, Card card, NetworkHandler<TokenCreditCard> handler) {
-        HyperLog.i(TAG, "tokenizeCreditCard");
+        mLogger.log(Logger.Level.INFO, "tokenizeCreditCard");
         String baseUrl = getEnvironment() ? tokenConfig.getFlexProductionUrl() : tokenConfig.getFlexDevelopmentUrl();
         String flexUrl = baseUrl + TOKENIZE_CREDIT_CARD_URL + tokenConfig.getFlexApiKey();
 
@@ -530,7 +503,7 @@ public class Xendit {
         try {
             cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
         } catch (NullPointerException e) {
-            HyperLog.e(TAG, e.getMessage());
+            mLogger.log(Logger.Level.ERROR, e.getMessage());
             e.printStackTrace();
             handler.handleError(new NetworkError(new VolleyError(e.getMessage(), e.getCause())));
         }
@@ -541,7 +514,7 @@ public class Xendit {
     }
 
     private void _createToken(Card card, String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
-        HyperLog.i(TAG, "_createToken");
+        mLogger.log(Logger.Level.INFO, "_createToken");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
 
@@ -560,7 +533,7 @@ public class Xendit {
     }
 
     private void _createAuthentication(String tokenId, String amount, NetworkHandler<Authentication> handler) {
-        HyperLog.i(TAG, "_createAuthentication");
+        mLogger.log(Logger.Level.INFO, "_createAuthentication");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
@@ -572,43 +545,43 @@ public class Xendit {
     }
 
     private String encodeBase64(String key) {
-        HyperLog.i(TAG,"encodeBase64");
+        mLogger.log(Logger.Level.INFO, "encodeBase64");
         try {
             byte[] keyData = key.getBytes("UTF-8");
             return Base64.encodeToString(keyData, Base64.DEFAULT);
         } catch (UnsupportedEncodingException e) {
-            HyperLog.e(TAG, e.getCause() + " " + e.getMessage());
+            mLogger.log(Logger.Level.ERROR, e.getCause() + " " + e.getMessage());
             e.printStackTrace();
         }
         return null;
     }
 
     private void sendRequest(BaseRequest request, NetworkHandler<?> handler) {
-        HyperLog.i(TAG, "sendRequest");
+        mLogger.log(Logger.Level.INFO, "sendRequest");
         if (isConnectionAvailable()) {
-            HyperLog.d(TAG, "Connected!");
+            mLogger.log(Logger.Level.DEBUG, "Connected!");
             requestQueue.add(request);
         } else if (handler != null) {
-            HyperLog.e(TAG, new ConnectionError().getMessage());
+            mLogger.log(Logger.Level.ERROR, new ConnectionError().getMessage());
             handler.handleError(new ConnectionError());
         }
     }
 
     private boolean isConnectionAvailable() {
-        HyperLog.i(TAG, "isConnectionAvailable");
+        mLogger.log(Logger.Level.INFO, "isConnectionAvailable");
         if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)) {
             @SuppressLint("MissingPermission") NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-            HyperLog.d(TAG, "Had access network state");
+            mLogger.log(Logger.Level.DEBUG, "Had access network state");
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         } else {
-            HyperLog.e(TAG, context.getString(R.string.not_granted_access_network_state));
+            mLogger.log(Logger.Level.ERROR, context.getString(R.string.not_granted_access_network_state));
             return false;
         }
 
     }
 
     private boolean getEnvironment() {
-        HyperLog.i(TAG, "getEnvironment");
+        mLogger.log(Logger.Level.INFO, "getEnvironment");
         String publishKey = publishableKey.toUpperCase();
         return publishKey.contains("PRODUCTION");
     }
