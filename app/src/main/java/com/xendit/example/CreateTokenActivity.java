@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,8 @@ import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
+
+import java.util.Calendar;
 
 /**
  * Created by Sergey on 4/3/17.
@@ -41,6 +44,8 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     private boolean isMultipleUse;
     private boolean shouldAuthenticate;
 
+    private static String tokenId;
+
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, CreateTokenActivity.class);
     }
@@ -50,7 +55,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_token);
 
-        setActionBarTitle("Create Token");
+        setActionBarTitle(getString(R.string.create_token));
 
         cardNumberEditText = (EditText) findViewById(R.id.cardNumberEditText_CreateTokenActivity);
         expMonthEditText = (EditText) findViewById(R.id.expMonthEditText_CreateTokenActivity);
@@ -64,11 +69,12 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
         createTokenBtn.setOnClickListener(this);
 
-        cardNumberEditText.setText("4000000000000002");
-        expMonthEditText.setText("12");
-        expYearEditText.setText("2017");
-        cvnEditText.setText("123");
-        amountEditText.setText("123000");
+        cardNumberEditText.setText(R.string.cardNumbTest);
+        expMonthEditText.setText(R.string.expMonthTest);
+        String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 1);
+        expYearEditText.setText(year);
+        cvnEditText.setText(R.string.cvnTest);
+        amountEditText.setText(R.string.amountTest);
     }
 
     private void setActionBarTitle(String title) {
@@ -82,7 +88,10 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view) {
-        Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
+        final Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY);
+
+        final ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         isMultipleUse = multipleUseCheckBox.isChecked();
         shouldAuthenticate = !shouldAuthenticateCheckBox.isChecked();
@@ -95,13 +104,17 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
+                progressBar.setVisibility(View.GONE);
+                setTokenId(token.getId());
                 resultTextView.setText("{ id: \"" + token.getId() + "\", authentication_id: \"" + token.getAuthenticationId() + "\", status: \"" + token.getStatus() + "\", masked_card_number: \"" + token.getMaskedCardNumber() + "\" }");
                 Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(XenditError xenditError) {
-                Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode() + " " +
+                        xenditError.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -123,5 +136,13 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public static String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 }

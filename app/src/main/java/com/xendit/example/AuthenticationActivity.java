@@ -47,8 +47,8 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         authenticateBtn = (Button) findViewById(R.id.authenticateBtn_AuthenticationActivity);
         resultTextView = (TextView) findViewById(R.id.result_AuthenticationActivity);
 
-        amountEditText.setText("123000");
-        cardCvnEditText.setText("123");
+        amountEditText.setText(getString(R.string.amountTest));
+        cardCvnEditText.setText(getString(R.string.cvnTest));
 
         authenticateBtn.setOnClickListener(this);
     }

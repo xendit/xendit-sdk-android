@@ -14,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
+import com.xendit.Logger.Logger;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.TokenExpiredListener;
 
@@ -23,8 +24,11 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.xendit.Xendit.mLogger;
+
 public class BaseRequest<T> extends Request<T> {
 
+    private static final String TAG = "BaseRequest";
     private static final String NO_AUTHENTICATION_CHALLENGES_FOUND_ERROR = "java.io.IOException: No authentication challenges found";
     private static final String PROTOCOL_CHARSET = "utf-8";
     private static final String PROTOCOL_CONTENT_TYPE = String.format("application/json; charset=%s", PROTOCOL_CHARSET);
@@ -85,6 +89,7 @@ public class BaseRequest<T> extends Request<T> {
 
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
+        mLogger.log(Logger.Level.INFO, "parseNetworkResponse");
         try {
             String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             return Response.success(parseResult(jsonString), HttpHeaderParser.parseCacheHeaders(response));
@@ -122,7 +127,7 @@ public class BaseRequest<T> extends Request<T> {
     }
 
     @Override
-    public byte[] getBody() throws AuthFailureError {
+    public byte[] getBody() {
         byte[] body = null;
         if (jsonBody != null) {
             try {

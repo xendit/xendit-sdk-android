@@ -1,8 +1,11 @@
 package com.xendit.utils;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
+
+import java.util.Calendar;
+
+import static com.google.common.truth.Truth.assertThat;
+
 
 /**
  * Created by gonzalez on 8/22/17.
@@ -14,224 +17,228 @@ public class CardValidatorTests {
 
     @Test
     public void isCardNumberValid_shouldTrimCardNumber() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("   " + VALID_CARD_NUMBER + "     "));
+        assertThat(CardValidator.isCardNumberValid("   " + VALID_CARD_NUMBER + "     ")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldOnlyAllowNumericCharacters() {
-        Assert.assertFalse(CardValidator.isCardNumberValid(VALID_CARD_NUMBER + "Z"));
+        assertThat(CardValidator.isCardNumberValid(VALID_CARD_NUMBER + "Z")).isFalse();
     }
 
     @Test
     public void isCardNumberValid_shouldAllowValidCardNumber() {
-        Assert.assertTrue(CardValidator.isCardNumberValid(VALID_CARD_NUMBER));
+        assertThat(CardValidator.isCardNumberValid(VALID_CARD_NUMBER)).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldPassMasterCard() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("5555555555554444"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("5105105105105100"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("5213724373543245"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("5513799778027330"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("5404666842103888"));
+        assertThat(CardValidator.isCardNumberValid("5555555555554444")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("5105105105105100")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("5213724373543245")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("5513799778027330")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("5404666842103888")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldPassVisa() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("4000000000000002"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4111111111111111"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4012888888881881"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4222222222222"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4929950253805473"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4916154524086329"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4556564166261021533"));
+        assertThat(CardValidator.isCardNumberValid("4000000000000002")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4111111111111111")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4012888888881881")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4222222222222")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4929950253805473")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4916154524086329")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4556564166261021533")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldPassJCB() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("3530111333300000"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("3566002020360505"));
+        assertThat(CardValidator.isCardNumberValid("3530111333300000")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("3566002020360505")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldPassDiscover() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("6011111111111117"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("6011000990139424"));
+        assertThat(CardValidator.isCardNumberValid("6011111111111117")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("6011000990139424")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldPassAMEX() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("378282246310005"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("371449635398431"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("378734493671000"));
+        assertThat(CardValidator.isCardNumberValid("378282246310005")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("371449635398431")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("378734493671000")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldPassValidNumbersWithSpaces() {
-        Assert.assertTrue(CardValidator.isCardNumberValid("4111 1111 1111 1111"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("4012 8888 8888 1881"));
-        Assert.assertTrue(CardValidator.isCardNumberValid("3782 822463 10005"));
+        assertThat(CardValidator.isCardNumberValid("4111 1111 1111 1111")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("4012 8888 8888 1881")).isTrue();
+        assertThat(CardValidator.isCardNumberValid("3782 822463 10005")).isTrue();
     }
 
     @Test
     public void isCardNumberValid_shouldNotPassNumbersThatDontPassLuhnTest() {
-        Assert.assertFalse(CardValidator.isCardNumberValid("4000000000000001"));
-        Assert.assertFalse(CardValidator.isCardNumberValid("4111111111111112"));
+        assertThat(CardValidator.isCardNumberValid("4000000000000001")).isFalse();
+        assertThat(CardValidator.isCardNumberValid("4111111111111112")).isFalse();
     }
 
     @Test
     public void isCardNumberValid_shouldNotPassNumbersWithInvalidLength() {
-        Assert.assertFalse(CardValidator.isCardNumberValid("40000000002"));
-        Assert.assertFalse(CardValidator.isCardNumberValid("40000000000000000002"));
+        assertThat(CardValidator.isCardNumberValid("40000000002")).isFalse();
+        assertThat(CardValidator.isCardNumberValid("40000000000000000002")).isFalse();
     }
 
     @Test
     public void isCardNumberValid_shouldNotAllowNullCardNumber() {
-        Assert.assertFalse(CardValidator.isCardNumberValid(null));
+        assertThat(CardValidator.isCardNumberValid(null)).isFalse();
     }
 
     @Test
     public void isCardNumberValid_shouldNotAllowCardOfUnkownType() {
-        Assert.assertFalse(CardValidator.isCardNumberValid("122000000000003"));
+        assertThat(CardValidator.isCardNumberValid("122000000000003")).isFalse();
     }
 
     @Test
     public void isExpiryValid_shouldNotPassNonNumericValues() {
-        Assert.assertFalse(CardValidator.isExpiryValid("A", "2020"));
-        Assert.assertFalse(CardValidator.isExpiryValid("12", "B"));
+        assertThat(CardValidator.isExpiryValid("A", "2020")).isFalse();
+        assertThat(CardValidator.isExpiryValid("12", "B")).isFalse();
     }
 
     @Test
     public void isExpiryValid_shouldNotPassInvalidMonths() {
-        Assert.assertFalse(CardValidator.isExpiryValid("00", "2020"));
-        Assert.assertFalse(CardValidator.isExpiryValid("-1", "2020"));
-        Assert.assertFalse(CardValidator.isExpiryValid("13", "2020"));
+        assertThat(CardValidator.isExpiryValid("00",
+                Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
+        assertThat(CardValidator.isExpiryValid("-1",
+                Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
+        assertThat(CardValidator.isExpiryValid("13",
+                Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
     }
 
     @Test
     public void isExpiryValid_shouldPassValidMonthAndYear() {
-        Assert.assertTrue(CardValidator.isExpiryValid("12", "2020"));
-        Assert.assertTrue(CardValidator.isExpiryValid("01", "2020"));
-        Assert.assertTrue(CardValidator.isExpiryValid("1", "2020"));
+        assertThat(CardValidator.isExpiryValid("12", Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isTrue();
+        assertThat(CardValidator.isExpiryValid("01", Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isTrue();
+        assertThat(CardValidator.isExpiryValid("1", Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isTrue();
     }
 
     @Test
     public void isExpiryValid_shouldTrimMonthAndYear() {
-        Assert.assertTrue(CardValidator.isExpiryValid("  12  ", "  2020  "));
+        String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2);
+        assertThat(CardValidator.isExpiryValid("  12  ", "   " + year + "     ")).isTrue();
     }
 
     @Test
     public void isExpiryValid_shouldNotAllowNullValues() {
-        Assert.assertFalse(CardValidator.isExpiryValid(null, "2020"));
-        Assert.assertFalse(CardValidator.isExpiryValid("12", null));
+        assertThat(CardValidator.isExpiryValid(null, Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 2))).isFalse();
+        assertThat(CardValidator.isExpiryValid("12", null)).isFalse();
     }
 
     @Test
     public void isCvnValid_shouldNotPassEmptyString() {
-        Assert.assertFalse(CardValidator.isCvnValid(""));
+        assertThat(CardValidator.isCvnValid("")).isFalse();
     }
 
     @Test
     public void isCvnValid_shouldNotPassCVNThatIsTooLong() {
-        Assert.assertFalse(CardValidator.isCvnValid("12345"));
+        assertThat(CardValidator.isCvnValid("12345")).isFalse();
     }
 
     @Test
     public void isCvnValid_shouldNotPassCVNThatIsTooShort() {
-        Assert.assertFalse(CardValidator.isCvnValid("12"));
+        assertThat(CardValidator.isCvnValid("12")).isFalse();
     }
 
     @Test
     public void isCvnValid_shouldAllowZeroValueCVN() {
-        Assert.assertTrue(CardValidator.isCvnValid("000"));
+        assertThat(CardValidator.isCvnValid("000")).isTrue();
     }
 
     @Test
     public void isCvnValid_shouldPassShortCVN() {
-        Assert.assertTrue(CardValidator.isCvnValid("123"));
+        assertThat(CardValidator.isCvnValid("123")).isTrue();
     }
 
     @Test
     public void isCvnValid_shouldNotPassLongCVN() {
-        Assert.assertTrue(CardValidator.isCvnValid("1234"));
+        assertThat(CardValidator.isCvnValid("1234")).isTrue();
     }
 
     @Test
     public void isCvnValid_shouldTrimCVN() {
-        Assert.assertTrue(CardValidator.isCvnValid("  123  "));
+        assertThat(CardValidator.isCvnValid("  123  ")).isTrue();
     }
 
     @Test
     public void cleanCardNumber_shouldTrimAndRemoveSpaces() {
-        Assert.assertEquals(CardValidator.cleanCardNumber("     1234 1234 1234 1234     "), "1234123412341234");
+        assertThat(CardValidator.cleanCardNumber("     1234 1234 1234 1234     ")).isEqualTo("1234123412341234");
     }
 
     @Test
     public void cleanCardNumber_shouldReturnNullIfCardNumberIsNull() {
-        Assert.assertEquals(CardValidator.cleanCardNumber(null), null);
+        assertThat(CardValidator.cleanCardNumber(null)).isEqualTo(null);
     }
 
     @Test
     public void cleanCvn_shouldTrimAndRemoveSpaces() {
-        Assert.assertEquals(CardValidator.cleanCvn("  1 2 3  "), "123");
+        assertThat(CardValidator.cleanCvn("  1 2 3  ")).isEqualTo("123");
     }
 
     @Test
     public void cleanCvn_shouldReturnNullIfCardNumberIsNull() {
-        Assert.assertEquals(CardValidator.cleanCvn(null), null);
+        assertThat(CardValidator.cleanCvn(null)).isEqualTo(null);
     }
 
     @Test
     public void getCardType_shouldHandleAmex() {
-        Assert.assertEquals(CardValidator.getCardType("378282246310005"), CardValidator.CardType.AMEX);
-        Assert.assertEquals(CardValidator.getCardType("371449635398431"), CardValidator.CardType.AMEX);
-        Assert.assertEquals(CardValidator.getCardType("378734493671000"), CardValidator.CardType.AMEX);
+        assertThat(CardValidator.getCardType("378282246310005")).isEqualTo(CardValidator.CardType.AMEX);
+        assertThat(CardValidator.getCardType("371449635398431")).isEqualTo(CardValidator.CardType.AMEX);
+        assertThat(CardValidator.getCardType("378734493671000")).isEqualTo(CardValidator.CardType.AMEX);
     }
 
     @Test
     public void getCardType_shouldHandleDiscover() {
-        Assert.assertEquals(CardValidator.getCardType("6011111111111117"), CardValidator.CardType.DISCOVER);
-        Assert.assertEquals(CardValidator.getCardType("6011000990139424"), CardValidator.CardType.DISCOVER);
+        assertThat(CardValidator.getCardType("6011111111111117")).isEqualTo(CardValidator.CardType.DISCOVER);
+        assertThat(CardValidator.getCardType("6011000990139424")).isEqualTo(CardValidator.CardType.DISCOVER);
     }
 
     @Test
     public void getCardType_shouldHandleJCB() {
-        Assert.assertEquals(CardValidator.getCardType("3530111333300000"), CardValidator.CardType.JCB);
-        Assert.assertEquals(CardValidator.getCardType("3566002020360505"), CardValidator.CardType.JCB);
+        assertThat(CardValidator.getCardType("3530111333300000")).isEqualTo(CardValidator.CardType.JCB);
+        assertThat(CardValidator.getCardType("3566002020360505")).isEqualTo(CardValidator.CardType.JCB);
     }
 
     @Test
     public void getCardType_shouldHandleMastercard() {
-        Assert.assertEquals(CardValidator.getCardType("5555555555554444"), CardValidator.CardType.MASTERCARD);
-        Assert.assertEquals(CardValidator.getCardType("5105105105105100"), CardValidator.CardType.MASTERCARD);
+        assertThat(CardValidator.getCardType("5555555555554444")).isEqualTo(CardValidator.CardType.MASTERCARD);
+        assertThat(CardValidator.getCardType("5105105105105100")).isEqualTo(CardValidator.CardType.MASTERCARD);
     }
 
     @Test
     public void getCardType_shouldHandleVisa() {
-        Assert.assertEquals(CardValidator.getCardType("4111111111111111"), CardValidator.CardType.VISA);
-        Assert.assertEquals(CardValidator.getCardType("4012888888881881"), CardValidator.CardType.VISA);
-        Assert.assertEquals(CardValidator.getCardType("4222222222222"), CardValidator.CardType.VISA);
+        assertThat(CardValidator.getCardType("4111111111111111")).isEqualTo(CardValidator.CardType.VISA);
+        assertThat(CardValidator.getCardType("4012888888881881")).isEqualTo(CardValidator.CardType.VISA);
+        assertThat(CardValidator.getCardType("4222222222222")).isEqualTo(CardValidator.CardType.VISA);
     }
 
     @Test
     public void getCardType_shouldHandleDankort() {
-        Assert.assertEquals(CardValidator.getCardType("5019717010103742"), CardValidator.CardType.DANKORT);
+        assertThat(CardValidator.getCardType("5019717010103742")).isEqualTo(CardValidator.CardType.DANKORT);
     }
 
     @Test
     public void getCardType_shouldHandleUnknownCardType() {
-        Assert.assertEquals(CardValidator.getCardType("000000000000"), CardValidator.CardType.OTHER);
+        assertThat(CardValidator.getCardType("000000000000")).isEqualTo(CardValidator.CardType.OTHER);
     }
 
     @Test
     public void isCvnValidForCardType_shouldHandleAMEX() {
-        Assert.assertTrue(CardValidator.isCvnValidForCardType("1234", "378282246310005"));
-        Assert.assertFalse(CardValidator.isCvnValidForCardType("123", "378282246310005"));
+        assertThat(CardValidator.isCvnValidForCardType("1234", "378282246310005")).isTrue();
+        assertThat(CardValidator.isCvnValidForCardType("123", "378282246310005")).isFalse();
     }
 
     @Test
     public void isCvnValidForCardType_shouldHandleNonAMEX() {
-        Assert.assertTrue(CardValidator.isCvnValidForCardType("123", "4012888888881881"));
-        Assert.assertFalse(CardValidator.isCvnValidForCardType("1234", "4012888888881881"));
+        assertThat(CardValidator.isCvnValidForCardType("123", "4012888888881881")).isTrue();
+        assertThat(CardValidator.isCvnValidForCardType("1234", "4012888888881881")).isFalse();
     }
 }

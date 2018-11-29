@@ -5,17 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
+import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.XenditError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.xendit.Xendit.mLogger;
+
 /**
  * Created by gonzalez on 7/26/17.
  */
 
 public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
+
+    private final String TAG = "AuthenticationBroadcastReceiver";
     private AuthenticationCallback authenticationCallback;
 
     public AuthenticationBroadcastReceiver(AuthenticationCallback authenticationCallback) {
@@ -24,30 +29,38 @@ public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
-
-        if (message != null && message.equals(context.getString(R.string.create_token_error_validation))) {
-            authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
-        } else if (message != null && message.equals(context.getString(R.string.tokenization_error))) {
-            authenticationCallback.onError(new XenditError("AUTHENTICATION_ERROR", context.getString(R.string.tokenization_error)));
-        } else {
-            Gson gson = new Gson();
-            Authentication authentication = gson.fromJson(message, Authentication.class);
-
-            if (authentication.getStatus().equals("VERIFIED")) {
-                authenticationCallback.onSuccess(authentication);
+        mLogger.log(Logger.Level.INFO, "AuthenticationBroadcastReceiver onReceive");
+        try {
+            String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
+            if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
+                authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
+            } else if (message.equals(context.getString(R.string.tokenization_error))) {
+                authenticationCallback.onError(new XenditError("AUTHENTICATION_ERROR", context.getString(R.string.tokenization_error)));
             } else {
-                try {
-                    JSONObject errorJson = new JSONObject(message);
-                    String errorMessage = errorJson.getString("failure_reason");
-                    authenticationCallback.onError(new XenditError(errorMessage, authentication));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    authenticationCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.authentication_error)));
-                }
+                Gson gson = new Gson();
+                Authentication authentication = gson.fromJson(message, Authentication.class);
 
+                if (authentication.getStatus().equals("VERIFIED")) {
+                    authenticationCallback.onSuccess(authentication);
+                } else {
+                    try {
+                        JSONObject errorJson = new JSONObject(message);
+                        String errorMessage = errorJson.getString("failure_reason");
+                        authenticationCallback.onError(new XenditError(errorMessage, authentication));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        authenticationCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.authentication_error)));
+                    }
+
+                }
             }
+        } catch (NullPointerException e) {
+            mLogger.log(Logger.Level.ERROR, e.getMessage());
+            e.printStackTrace();
+            authenticationCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
+
         }
+
 
         context.unregisterReceiver(this);
     }
