@@ -86,8 +86,7 @@ public class Xendit {
 
         // init sentry
         // Use the Sentry DSN (client key) from the Project Settings page on Sentry
-        String sentryDsn = DNS_SERVER;
-        Sentry.init(sentryDsn, new AndroidSentryClientFactory(context));
+        Sentry.init(DNS_SERVER, new AndroidSentryClientFactory(context));
         // filter out exceptions
         shouldSendException();
 
@@ -114,25 +113,25 @@ public class Xendit {
         mLogger.log(Logger.Level.DEBUG, "Language: " + DeviceInfo.getLanguage());
         mLogger.log(Logger.Level.DEBUG, "IP: " + DeviceInfo.getIPAddress(true));
 
-
-        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-             mLogger.log(Logger.Level.DEBUG, "Access Fine Location permission is not granted");
-        } else {
-            GPSLocation gpsLocation = new GPSLocation(context);
-            DeviceLocation deviceLocation = gpsLocation.getLocation();
-            if (deviceLocation != null && deviceLocation.getLatitude() != null) {
-                mLogger.log(Logger.Level.DEBUG, "Latitude: " + deviceLocation.getLatitude());
-                mLogger.log(Logger.Level.DEBUG, "Longitude: " + deviceLocation.getLongitude());
-            }
-            mLogger.log(Logger.Level.DEBUG, "Latitude: " + gpsLocation.getLatitude());
-            mLogger.log(Logger.Level.DEBUG, "Longitude: " + gpsLocation.getLongitude());
-            if (gpsLocation.getLac(context) != 0) {
-                mLogger.log(Logger.Level.DEBUG, "Lac: " + gpsLocation.getLac(context));
-            }
-            if (gpsLocation.getCid(context) != 0) {
-                mLogger.log(Logger.Level.DEBUG, "Cid: " + gpsLocation.getCid(context));
-            }
-        }
+        // remove location logging
+//        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+//             mLogger.log(Logger.Level.DEBUG, "Access Fine Location permission is not granted");
+//        } else {
+//            GPSLocation gpsLocation = new GPSLocation(context);
+//            DeviceLocation deviceLocation = gpsLocation.getLocation();
+//            if (deviceLocation != null && deviceLocation.getLatitude() != null) {
+//                mLogger.log(Logger.Level.DEBUG, "Latitude: " + deviceLocation.getLatitude());
+//                mLogger.log(Logger.Level.DEBUG, "Longitude: " + deviceLocation.getLongitude());
+//            }
+//            mLogger.log(Logger.Level.DEBUG, "Latitude: " + gpsLocation.getLatitude());
+//            mLogger.log(Logger.Level.DEBUG, "Longitude: " + gpsLocation.getLongitude());
+//            if (gpsLocation.getLac(context) != 0) {
+//                mLogger.log(Logger.Level.DEBUG, "Lac: " + gpsLocation.getLac(context));
+//            }
+//            if (gpsLocation.getCid(context) != 0) {
+//                mLogger.log(Logger.Level.DEBUG, "Cid: " + gpsLocation.getCid(context));
+//            }
+//        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 
