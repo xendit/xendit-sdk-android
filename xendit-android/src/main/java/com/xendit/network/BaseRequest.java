@@ -89,11 +89,11 @@ public class BaseRequest<T> extends Request<T> {
 
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
-        mLogger.log(Logger.Level.INFO, "parseNetworkResponse");
         try {
             String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             return Response.success(parseResult(jsonString), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException | JsonParseException e) {
+            mLogger.log(Logger.Level.ERROR, "parse network error " + e.getMessage());
             return Response.error(new ParseError(e));
         }
     }

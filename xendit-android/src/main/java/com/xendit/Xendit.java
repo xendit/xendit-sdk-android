@@ -164,7 +164,6 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCardNumberValid(String creditCardNumber) {
-        mLogger.log(Logger.Level.INFO, "isCardNumberValid");
         return CardValidator.isCardNumberValid(creditCardNumber);
     }
 
@@ -178,7 +177,6 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isExpiryValid(String cardExpirationMonth, String cardExpirationYear) {
-        mLogger.log(Logger.Level.INFO,"isExpiryValid");
         return CardValidator.isExpiryValid(cardExpirationMonth, cardExpirationYear);
     }
 
@@ -191,7 +189,6 @@ public class Xendit {
      */
     @Deprecated
     public static boolean isCvnValid(String creditCardCVN) {
-        mLogger.log(Logger.Level.INFO, "isCvnValid");
         return CardValidator.isCvnValid(creditCardCVN);
     }
 
@@ -206,7 +203,6 @@ public class Xendit {
      *                      fails
      */
     public void createSingleUseToken(final Card card, final int amount, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "createSingleUseToken");
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, true, false, tokenCallback);
@@ -224,7 +220,6 @@ public class Xendit {
      *                      fails
      */
     public void createSingleUseToken(final Card card, final int amount, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO,  "createSingleUseToken");
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, false, tokenCallback);
@@ -239,7 +234,6 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "createMultipleUseToken");
         createSingleOrMultipleUseToken(card, "0", false, true, tokenCallback);
     }
 
@@ -250,12 +244,10 @@ public class Xendit {
      */
     @Deprecated
     public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "createToken");
         createSingleOrMultipleUseToken(card, amount, true, isMultipleUse, tokenCallback);
     }
 
     private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "createSingleOrMultipleUseToken");
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
                 mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_card_number)).getErrorMessage());
@@ -285,7 +277,6 @@ public class Xendit {
                 @Override
                 public void onSuccess(TokenConfiguration tokenConfiguration) {
                     tokenizeCreditCardRequest(tokenConfiguration, card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-                    mLogger.log(Logger.Level.DEBUG,  "Successfully tokenize configuration");
                 }
 
                 @Override
@@ -307,7 +298,6 @@ public class Xendit {
      *                               creation completes or fails
      */
     public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
-        mLogger.log(Logger.Level.INFO,  "createAuthentication");
         if (tokenId == null || tokenId.equals("")) {
             mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
@@ -331,7 +321,6 @@ public class Xendit {
                 } else {
                     authenticationCallback.onSuccess(authentication);
                 }
-                mLogger.log(Logger.Level.DEBUG,  "Successfully created auth!");
             }
 
             @Override
@@ -348,7 +337,6 @@ public class Xendit {
      */
     @Deprecated
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO,  "createAuthentication");
         if (tokenId == null || tokenId.isEmpty()) {
             mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
@@ -378,7 +366,6 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
-                mLogger.log(Logger.Level.DEBUG,  "Successfully created auth!");
             }
 
             @Override
@@ -390,12 +377,10 @@ public class Xendit {
     }
 
     private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "tokenizeCreditCardRequest");
         tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
             @Override
             public void onSuccess(TokenCreditCard tokenCreditCard) {
                 _createCreditCardToken(card, tokenCreditCard.getToken(), amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-                mLogger.log(Logger.Level.DEBUG,  "Successfully tokenize credit card!");
             }
 
             @Override
@@ -411,7 +396,6 @@ public class Xendit {
      */
     @Deprecated
     public void createCreditCardToken(Card card, final String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "createCreditCardToken");
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
@@ -426,7 +410,6 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
-                mLogger.log(Logger.Level.DEBUG,  "Successfully created token!");
             }
 
             @Override
@@ -438,7 +421,6 @@ public class Xendit {
     }
 
     private void _createCreditCardToken(Card card, final String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "createCreditCardToken");
         _createToken(card, token, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
@@ -448,7 +430,6 @@ public class Xendit {
                 } else {
                     tokenCallback.onSuccess(new Token(authentication));
                 }
-                mLogger.log(Logger.Level.DEBUG,  "Successfully created token!");
             }
 
             @Override
@@ -460,7 +441,6 @@ public class Xendit {
     }
 
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
-        mLogger.log(Logger.Level.INFO, "registerBroadcastReceiver");
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -470,7 +450,6 @@ public class Xendit {
     }
 
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
-        mLogger.log(Logger.Level.INFO, "registerBroadcastReceiver");
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -480,7 +459,6 @@ public class Xendit {
     }
 
     private void getTokenizationConfiguration(NetworkHandler<TokenConfiguration> handler) {
-        mLogger.log(Logger.Level.INFO, "getTokenizationConfiguration");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CONFIGURATION_URL, TokenConfiguration.class, new DefaultResponseHandler<>(handler));
@@ -489,7 +467,6 @@ public class Xendit {
     }
 
     private void tokenizeCreditCard(TokenConfiguration tokenConfig, Card card, NetworkHandler<TokenCreditCard> handler) {
-        mLogger.log(Logger.Level.INFO, "tokenizeCreditCard");
         String baseUrl = getEnvironment() ? tokenConfig.getFlexProductionUrl() : tokenConfig.getFlexDevelopmentUrl();
         String flexUrl = baseUrl + TOKENIZE_CREDIT_CARD_URL + tokenConfig.getFlexApiKey();
 
@@ -513,7 +490,6 @@ public class Xendit {
     }
 
     private void _createToken(Card card, String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
-        mLogger.log(Logger.Level.INFO, "_createToken");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
 
@@ -532,7 +508,6 @@ public class Xendit {
     }
 
     private void _createAuthentication(String tokenId, String amount, NetworkHandler<Authentication> handler) {
-        mLogger.log(Logger.Level.INFO, "_createAuthentication");
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
@@ -544,7 +519,6 @@ public class Xendit {
     }
 
     private String encodeBase64(String key) {
-        mLogger.log(Logger.Level.INFO, "encodeBase64");
         try {
             byte[] keyData = key.getBytes("UTF-8");
             return Base64.encodeToString(keyData, Base64.DEFAULT);
@@ -556,9 +530,7 @@ public class Xendit {
     }
 
     private void sendRequest(BaseRequest request, NetworkHandler<?> handler) {
-        mLogger.log(Logger.Level.INFO, "sendRequest");
         if (isConnectionAvailable()) {
-            mLogger.log(Logger.Level.DEBUG, "Connected!");
             requestQueue.add(request);
         } else if (handler != null) {
             mLogger.log(Logger.Level.ERROR, new ConnectionError().getMessage());
@@ -567,10 +539,8 @@ public class Xendit {
     }
 
     private boolean isConnectionAvailable() {
-        mLogger.log(Logger.Level.INFO, "isConnectionAvailable");
         if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)) {
             @SuppressLint("MissingPermission") NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-            mLogger.log(Logger.Level.DEBUG, "Had access network state");
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         } else {
             mLogger.log(Logger.Level.ERROR, context.getString(R.string.not_granted_access_network_state));
@@ -580,7 +550,6 @@ public class Xendit {
     }
 
     private boolean getEnvironment() {
-        mLogger.log(Logger.Level.INFO, "getEnvironment");
         String publishKey = publishableKey.toUpperCase();
         return publishKey.contains("PRODUCTION");
     }
