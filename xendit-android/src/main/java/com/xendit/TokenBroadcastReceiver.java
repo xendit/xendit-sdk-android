@@ -30,7 +30,6 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        mLogger.log(Logger.Level.DEBUG, "TokenBroadcastReceiver onReceive");
         try {
             String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
             if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
@@ -48,6 +47,7 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
                         String errorMessage = errorJson.getString("failure_reason");
                         tokenCallback.onError(new XenditError(errorMessage, authentication));
                     } catch (JSONException e) {
+                        mLogger.log(Logger.Level.ERROR, e.getMessage());
                         e.printStackTrace();
                         tokenCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.tokenization_error)));
                     }
