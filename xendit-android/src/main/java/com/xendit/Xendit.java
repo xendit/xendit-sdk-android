@@ -65,6 +65,7 @@ public class Xendit {
     private static final String TAG = "Xendit";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
     private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
+    private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_TOKEN_CONFIGURATION_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_configuration";
     private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
@@ -504,7 +505,7 @@ public class Xendit {
     private void _createAuthentication(String tokenId, String amount, NetworkHandler<Authentication> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
-        String requestUrl = CREATE_CREDIT_CARD_TOKEN_URL + "/" + tokenId + "/authentications";
+        String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
 
         BaseRequest request = new BaseRequest<>(Request.Method.POST, requestUrl , Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
