@@ -64,10 +64,8 @@ public class Xendit {
 
     private static final String TAG = "Xendit";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
-    private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
-    private static final String GET_TOKEN_CONFIGURATION_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_configuration";
     private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
     static final String ACTION_KEY = "ACTION_KEY";
 
@@ -366,21 +364,6 @@ public class Xendit {
         }));
     }
 
-    private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
-            @Override
-            public void onSuccess(TokenCreditCard tokenCreditCard) {
-                createCreditCardToken(card, tokenCreditCard.getToken(), amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-            }
-
-            @Override
-            public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
-                tokenCallback.onError(new XenditError(error));
-            }
-        }));
-    }
-
     /**
      * @deprecated Not for public use.
      */
@@ -446,37 +429,6 @@ public class Xendit {
                 context.registerReceiver(new TokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY));
             }
         });
-    }
-
-    private void getTokenizationConfiguration(NetworkHandler<TokenConfiguration> handler) {
-        String encodedKey = encodeBase64(publishableKey + ":");
-        String basicAuthCredentials = "Basic " + encodedKey;
-        BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CONFIGURATION_URL, TokenConfiguration.class, new DefaultResponseHandler<>(handler));
-        request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
-        sendRequest(request, handler);
-    }
-
-    private void tokenizeCreditCard(TokenConfiguration tokenConfig, Card card, NetworkHandler<TokenCreditCard> handler) {
-        String baseUrl = getEnvironment() ? tokenConfig.getFlexProductionUrl() : tokenConfig.getFlexDevelopmentUrl();
-        String flexUrl = baseUrl + TOKENIZE_CREDIT_CARD_URL + tokenConfig.getFlexApiKey();
-
-        BaseRequest request = new BaseRequest<>(Request.Method.POST, flexUrl, TokenCreditCard.class, new DefaultResponseHandler<>(handler));
-
-        JsonObject cardInfoJson = new JsonObject();
-        cardInfoJson.addProperty("cardNumber", card.getCreditCardNumber());
-        cardInfoJson.addProperty("cardExpirationMonth", card.getCardExpirationMonth());
-        cardInfoJson.addProperty("cardExpirationYear", card.getCardExpirationYear());
-        try {
-            cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
-        } catch (NullPointerException e) {
-            mLogger.log(Logger.Level.ERROR, e.getMessage());
-            e.printStackTrace();
-            handler.handleError(new NetworkError(new VolleyError(e.getMessage(), e.getCause())));
-        }
-
-        request.addParam("keyId", tokenConfig.getTokenizationAuthKeyId());
-        request.addJsonParam("cardInfo", cardInfoJson);
-        sendRequest(request, handler);
     }
 
     private void _createToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
