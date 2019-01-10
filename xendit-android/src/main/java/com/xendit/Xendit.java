@@ -272,7 +272,7 @@ public class Xendit {
                 return;
             }
 
-            createCreditCardToken(card, amount, shouldAuthenticate, isMultipleUse, tokenCallback) 
+            createCreditCardToken(card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
         }
     }
 
@@ -445,7 +445,7 @@ public class Xendit {
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addParam("is_single_use", String.valueOf(!isMultipleUse));
         request.addParam("should_authenticate", String.valueOf(shouldAuthenticate));
-        request.addParam("card", cardData);
+        request.addJsonParam("card_data", cardData);
 
         if (!isMultipleUse) {
             request.addParam("amount", amount);
