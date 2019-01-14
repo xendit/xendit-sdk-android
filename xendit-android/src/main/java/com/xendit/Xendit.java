@@ -64,9 +64,8 @@ public class Xendit {
 
     private static final String TAG = "Xendit";
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
-    private static final String TOKENIZE_CREDIT_CARD_URL = "/cybersource/flex/v1/tokens?apikey=";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
-    private static final String GET_TOKEN_CONFIGURATION_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokenization_configuration";
+    private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
     static final String ACTION_KEY = "ACTION_KEY";
 
@@ -273,18 +272,7 @@ public class Xendit {
                 return;
             }
 
-            getTokenizationConfiguration(new NetworkHandler<TokenConfiguration>().setResultListener(new ResultListener<TokenConfiguration>() {
-                @Override
-                public void onSuccess(TokenConfiguration tokenConfiguration) {
-                    tokenizeCreditCardRequest(tokenConfiguration, card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-                }
-
-                @Override
-                public void onFailure(NetworkError error) {
-                    mLogger.log(Logger.Level.ERROR,  error.getMessage());
-                    tokenCallback.onError(new XenditError(error));
-                }
-            }));
+            createCreditCardToken(card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
         }
     }
 
@@ -376,32 +364,17 @@ public class Xendit {
         }));
     }
 
-    private void tokenizeCreditCardRequest(final TokenConfiguration tokenConfiguration, final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        tokenizeCreditCard(tokenConfiguration, card, new NetworkHandler<TokenCreditCard>().setResultListener(new ResultListener<TokenCreditCard>() {
-            @Override
-            public void onSuccess(TokenCreditCard tokenCreditCard) {
-                _createCreditCardToken(card, tokenCreditCard.getToken(), amount, shouldAuthenticate, isMultipleUse, tokenCallback);
-            }
-
-            @Override
-            public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
-                tokenCallback.onError(new XenditError(error));
-            }
-        }));
-    }
-
     /**
      * @deprecated Not for public use.
      */
     @Deprecated
-    public void createCreditCardToken(Card card, final String token, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
+    public void createCreditCardToken(Card card, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
         }
 
-        _createToken(card, token, amount, true, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+        _createToken(card, amount, true, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
@@ -420,8 +393,8 @@ public class Xendit {
         }));
     }
 
-    private void _createCreditCardToken(Card card, final String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        _createToken(card, token, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+    public void createCreditCardToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
+        _createToken(card, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
@@ -458,47 +431,21 @@ public class Xendit {
         });
     }
 
-    private void getTokenizationConfiguration(NetworkHandler<TokenConfiguration> handler) {
-        String encodedKey = encodeBase64(publishableKey + ":");
-        String basicAuthCredentials = "Basic " + encodedKey;
-        BaseRequest request = new BaseRequest<>(Request.Method.GET, GET_TOKEN_CONFIGURATION_URL, TokenConfiguration.class, new DefaultResponseHandler<>(handler));
-        request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
-        sendRequest(request, handler);
-    }
-
-    private void tokenizeCreditCard(TokenConfiguration tokenConfig, Card card, NetworkHandler<TokenCreditCard> handler) {
-        String baseUrl = getEnvironment() ? tokenConfig.getFlexProductionUrl() : tokenConfig.getFlexDevelopmentUrl();
-        String flexUrl = baseUrl + TOKENIZE_CREDIT_CARD_URL + tokenConfig.getFlexApiKey();
-
-        BaseRequest request = new BaseRequest<>(Request.Method.POST, flexUrl, TokenCreditCard.class, new DefaultResponseHandler<>(handler));
-
-        JsonObject cardInfoJson = new JsonObject();
-        cardInfoJson.addProperty("cardNumber", card.getCreditCardNumber());
-        cardInfoJson.addProperty("cardExpirationMonth", card.getCardExpirationMonth());
-        cardInfoJson.addProperty("cardExpirationYear", card.getCardExpirationYear());
-        try {
-            cardInfoJson.addProperty("cardType", CardValidator.getCardType(card.getCreditCardNumber()).getCardTypeKey());
-        } catch (NullPointerException e) {
-            mLogger.log(Logger.Level.ERROR, e.getMessage());
-            e.printStackTrace();
-            handler.handleError(new NetworkError(new VolleyError(e.getMessage(), e.getCause())));
-        }
-
-        request.addParam("keyId", tokenConfig.getTokenizationAuthKeyId());
-        request.addJsonParam("cardInfo", cardInfoJson);
-        sendRequest(request, handler);
-    }
-
-    private void _createToken(Card card, String token, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
+    private void _createToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
 
-        BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_URL, Authentication.class, new DefaultResponseHandler<>(handler));
+        JsonObject cardData = new JsonObject();
+        cardData.addProperty("account_number", card.getCreditCardNumber());
+        cardData.addProperty("exp_year", card.getCardExpirationYear());
+        cardData.addProperty("exp_month", card.getCardExpirationMonth());
+        cardData.addProperty("cvn", card.getCreditCardCVN());
+
+        BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_TOKEN_URL, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
-        request.addParam("is_authentication_bundled", String.valueOf(!isMultipleUse));
+        request.addParam("is_single_use", String.valueOf(!isMultipleUse));
         request.addParam("should_authenticate", String.valueOf(shouldAuthenticate));
-        request.addParam("credit_card_token", token);
-        request.addParam("card_cvn", card.getCreditCardCVN());
+        request.addJsonParam("card_data", cardData);
 
         if (!isMultipleUse) {
             request.addParam("amount", amount);
