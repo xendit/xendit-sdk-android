@@ -87,5 +87,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 }
 
-//apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'
-//apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/bintrayv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
