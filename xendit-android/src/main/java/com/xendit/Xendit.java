@@ -20,6 +20,8 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
+import com.snowplowanalytics.snowplow.tracker.Tracker;
+import com.snowplowanalytics.snowplow.tracker.events.Structured;
 import com.xendit.DeviceInfo.GPSLocation;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
 import com.xendit.Logger.Logger;
@@ -38,6 +40,7 @@ import com.xendit.network.TLSSocketFactory;
 import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
+import com.xendit.Tracker.SnowplowTrackerBuilder;
 import com.xendit.utils.CardValidator;
 import com.xendit.utils.PermissionUtils;
 
@@ -272,6 +275,13 @@ public class Xendit {
                 return;
             }
 
+            Tracker tracker = SnowplowTrackerBuilder.getTracker(context);
+            tracker.track(Structured.builder()
+                    .category("api-request")
+                    .action("create-token")
+                    .label("Create Token")
+                    .build());
+
             createCreditCardToken(card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
         }
     }
@@ -297,6 +307,13 @@ public class Xendit {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
+
+        Tracker tracker = SnowplowTrackerBuilder.getTracker(context);
+        tracker.track(Structured.builder()
+                .category("api-request")
+                .action("create-authentication")
+                .label("Create Authentication")
+                .build());
 
         String amountStr = Integer.toString(amount);
 
