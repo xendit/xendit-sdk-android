@@ -59,6 +59,8 @@ import io.sentry.event.interfaces.SentryException;
 import io.sentry.event.interfaces.SentryInterface;
 import io.sentry.event.interfaces.SentryStackTraceElement;
 
+import static com.xendit.Tracker.SnowplowTrackerBuilder.getTracker;
+
 /**
  * Created by Dimon_GDA on 3/7/17.
  */
@@ -275,13 +277,6 @@ public class Xendit {
                 return;
             }
 
-            Tracker tracker = SnowplowTrackerBuilder.getTracker(context);
-            tracker.track(Structured.builder()
-                    .category("api-request")
-                    .action("create-token")
-                    .label("Create Token")
-                    .build());
-
             createCreditCardToken(card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
         }
     }
@@ -308,18 +303,18 @@ public class Xendit {
             return;
         }
 
-        Tracker tracker = SnowplowTrackerBuilder.getTracker(context);
-        tracker.track(Structured.builder()
-                .category("api-request")
-                .action("create-authentication")
-                .label("Create Authentication")
-                .build());
-
         String amountStr = Integer.toString(amount);
 
         _createAuthentication(tokenId, amountStr, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
+                Tracker tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("create-authentication")
+                        .label("Create Authentication")
+                        .build());
+
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
                     registerBroadcastReceiver(authenticationCallback);
                     context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
@@ -414,6 +409,13 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
+                Tracker tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("create-token")
+                        .label("Create Token")
+                        .build());
+
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
                     registerBroadcastReceiver(tokenCallback);
                     context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
