@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '2.1.3'
+version '2.1.4'
 
 ext {
     bintrayOrg = 'xendit'
@@ -121,6 +121,8 @@ publishing {
         }
     }
 }
+
+tasks.withType(Javadoc).all { enabled = false }
 
 apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/bintrayv1.gradle'
