@@ -20,6 +20,8 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
+import com.snowplowanalytics.snowplow.tracker.Tracker;
+import com.snowplowanalytics.snowplow.tracker.events.Structured;
 import com.xendit.DeviceInfo.GPSLocation;
 import com.xendit.DeviceInfo.Model.DeviceLocation;
 import com.xendit.Logger.Logger;
@@ -38,6 +40,7 @@ import com.xendit.network.TLSSocketFactory;
 import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
+import com.xendit.Tracker.SnowplowTrackerBuilder;
 import com.xendit.utils.CardValidator;
 import com.xendit.utils.PermissionUtils;
 
@@ -55,6 +58,8 @@ import io.sentry.event.interfaces.ExceptionInterface;
 import io.sentry.event.interfaces.SentryException;
 import io.sentry.event.interfaces.SentryInterface;
 import io.sentry.event.interfaces.SentryStackTraceElement;
+
+import static com.xendit.Tracker.SnowplowTrackerBuilder.getTracker;
 
 /**
  * Created by Dimon_GDA on 3/7/17.
@@ -303,6 +308,13 @@ public class Xendit {
         _createAuthentication(tokenId, amountStr, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
+                Tracker tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("create-authentication")
+                        .label("Create Authentication")
+                        .build());
+
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
                     registerBroadcastReceiver(authenticationCallback);
                     context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
@@ -397,6 +409,13 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
+                Tracker tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("create-token")
+                        .label("Create Token")
+                        .build());
+
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
                     registerBroadcastReceiver(tokenCallback);
                     context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
