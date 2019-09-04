@@ -44,6 +44,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     implementation project(':xendit-android')
+    // implementation 'com.xendit:xendit-android:2.1.4'
 
     // App's dependencies, including test
     implementation 'com.android.support:support-annotations:28.0.0'
