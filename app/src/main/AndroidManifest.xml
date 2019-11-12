@@ -36,6 +36,10 @@
             android:name="com.xendit.example.ValidationUtilActivity"
             android:theme="@style/AppTheme"/>
 
+        <activity
+            android:name="com.xendit.example.ThreeDSRecommendationActivity"
+            android:theme="@style/AppTheme"/>
+
         <activity android:name="com.xendit.XenditActivity"/>
     </application>
 </manifest>

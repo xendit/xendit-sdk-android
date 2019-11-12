@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView createTokenTextView;
     private TextView authenticationTextView;
     private TextView validationUtilTextView;
+    private TextView threeDSRecommendationTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +27,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         createTokenTextView = (TextView) findViewById(R.id.createTokenTextView_MainActivity);
         authenticationTextView = (TextView) findViewById(R.id.authenticationTextView_MainActivity);
         validationUtilTextView = (TextView) findViewById(R.id.validationUtilTextView_MainActivity);
+        threeDSRecommendationTextView = (TextView) findViewById(R.id.threeDSRecommendationTextView_MainActivity);
 
         createTokenTextView.setOnClickListener(this);
         authenticationTextView.setOnClickListener(this);
         validationUtilTextView.setOnClickListener(this);
+        threeDSRecommendationTextView.setOnClickListener(this);
     }
 
     @Override
@@ -43,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.validationUtilTextView_MainActivity:
                 startActivity(ValidationUtilActivity.getLaunchIntent(this));
+                break;
+            case R.id.threeDSRecommendationTextView_MainActivity:
+                startActivity(ThreeDSRecommendationActivity.getLaunchIntent(this));
                 break;
         }
     }
