@@ -1,7 +1,5 @@
 package com.xendit.Models;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Created by Sergey on 3/16/17.
  */
@@ -14,12 +12,23 @@ public class Token {
     private Authentication authentication;
     private String masked_card_number;
 
+    private String should_3ds;
+
     public Token(Authentication authentication) {
         this.id = authentication.getId();
         this.status = authentication.getStatus();
         this.authentication_id = authentication.getAuthenticationId();
         this.authentication = authentication;
         this.masked_card_number = authentication.getMaskedCardNumber();
+    }
+
+    public Token(Authentication authentication, ThreeDSRecommendation rec) {
+        this.id = authentication.getId();
+        this.status = authentication.getStatus();
+        this.authentication_id = authentication.getAuthenticationId();
+        this.authentication = authentication;
+        this.masked_card_number = authentication.getMaskedCardNumber();
+        this.should_3ds = rec.getShould_3DS();
     }
 
     public String getId() {
@@ -33,6 +42,8 @@ public class Token {
     public String getAuthenticationId() { return authentication_id; }
 
     public String getMaskedCardNumber() { return masked_card_number; }
+
+    public String getShould_3DS() { return should_3ds; }
 
     @Deprecated
     public Authentication getAuthentication() {

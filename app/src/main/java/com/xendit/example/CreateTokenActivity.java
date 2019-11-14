@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xendit.Models.Card;
+import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
@@ -29,7 +30,8 @@ import java.util.Calendar;
 
 public class CreateTokenActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+    public static final String PUBLISHABLE_KEY = "xnd_public_development_O46JfOUs3bX+kZU/euIcGGLEMNem99QtkSfp+Rxj/2Xf/rKnDQR+gg==";
+    //public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
 
     private EditText cardNumberEditText;
     private EditText expMonthEditText;
@@ -106,7 +108,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(Token token) {
                 progressBar.setVisibility(View.GONE);
                 setTokenId(token.getId());
-                resultTextView.setText("{ id: \"" + token.getId() + "\", authentication_id: \"" + token.getAuthenticationId() + "\", status: \"" + token.getStatus() + "\", masked_card_number: \"" + token.getMaskedCardNumber() + "\" }");
+                resultTextView.setText("{ id: \"" + token.getId() + "\", authentication_id: \"" + token.getAuthenticationId() + "\", status: \"" + token.getStatus() + "\", masked_card_number: \"" + token.getMaskedCardNumber() + "\", should_3ds: \"" + token.getShould_3DS() + "\"}");
                 Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 

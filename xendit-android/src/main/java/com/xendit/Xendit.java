@@ -27,6 +27,7 @@ import com.xendit.DeviceInfo.Model.DeviceLocation;
 import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
+import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
 import com.xendit.Models.TokenConfiguration;
 import com.xendit.Models.TokenCreditCard;
@@ -71,6 +72,7 @@ public class Xendit {
     private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
+    private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
     private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
     static final String ACTION_KEY = "ACTION_KEY";
 
@@ -405,10 +407,29 @@ public class Xendit {
         }));
     }
 
+    public void get3DSRecommendation(String tokenId, final TokenCallback callback, final Authentication authentication){
+        if (tokenId != null && !tokenId.isEmpty()) {
+            callback.onError(new XenditError("Invalid Token ID"));
+        }
+
+        _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
+            @Override
+            public void onSuccess (ThreeDSRecommendation rec) {
+                callback.onSuccess(new Token(authentication, rec));
+            }
+
+            @Override
+            public void onFailure (NetworkError error) {
+                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
+                callback.onError(new XenditError(error));
+            }
+        }));
+    }
+
     public void createCreditCardToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
         _createToken(card, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
-            public void onSuccess(Authentication authentication) {
+            public void onSuccess(final Authentication authentication) {
                 Tracker tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
@@ -416,11 +437,13 @@ public class Xendit {
                         .label("Create Token")
                         .build());
 
-                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) { //single token = automatically attempt 3DS
                     registerBroadcastReceiver(tokenCallback);
                     context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
-                } else {
-                    tokenCallback.onSuccess(new Token(authentication));
+                }
+                else { //for multi token
+                    String tokenId = authentication.getId();
+                    get3DSRecommendation(tokenId, tokenCallback, authentication);
                 }
             }
 
@@ -473,6 +496,17 @@ public class Xendit {
         sendRequest(request, handler);
     }
 
+    private void _get3DSRecommendation(String tokenId, NetworkHandler<ThreeDSRecommendation> handler) {
+        String encodedKey = encodeBase64(publishableKey + ":");
+        String basicAuthCredentials = "Basic " + encodedKey;
+        String url = GET_3DS_URL + "?token_id=" + tokenId;
+
+        BaseRequest request = new BaseRequest<>(Request.Method.GET, url, ThreeDSRecommendation.class, new DefaultResponseHandler<>(handler));
+        request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
+
+        sendRequest(request, handler);
+    }
+
     private void _createAuthentication(String tokenId, String amount, NetworkHandler<Authentication> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
@@ -519,7 +553,6 @@ public class Xendit {
         String publishKey = publishableKey.toUpperCase();
         return publishKey.contains("PRODUCTION");
     }
-
 
 
     /**

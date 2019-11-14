@@ -1,5 +1,6 @@
 package com.xendit;
 
+import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 

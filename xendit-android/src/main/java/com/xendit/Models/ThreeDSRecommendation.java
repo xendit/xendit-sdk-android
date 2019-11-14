@@ -10,28 +10,28 @@ import com.google.gson.annotations.SerializedName;
  * Created by Sergey on 3/22/17.
  */
 
-public class ThreeDSRec implements Parcelable {
+public class ThreeDSRecommendation implements Parcelable {
 
-    @SerializedName("status")
-    private String should3ds;
+    @SerializedName("should_3ds")
+    private String should_3ds;
 
-    @SerializedName("authentication_id")
+    @SerializedName("token_id")
     private String token_id;
 
-    private ThreeDSRec(Parcel in) {
-        should3ds = in.readString();
+    private ThreeDSRecommendation(Parcel in) {
+        should_3ds = in.readString();
         token_id = in.readString();
     }
 
-    public static final Creator<ThreeDSRec> CREATOR = new Creator<ThreeDSRec>() {
+    public static final Creator<ThreeDSRecommendation> CREATOR = new Creator<ThreeDSRecommendation>() {
         @Override
-        public ThreeDSRec createFromParcel(Parcel in) {
-            return new ThreeDSRec(in);
+        public ThreeDSRecommendation createFromParcel(Parcel in) {
+            return new ThreeDSRecommendation(in);
         }
 
         @Override
-        public ThreeDSRec[] newArray(int size) {
-            return new ThreeDSRec[size];
+        public ThreeDSRecommendation[] newArray(int size) {
+            return new ThreeDSRecommendation[size];
         }
     };
 
@@ -39,8 +39,8 @@ public class ThreeDSRec implements Parcelable {
         return token_id;
     }
 
-    public String get3DSRec() {
-        return should3ds;
+    public String getShould_3DS() {
+        return should_3ds;
     }
 
 
@@ -51,13 +51,13 @@ public class ThreeDSRec implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(should3ds);
+        parcel.writeString(should_3ds);
         parcel.writeString(token_id);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "{"+this.token_id+","+this.should3ds+"}";
+        return "{"+this.token_id+","+this.should_3ds+"}";
     }
 }
