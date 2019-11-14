@@ -74,6 +74,7 @@ public class Xendit {
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
     private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
+    private static final String CLIENT_IDENTIFIER = "Xendit Android SDK";
     static final String ACTION_KEY = "ACTION_KEY";
 
     private Context context;
@@ -407,10 +408,17 @@ public class Xendit {
         }));
     }
 
-    public void get3DSRecommendation(String tokenId, final Authentication authentication, final TokenCallback callback){
+    private void get3DSRecommendation(String tokenId, final Authentication authentication, final TokenCallback callback){
         _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
+                Tracker tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("get-3ds-recommendation")
+                        .label("Get 3DS Recommendation")
+                        .build());
+
                 callback.onSuccess(new Token(authentication, rec));
             }
 
@@ -481,6 +489,7 @@ public class Xendit {
 
         BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_TOKEN_URL, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
+        request.addHeader("x-client-identifier", CLIENT_IDENTIFIER);
         request.addParam("is_single_use", String.valueOf(!isMultipleUse));
         request.addParam("should_authenticate", String.valueOf(shouldAuthenticate));
         request.addJsonParam("card_data", cardData);
@@ -499,6 +508,7 @@ public class Xendit {
 
         BaseRequest request = new BaseRequest<>(Request.Method.GET, url, ThreeDSRecommendation.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
+        request.addHeader("x-client-identifier", CLIENT_IDENTIFIER);
 
         sendRequest(request, handler);
     }
@@ -510,6 +520,7 @@ public class Xendit {
 
         BaseRequest request = new BaseRequest<>(Request.Method.POST, requestUrl , Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
+        request.addHeader("x-client-identifier", CLIENT_IDENTIFIER);
         request.addParam("amount", amount);
         sendRequest(request, handler);
     }

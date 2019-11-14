@@ -10,6 +10,9 @@ import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +39,13 @@ public class TokenTest {
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
+                assertThat(token.getId(), isA(String.class));
+                assertThat(token.getAuthenticationId(), isA(String.class));
             }
 
             @Override
             public void onError(XenditError xenditError) {
+                fail();
             }
         };
         xendit.createSingleUseToken(card, 400, false, callback);
@@ -99,7 +105,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createCreditCardToken(card, "123456789", "300", false, callback);
+        xendit.createCreditCardToken(card, "123456789", false, false, callback);
     }
 
     @Test
@@ -117,7 +123,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createCreditCardToken(card, "123456789", "300", true, callback);
+        xendit.createCreditCardToken(card, "123456789", false, true, callback);
     }
 
 

@@ -30,7 +30,6 @@ import java.util.Calendar;
 
 public class CreateTokenActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //public static final String PUBLISHABLE_KEY = "xnd_public_development_O46JfOUs3bX+kZU/euIcGGLEMNem99QtkSfp+Rxj/2Xf/rKnDQR+gg==";
     public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
 
     private EditText cardNumberEditText;
