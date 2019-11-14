@@ -11,7 +11,6 @@ public class Token {
     private String authentication_id;
     private Authentication authentication;
     private String masked_card_number;
-
     private String should_3ds;
 
     public Token(Authentication authentication) {

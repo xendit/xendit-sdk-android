@@ -407,7 +407,7 @@ public class Xendit {
         }));
     }
 
-    public void get3DSRecommendation(String tokenId, final TokenCallback callback, final Authentication authentication){
+    public void get3DSRecommendation(String tokenId, final Authentication authentication, final TokenCallback callback){
         if (tokenId != null && !tokenId.isEmpty()) {
             callback.onError(new XenditError("Invalid Token ID"));
         }
@@ -429,7 +429,7 @@ public class Xendit {
     public void createCreditCardToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
         _createToken(card, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
-            public void onSuccess(final Authentication authentication) {
+            public void onSuccess(Authentication authentication) {
                 Tracker tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
@@ -443,13 +443,13 @@ public class Xendit {
                 }
                 else { //for multi token
                     String tokenId = authentication.getId();
-                    get3DSRecommendation(tokenId, tokenCallback, authentication);
+                    get3DSRecommendation(tokenId, authentication, tokenCallback);
                 }
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR,  "3DS Recommendation Error: " + error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
