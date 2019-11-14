@@ -6,12 +6,13 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.google.common.truth.Truth;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
-import com.google.common.truth.Truth.*;
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,12 +39,13 @@ public class TokenTest {
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
-                Truth.assertThat(token.getId());
-                Truth.assertThat(token.getAuthenticationId());
+                assertThat(token.getId(), isA(String.class));
+                assertThat(token.getAuthenticationId(), isA(String.class));
             }
 
             @Override
             public void onError(XenditError xenditError) {
+                fail();
             }
         };
         xendit.createSingleUseToken(card, 400, false, callback);
