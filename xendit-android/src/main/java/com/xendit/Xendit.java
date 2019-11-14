@@ -408,10 +408,6 @@ public class Xendit {
     }
 
     public void get3DSRecommendation(String tokenId, final Authentication authentication, final TokenCallback callback){
-        if (tokenId != null && !tokenId.isEmpty()) {
-            callback.onError(new XenditError("Invalid Token ID"));
-        }
-
         _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
@@ -420,8 +416,8 @@ public class Xendit {
 
             @Override
             public void onFailure (NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
-                callback.onError(new XenditError(error));
+                mLogger.log(Logger.Level.ERROR,  "3DS Recommendation Error: " + error.responseCode + " " + error.getMessage());
+                callback.onSuccess(new Token(authentication));
             }
         }));
     }
@@ -449,7 +445,7 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  "3DS Recommendation Error: " + error.responseCode + " " + error.getMessage());
+                mLogger.log(Logger.Level.ERROR,  "Tokenization Error: " + error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
