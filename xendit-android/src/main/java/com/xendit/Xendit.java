@@ -408,7 +408,7 @@ public class Xendit {
         }));
     }
 
-    public void get3DSRecommendation(String tokenId, final Authentication authentication, final TokenCallback callback){
+    private void get3DSRecommendation(String tokenId, final Authentication authentication, final TokenCallback callback){
         _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
