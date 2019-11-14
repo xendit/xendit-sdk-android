@@ -411,6 +411,13 @@ public class Xendit {
         _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
+                Tracker tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("get-3ds-recommendation")
+                        .label("Get 3DS Recommendation")
+                        .build());
+                
                 callback.onSuccess(new Token(authentication, rec));
             }
 

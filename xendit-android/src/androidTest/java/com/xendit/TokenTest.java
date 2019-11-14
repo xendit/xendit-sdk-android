@@ -6,10 +6,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.google.common.truth.Truth;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
+import com.google.common.truth.Truth.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,8 @@ public class TokenTest {
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
+                Truth.assertThat(token.getId());
+                Truth.assertThat(token.getAuthenticationId());
             }
 
             @Override
@@ -99,7 +103,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createCreditCardToken(card, "123456789", "300", false, callback);
+        xendit.createCreditCardToken(card, "123456789", false, false, callback);
     }
 
     @Test
@@ -117,7 +121,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createCreditCardToken(card, "123456789", "300", true, callback);
+        xendit.createCreditCardToken(card, "123456789", false, true, callback);
     }
 
 
