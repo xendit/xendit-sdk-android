@@ -14,6 +14,8 @@ import android.support.test.uiautomator.Until;
 import android.widget.Button;
 
 import org.hamcrest.CoreMatchers;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,6 +96,56 @@ public class SampleAppDefaultTest {
                 .wait(Until.findObject(By.res(TARGET_PACKAGE, "result_CreateTokenActivity")),
                         100);
         assertThat(resultText.getText(), CoreMatchers.containsString("should_3ds"));
+
+        Sleep(2000);
+
+        mDevice.pressBack();
+    }
+
+    @Test
+    public void testCreateMultipleToken() {
+        UiObject2 createToken = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "createTokenTextView_MainActivity")),
+                        100);
+        createToken.click();
+
+        Sleep(3000);
+
+        UiObject2 createTokenButton = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "createTokenBtn_CreateTokenActivity")),
+                        100);
+        assertThat(createTokenButton, notNullValue());
+
+        UiObject2 yearText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "expYearEditText_CreateTokenActivity")),
+                        100);
+        assertThat(yearText, notNullValue());
+
+        UiObject2 multipleUseTokenCheckbox = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "multipleUseCheckBox_CreateTokenActivity")),
+                        100);
+        assertThat(multipleUseTokenCheckbox, notNullValue());
+
+        yearText.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 1));
+        multipleUseTokenCheckbox.click();
+
+        createTokenButton.click();
+
+        Sleep(5000);
+
+        UiObject2 resultText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "result_CreateTokenActivity")),
+                        100);
+        assertThat(resultText.getText(), CoreMatchers.containsString("should_3ds"));
+
+        try {
+            JSONObject jsonObject = new JSONObject(resultText.getText());
+            System.out.println(jsonObject.get("should_3ds"));
+            assertEquals(jsonObject.get("should_3ds"), "true");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            fail();
+        }
 
         Sleep(2000);
 
