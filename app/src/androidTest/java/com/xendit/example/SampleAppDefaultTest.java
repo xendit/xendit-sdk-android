@@ -140,7 +140,6 @@ public class SampleAppDefaultTest {
 
         try {
             JSONObject jsonObject = new JSONObject(resultText.getText());
-            System.out.println(jsonObject.get("should_3ds"));
             assertEquals(jsonObject.get("should_3ds"), "true");
         } catch (JSONException e) {
             e.printStackTrace();
