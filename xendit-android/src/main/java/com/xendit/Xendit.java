@@ -10,30 +10,23 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BaseHttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
-
 import com.snowplowanalytics.snowplow.tracker.Tracker;
 import com.snowplowanalytics.snowplow.tracker.events.Structured;
-import com.xendit.DeviceInfo.GPSLocation;
-import com.xendit.DeviceInfo.Model.DeviceLocation;
+import com.xendit.DeviceInfo.AdInfo;
+import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
-import com.xendit.Models.TokenConfiguration;
-import com.xendit.Models.TokenCreditCard;
 import com.xendit.Models.XenditError;
-import com.xendit.DeviceInfo.AdInfo;
-import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.network.BaseRequest;
 import com.xendit.network.DefaultResponseHandler;
 import com.xendit.network.NetworkHandler;
@@ -41,7 +34,6 @@ import com.xendit.network.TLSSocketFactory;
 import com.xendit.network.errors.ConnectionError;
 import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
-import com.xendit.Tracker.SnowplowTrackerBuilder;
 import com.xendit.utils.CardValidator;
 import com.xendit.utils.PermissionUtils;
 
@@ -300,7 +292,7 @@ public class Xendit {
             return;
         }
 
-        if (amount <= 0) {
+        if (amount < 0) {
             mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
@@ -346,7 +338,7 @@ public class Xendit {
             return;
         }
 
-        if (amount == null || Integer.parseInt(amount) <= 0) {
+        if (amount == null || Integer.parseInt(amount) < 0) {
 
             mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
