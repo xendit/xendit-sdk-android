@@ -13,13 +13,13 @@ import com.google.gson.annotations.SerializedName;
 public class ThreeDSRecommendation implements Parcelable {
 
     @SerializedName("should_3ds")
-    private String should_3ds;
+    private Boolean should_3ds;
 
     @SerializedName("token_id")
     private String token_id;
 
     private ThreeDSRecommendation(Parcel in) {
-        should_3ds = in.readString();
+        should_3ds = in.readInt() == 1;;
         token_id = in.readString();
     }
 
@@ -39,7 +39,7 @@ public class ThreeDSRecommendation implements Parcelable {
         return token_id;
     }
 
-    public String getShould_3DS() {
+    public Boolean getShould_3DS() {
         return should_3ds;
     }
 
@@ -51,7 +51,7 @@ public class ThreeDSRecommendation implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(should_3ds);
+        parcel.writeInt(should_3ds ? 1 : 0);
         parcel.writeString(token_id);
     }
 
