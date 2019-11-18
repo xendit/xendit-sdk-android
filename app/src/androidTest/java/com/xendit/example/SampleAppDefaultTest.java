@@ -13,6 +13,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.widget.Button;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,6 +89,13 @@ public class SampleAppDefaultTest {
         }
 
         Sleep(20000);
+
+        UiObject2 resultText = mDevice
+                .wait(Until.findObject(By.res(TARGET_PACKAGE, "result_CreateTokenActivity")),
+                        100);
+        assertThat(resultText.getText(), CoreMatchers.containsString("should_3ds"));
+
+        Sleep(2000);
 
         mDevice.pressBack();
     }
