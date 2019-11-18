@@ -11,7 +11,7 @@ public class Token {
     private String authentication_id;
     private Authentication authentication;
     private String masked_card_number;
-    private String should_3ds;
+    private Boolean should_3ds;
 
     public Token(Authentication authentication) {
         this.id = authentication.getId();
@@ -19,6 +19,7 @@ public class Token {
         this.authentication_id = authentication.getAuthenticationId();
         this.authentication = authentication;
         this.masked_card_number = authentication.getMaskedCardNumber();
+        this.should_3ds = true;
     }
 
     public Token(Authentication authentication, ThreeDSRecommendation rec) {
@@ -42,7 +43,7 @@ public class Token {
 
     public String getMaskedCardNumber() { return masked_card_number; }
 
-    public String getShould_3DS() { return should_3ds; }
+    public Boolean getShould_3DS() { return should_3ds; }
 
     @Deprecated
     public Authentication getAuthentication() {
