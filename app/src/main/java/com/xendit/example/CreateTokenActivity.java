@@ -106,7 +106,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(Token token) {
                 progressBar.setVisibility(View.GONE);
                 setTokenId(token.getId());
-                resultTextView.setText("{ id: \"" + token.getId() + "\", authentication_id: \"" + token.getAuthenticationId() + "\", status: \"" + token.getStatus() + "\", masked_card_number: \"" + token.getMaskedCardNumber() + "\" }");
+                resultTextView.setText("{ \"id\": \"" + token.getId() + "\", \"authentication_id\": \"" + token.getAuthenticationId() + "\", \"status\": \"" + token.getStatus() + "\", \"masked_card_number\": \"" + token.getMaskedCardNumber() + "\", \"should_3ds\": \"" + token.getShould_3DS() + "\"}");
                 Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 
