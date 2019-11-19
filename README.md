@@ -12,6 +12,18 @@ Slack Mentions: `@troops-tpi`
 ## Requirements
 The Xendit SDK is compatible with Android 2.3.3 and above.
 
+## How to try example
+Visit and try the `app` module to see an example of how the SDK works.
+
+1. [Install android studio.](https://developer.android.com/studio/install)
+2. [Clone repository.](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
+3. [Get your own API Key.](https://dashboard.xendit.co/settings/security)
+4. Change line with your own API Key.
+```
+PUBLISHABLE_KEY="xnd_public_development_YOURAPIKEY"
+```
+*Replace YOURAPIKEY with your own API Key.
+
 ## Installation
 Maven:
 ```
@@ -36,9 +48,6 @@ Ivy:
 ```
 
 For more information, visit https://bintray.com/xendit/android/xendit-sdk-android
-
-## Examples
-Visit and try the `app` module to see an example of how the SDK works. Additionally, we've provided some examples below:
 
 ### Initializing Xendit
 ```
