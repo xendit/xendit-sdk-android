@@ -12,17 +12,16 @@ Slack Mentions: `@troops-tpi`
 ## Requirements
 The Xendit SDK is compatible with Android 2.3.3 and above.
 
-## How to try example
+## Example
 Visit and try the `app` module to see an example of how the SDK works.
 
 1. [Install android studio.](https://developer.android.com/studio/install)
 2. [Clone repository.](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
-3. [Get your own API Key.](https://dashboard.xendit.co/settings/security)
-4. Change line with your own API Key.
+3. [Get your Public Key.](https://dashboard.xendit.co/settings/developers#api-keys)
+4. Search for PUBLISHABLE_KEY and replace the content with your Public Key from Step 3.
 ```
-PUBLISHABLE_KEY="xnd_public_development_YOURAPIKEY"
+PUBLISHABLE_KEY="xnd_public_development_XXX"
 ```
-*Replace YOURAPIKEY with your own API Key.
 
 ## Installation
 Maven:
@@ -58,7 +57,7 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
 
-xendit.createSingleUseToken(card, 75000, true, new TokenCallback() {
+xendit.createSingleUseToken(card, 75000, true, "USER-ID", new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
