@@ -221,7 +221,7 @@ public class Xendit {
     public void createSingleUseToken(final Card card, final int amount, final String onBehalfOf, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
-        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, false, tokenCallback);
+        createSingleOrMultipleUseToken(card, amountStr, onBehalfOf, shouldAuthenticate, false, tokenCallback);
     }
 
     /**
@@ -233,7 +233,7 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, "0", false, true, tokenCallback);
+        createSingleOrMultipleUseToken(card, "0", "", false, true, tokenCallback);
     }
 
     /**
@@ -242,11 +242,11 @@ public class Xendit {
      * and {@link #createMultipleUseToken(Card, TokenCallback)} for multiple use token
      */
     @Deprecated
-    public void createToken(final Card card, final String amount, final boolean isMultipleUse, final TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, amount, true, isMultipleUse, tokenCallback);
+    public void createToken(final Card card, final String amount, String onBehalfOf, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+        createSingleOrMultipleUseToken(card, amount, onBehalfOf, true, isMultipleUse, tokenCallback);
     }
 
-    private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
+    private void createSingleOrMultipleUseToken(final Card card, final String amount, String onBehalfOf, final boolean shouldAuthenticate, final boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
                 mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_card_number)).getErrorMessage());
