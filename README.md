@@ -57,7 +57,7 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
 
-xendit.createSingleUseToken(card, 75000, true, "USER-ID", new TokenCallback() {
+xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -71,7 +71,7 @@ xendit.createSingleUseToken(card, 75000, true, "USER-ID", new TokenCallback() {
 });
 ```
 
-`createSingleUseToken` accept 4 parameters: `Card` object, amount, an optional `shouldAuthenticate` boolean, and a `TokenCallback`. `shouldAuthenticate` will be set to true if you don't pass this value.
+`createSingleUseToken` accept 5 parameters: `Card` object, amount, optional `shouldAuthenticate` (boolean), optional `onBehalfOf` (string), and a `TokenCallback`. `shouldAuthenticate` will be set to true and `onBehalfOf` will be set to empty if you omit these parameters.
 
 ### Creating a multiple-use token
 ```
@@ -91,12 +91,12 @@ xendit.createMultipleUseToken(card, new TokenCallback() {
 });
 ```
 
-### Creating a 3ds authentication
+### Creating a 3DS authentication
 ```
 String tokenId = "sample-token-id";
 int amount = 50000;
 
-xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
+xendit.createAuthentication(tokenId, amount, "user-id", new AuthenticationCallback() {
     @Override
     public void onSuccess(Authentication authentication) {
         // Handle successful authentication
@@ -109,6 +109,8 @@ xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
     }
 });
 ```
+
+`createAuthentication` accept 4 parameters: tokenId, amount, optional `onBehalfOf` (string), and an `AuthenticationCallback`. `onBehalfOf` will be set to empty if you omit it, but is required when you passed it during `createSingleUseToken`.
 
 ## Creating a charge
 When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
