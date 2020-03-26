@@ -30,6 +30,7 @@ import java.util.Calendar;
 public class CreateTokenActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+    public static final String onBehalfOf = "";
 
     private EditText cardNumberEditText;
     private EditText expMonthEditText;
@@ -119,11 +120,11 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         };
 
         if (isMultipleUse) {
-            xendit.createMultipleUseToken(card, callback);
+            xendit.createMultipleUseToken(card, onBehalfOf, callback);
         } else {
             int amount = Integer.parseInt(amountEditText.getText().toString());
 
-            xendit.createSingleUseToken(card, amount, shouldAuthenticate, callback);
+            xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, callback);
         }
     }
 
