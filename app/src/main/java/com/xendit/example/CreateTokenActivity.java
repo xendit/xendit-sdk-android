@@ -122,8 +122,9 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             xendit.createMultipleUseToken(card, callback);
         } else {
             int amount = Integer.parseInt(amountEditText.getText().toString());
-
-            xendit.createSingleUseToken(card, amount, shouldAuthenticate, callback);
+            Staring onBehalfOf = onBehalfOf.getText().toString();
+            
+            xendit.createSingleUseToken(card, amount, onBehalfOf, shouldAuthenticate, callback);
         }
     }
 

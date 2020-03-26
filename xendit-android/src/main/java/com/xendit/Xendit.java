@@ -73,7 +73,6 @@ public class Xendit {
     private String publishableKey;
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
-    private String onBehalfOf = "";
     
     public static Logger mLogger;
     public Xendit(final Context context, String publishableKey) {
@@ -202,7 +201,7 @@ public class Xendit {
      * @param tokenCallback The callback that will be called when the token creation completes or
      *                      fails
      */
-    public void createSingleUseToken(final Card card, final int amount, final TokenCallback tokenCallback) {
+    public void createSingleUseToken(final Card card, final int amount, final String onBehalfOf, final TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, true, false, tokenCallback);
@@ -219,7 +218,7 @@ public class Xendit {
      * @param tokenCallback The callback that will be called when the token creation completes or
      *                      fails
      */
-    public void createSingleUseToken(final Card card, final int amount, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
+    public void createSingleUseToken(final Card card, final int amount, final String onBehalfOf, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
         createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, false, tokenCallback);
@@ -273,7 +272,7 @@ public class Xendit {
                 return;
             }
 
-            createCreditCardToken(card, amount, shouldAuthenticate, isMultipleUse, tokenCallback);
+            createCreditCardToken(card, amount, onBehalfOf, shouldAuthenticate, isMultipleUse, tokenCallback);
         }
     }
 
@@ -376,13 +375,13 @@ public class Xendit {
      * @deprecated Not for public use.
      */
     @Deprecated
-    public void createCreditCardToken(Card card, String amount, boolean isMultipleUse, final TokenCallback tokenCallback) {
+    public void createCreditCardToken(Card card, String amount, String onBehalfOf, boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (!isCvnValid(card.getCreditCardCVN())) {
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
         }
 
-        _createToken(card, amount, true, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+        _createToken(card, amount, onBehalfOf, true, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
@@ -423,8 +422,8 @@ public class Xendit {
         }));
     }
 
-    public void createCreditCardToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        _createToken(card, amount, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+    public void createCreditCardToken(Card card, String amount, String onBehalfOf, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
+        _createToken(card, amount, onBehalfOf, shouldAuthenticate, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
                 Tracker tracker = getTracker(context);
@@ -470,7 +469,7 @@ public class Xendit {
         });
     }
 
-    private void _createToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
+    private void _createToken(Card card, String amount, onBehalfOf, boolean shouldAuthenticate, boolean isMultipleUse, NetworkHandler<Authentication> handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
 
