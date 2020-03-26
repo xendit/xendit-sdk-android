@@ -68,12 +68,13 @@ public class Xendit {
     private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
     private static final String CLIENT_IDENTIFIER = "Xendit Android SDK";
     static final String ACTION_KEY = "ACTION_KEY";
-
+    
     private Context context;
     private String publishableKey;
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
-
+    private String onBehalfOf = "";
+    
     public static Logger mLogger;
     public Xendit(final Context context, String publishableKey) {
         this.context = context;
@@ -482,6 +483,7 @@ public class Xendit {
         BaseRequest request = new BaseRequest<>(Request.Method.POST, CREATE_CREDIT_CARD_TOKEN_URL, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addHeader("x-client-identifier", CLIENT_IDENTIFIER);
+        request.addHeader("for-user-id", onBehalfOf);
         request.addParam("is_single_use", String.valueOf(!isMultipleUse));
         request.addParam("should_authenticate", String.valueOf(shouldAuthenticate));
         request.addJsonParam("card_data", cardData);
