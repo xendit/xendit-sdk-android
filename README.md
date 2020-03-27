@@ -70,14 +70,13 @@ xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
     }
 });
 ```
-
 `createSingleUseToken` accept 5 parameters: `Card` object, amount, optional `shouldAuthenticate` (boolean), optional `onBehalfOf` (string), and a `TokenCallback`. `shouldAuthenticate` will be set to true and `onBehalfOf` will be set to empty if you omit these parameters.
 
 ### Creating a multiple-use token
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
 
-xendit.createMultipleUseToken(card, new TokenCallback() {
+xendit.createMultipleUseToken(card, "user-id", new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -90,6 +89,7 @@ xendit.createMultipleUseToken(card, new TokenCallback() {
     }
 });
 ```
+`createMultipleUseToken` accept 3 parameters: `Card` object, optional `onBehalfOf` (string), and a `TokenCallback`. `onBehalfOf` will be set to empty if you omit this parameter.
 
 ### Creating a 3DS authentication
 ```
@@ -110,7 +110,7 @@ xendit.createAuthentication(tokenId, amount, "user-id", new AuthenticationCallba
 });
 ```
 
-`createAuthentication` accept 4 parameters: tokenId, amount, optional `onBehalfOf` (string), and an `AuthenticationCallback`. `onBehalfOf` will be set to empty if you omit it, but is required when you passed it during `createSingleUseToken`.
+`createAuthentication` accept 4 parameters: tokenId, amount, optional `onBehalfOf` (string), and an `AuthenticationCallback`. `onBehalfOf` will be set to empty if you omit it, but is required when you passed it during `createSingleUseToken` or `createMultipleUseToken`.
 
 ## Creating a charge
 When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
