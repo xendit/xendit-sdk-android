@@ -2,6 +2,7 @@ package com.xendit;
 
 import android.Manifest;
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
@@ -16,14 +17,13 @@ import com.xendit.utils.PermissionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 @SmallTest
 public class DeviceInfoTest {
 
-    private Context appContext = getTargetContext();
+    private Context appContext = InstrumentationRegistry.getTargetContext();
 
     @Test
     public void test_getDeviceInfo() {
