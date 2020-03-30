@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '2.2.0'
+version '2.3.0'
 
 ext {
     bintrayOrg = 'xendit'

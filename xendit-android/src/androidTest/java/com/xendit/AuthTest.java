@@ -5,9 +5,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.xendit.AuthenticationCallback;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
+import com.xendit.TokenCallback;
+import com.xendit.Xendit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

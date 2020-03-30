@@ -9,6 +9,8 @@ import android.support.test.runner.AndroidJUnit4;
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
+import com.xendit.TokenCallback;
+import com.xendit.Xendit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +26,7 @@ import static org.junit.Assert.fail;
 public class TokenTest {
 
     private Xendit xendit;
+    private String onBehalfOf = "";
     @Before
     public void setup() {
         String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
@@ -51,7 +54,7 @@ public class TokenTest {
             }
         };
 
-        xendit.createSingleUseToken(card, 400, false, callback);
+        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
     }
 
     @Test
@@ -70,7 +73,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createSingleUseToken(card, 400, true, callback);
+        xendit.createSingleUseToken(card, 400, true, onBehalfOf, callback);
     }
 
 
@@ -90,7 +93,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createMultipleUseToken(card, callback);
+        xendit.createMultipleUseToken(card, onBehalfOf, callback);
     }
 
     @Test
@@ -108,7 +111,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createCreditCardToken(card, "123456789", false, false, callback);
+        xendit.createCreditCardToken(card, "123456789", false, onBehalfOf, false, callback);
     }
 
     @Test
@@ -126,7 +129,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createCreditCardToken(card, "123456789", false, true, callback);
+        xendit.createCreditCardToken(card, "123456789", false, onBehalfOf, true, callback);
     }
 
 
@@ -146,7 +149,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createSingleUseToken(card, 450, callback);
+        xendit.createSingleUseToken(card, 450, onBehalfOf, callback);
     }
 
     @Test
@@ -168,7 +171,7 @@ public class TokenTest {
             }
         };
 
-        xendit.createSingleUseToken(card, 400, false, callback);
+        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
     }
 
     @Test
@@ -190,7 +193,7 @@ public class TokenTest {
             }
         };
 
-        xendit.createSingleUseToken(card, 400, false, callback);
+        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
     }
 
     @Test
@@ -212,7 +215,7 @@ public class TokenTest {
             }
         };
 
-        xendit.createSingleUseToken(card, 400, false, callback);
+        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
     }
 
     @Test
@@ -234,6 +237,6 @@ public class TokenTest {
             }
         };
 
-        xendit.createSingleUseToken(card, 400, false, callback);
+        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
     }
 }
