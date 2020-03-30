@@ -12,17 +12,16 @@ Slack Mentions: `@troops-tpi`
 ## Requirements
 The Xendit SDK is compatible with Android 2.3.3 and above.
 
-## How to try example
+## Example
 Visit and try the `app` module to see an example of how the SDK works.
 
 1. [Install android studio.](https://developer.android.com/studio/install)
 2. [Clone repository.](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
-3. [Get your own API Key.](https://dashboard.xendit.co/settings/security)
-4. Change line with your own API Key.
+3. [Get your Public Key.](https://dashboard.xendit.co/settings/developers#api-keys)
+4. Search for PUBLISHABLE_KEY and replace the content with your Public Key from Step 3.
 ```
-PUBLISHABLE_KEY="xnd_public_development_YOURAPIKEY"
+PUBLISHABLE_KEY="xnd_public_development_XXX"
 ```
-*Replace YOURAPIKEY with your own API Key.
 
 ## Installation
 Maven:
@@ -58,7 +57,7 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
 
-xendit.createSingleUseToken(card, 75000, true, new TokenCallback() {
+xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -71,14 +70,13 @@ xendit.createSingleUseToken(card, 75000, true, new TokenCallback() {
     }
 });
 ```
-
-`createSingleUseToken` accept 4 parameters: `Card` object, amount, an optional `shouldAuthenticate` boolean, and a `TokenCallback`. `shouldAuthenticate` will be set to true if you don't pass this value.
+`createSingleUseToken` accept 5 parameters: `Card` object, amount, optional `shouldAuthenticate` (boolean), optional `onBehalfOf` (string), and a `TokenCallback`. `shouldAuthenticate` will be set to true and `onBehalfOf` will be set to empty if you omit these parameters.
 
 ### Creating a multiple-use token
 ```
 Card card = new Card("4000000000000002", "12", "2017", "123");
 
-xendit.createMultipleUseToken(card, new TokenCallback() {
+xendit.createMultipleUseToken(card, "user-id", new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -91,13 +89,14 @@ xendit.createMultipleUseToken(card, new TokenCallback() {
     }
 });
 ```
+`createMultipleUseToken` accept 3 parameters: `Card` object, optional `onBehalfOf` (string), and a `TokenCallback`. `onBehalfOf` will be set to empty if you omit this parameter.
 
-### Creating a 3ds authentication
+### Creating a 3DS authentication
 ```
 String tokenId = "sample-token-id";
 int amount = 50000;
 
-xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
+xendit.createAuthentication(tokenId, amount, "user-id", new AuthenticationCallback() {
     @Override
     public void onSuccess(Authentication authentication) {
         // Handle successful authentication
@@ -110,6 +109,8 @@ xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
     }
 });
 ```
+
+`createAuthentication` accept 4 parameters: tokenId, amount, optional `onBehalfOf` (string), and an `AuthenticationCallback`. `onBehalfOf` will be set to empty if you omit it, but is required when you passed it during `createSingleUseToken` or `createMultipleUseToken`.
 
 ## Creating a charge
 When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
