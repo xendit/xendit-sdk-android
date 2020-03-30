@@ -28,7 +28,8 @@ public class XenditError {
     public XenditError(NetworkError networkError) {
         try {
             this.errorCode =  networkError.errorResponse.getString("error_code");
-            this.errorMessage = networkError.errorResponse.getString("message");
+
+            this.errorMessage = networkError.errorResponse.getString("message").replace("for-user-id", "onBehalfOf");
         } catch (Exception e) {
             if (networkError.errorResponse == null) {
                 this.errorCode = "NETWORK_ERROR";
