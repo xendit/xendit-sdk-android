@@ -29,14 +29,14 @@ Maven:
 <dependency>
   <groupId>com.xendit</groupId>
   <artifactId>xendit-android</artifactId>
-  <version>2.2.0</version>
+  <version>2.3.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 Gradle:
 ```
-compile 'com.xendit:xendit-android:2.2.0'
+compile 'com.xendit:xendit-android:2.3.0'
 ```
 
 Ivy:
