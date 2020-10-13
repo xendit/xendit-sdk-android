@@ -15,7 +15,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.xendit.Models.Card;
+import com.xendit.Models.CardMetadata;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
@@ -46,6 +48,24 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     private boolean shouldAuthenticate;
 
     private static String tokenId;
+
+    private class TokenizationResponse {
+        private String id;
+        private String authentication_id;
+        private String status;
+        private String masked_card_number;
+        private boolean should_3ds;
+        private CardMetadata metadata;
+
+        public TokenizationResponse(Token token) {
+            id = token.getId();
+            authentication_id = token.getAuthenticationId();
+            status = token.getStatus();
+            masked_card_number = token.getMaskedCardNumber();
+            should_3ds = token.getShould_3DS();
+            metadata = token.getMetadata();
+        }
+    }
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, CreateTokenActivity.class);
@@ -107,7 +127,10 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(Token token) {
                 progressBar.setVisibility(View.GONE);
                 setTokenId(token.getId());
-                resultTextView.setText("{ \"id\": \"" + token.getId() + "\", \"authentication_id\": \"" + token.getAuthenticationId() + "\", \"status\": \"" + token.getStatus() + "\", \"masked_card_number\": \"" + token.getMaskedCardNumber() + "\", \"should_3ds\": \"" + token.getShould_3DS() + "\"}");
+                Gson gson = new Gson();
+                TokenizationResponse tokenizationResponse = new TokenizationResponse(token);
+                String json = gson.toJson(tokenizationResponse);
+                resultTextView.setText(json);
                 Toast.makeText(CreateTokenActivity.this, "Status: " + token.getStatus(), Toast.LENGTH_SHORT).show();
             }
 

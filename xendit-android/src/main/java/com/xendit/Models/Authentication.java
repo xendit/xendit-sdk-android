@@ -27,6 +27,9 @@ public class Authentication implements Parcelable {
     @SerializedName("masked_card_number")
     private String maskedCardNumber;
 
+    @SerializedName("metadata")
+    private CardMetadata metadata;
+
     private Authentication(Parcel in) {
         id = in.readString();
         status = in.readString();
@@ -61,6 +64,8 @@ public class Authentication implements Parcelable {
     public String getAuthenticationId() { return authentication_id; }
 
     public String getMaskedCardNumber() { return maskedCardNumber; }
+
+    public CardMetadata getMetadata() { return metadata; }
 
     @Override
     public int describeContents() {

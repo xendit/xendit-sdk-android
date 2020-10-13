@@ -149,7 +149,7 @@ public class TokenTest {
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createSingleUseToken(card, 450, onBehalfOf, callback);
+        xendit.createSingleUseToken(card, 450, true, onBehalfOf, callback);
     }
 
     @Test
