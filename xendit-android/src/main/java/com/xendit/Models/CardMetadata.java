@@ -22,7 +22,7 @@ public class CardMetadata {
         return bank;
     }
 
-    public String getCountry_code() {
+    public String getCountryCode() {
         return country_code;
     }
 
@@ -34,7 +34,7 @@ public class CardMetadata {
         return brand;
     }
 
-    public String getCard_art_url() {
+    public String getCardArtUrl() {
         return card_art_url;
     }
 }
