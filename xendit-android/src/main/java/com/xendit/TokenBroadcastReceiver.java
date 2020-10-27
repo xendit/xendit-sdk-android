@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.google.gson.Gson;
 import com.xendit.Logger.Logger;
-import com.xendit.Models.Authentication;
+import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
@@ -38,14 +38,14 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
                 tokenCallback.onError(new XenditError("TOKENIZATION_ERROR", context.getString(R.string.tokenization_error)));
             } else {
                 Gson gson = new Gson();
-                Authentication authentication = gson.fromJson(message, Authentication.class);
+                AuthenticatedToken authentication = gson.fromJson(message, AuthenticatedToken.class);
                 if (authentication.getStatus().equals("VERIFIED")) {
                     tokenCallback.onSuccess(new Token(authentication));
                 } else {
                     try {
                         JSONObject errorJson = new JSONObject(message);
                         String errorMessage = errorJson.getString("failure_reason");
-                        tokenCallback.onError(new XenditError(errorMessage, authentication));
+                        tokenCallback.onError(new XenditError(errorMessage));
                     } catch (JSONException e) {
                         mLogger.log(Logger.Level.ERROR, e.getMessage());
                         e.printStackTrace();

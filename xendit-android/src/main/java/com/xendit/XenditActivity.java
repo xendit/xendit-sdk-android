@@ -7,12 +7,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import com.xendit.Models.Authentication;
+import com.xendit.Models.HasAuthenticationUrl;
 
 /**
  * Created by Sergey on 3/23/17.
@@ -25,7 +26,7 @@ public class XenditActivity extends Activity {
 
     private ProgressBar progressBar;
 
-    public static Intent getLaunchIntent(Context context, Authentication authentication) {
+    public static Intent getLaunchIntent(Context context, HasAuthenticationUrl authentication) {
         Intent intent = new Intent(context, XenditActivity.class);
         intent.setClass(context, XenditActivity.class);
         intent.setAction(XenditActivity.class.getName());
@@ -41,9 +42,15 @@ public class XenditActivity extends Activity {
 
         setContentView(R.layout.activity_xendit);
 
-        Authentication authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
+        HasAuthenticationUrl authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
         WebView webView = findViewById(R.id.webView_XenditActivity);
         progressBar = findViewById(R.id.progressBar_XenditActivity);
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        } else {
+            CookieManager.getInstance().setAcceptCookie(true);
+        }
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());

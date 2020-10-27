@@ -8,7 +8,7 @@ import com.xendit.Models.XenditError;
  */
 
 public abstract class AuthenticationCallback {
-    public abstract void onSuccess(Authentication token);
+    public abstract void onSuccess(Authentication authentication);
 
     public abstract void onError(XenditError error);
 }
