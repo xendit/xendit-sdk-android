@@ -16,8 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.xendit.Models.Address;
+import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
 import com.xendit.Models.CardMetadata;
+import com.xendit.Models.Customer;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
@@ -122,6 +125,17 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
                 expYearEditText.getText().toString(),
                 cvnEditText.getText().toString());
 
+        Customer customer = new Customer();
+        customer.setEmail("test@xendit.co");
+        customer.setGivenNames("tester");
+
+        BillingDetails billingDetails = new BillingDetails();
+        billingDetails.setGivenNames("tester");
+        Address billingAddress = new Address();
+        billingAddress.setCountry("ID");
+        billingAddress.setPostalCode("123123");
+        billingDetails.setAddress(billingAddress);
+
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
@@ -147,7 +161,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         } else {
             int amount = Integer.parseInt(amountEditText.getText().toString());
 
-            xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, callback);
+            xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, callback);
         }
     }
 

@@ -46,6 +46,14 @@ public class Authentication implements HasAuthenticationUrl {
         authenticationTransactionId = in.readString();
     }
 
+    public Authentication(Token token) {
+        id = token.getAuthenticationId();
+        creditCardTokenId = token.getId();
+        status = token.getStatus();
+        maskedCardNumber = token.getMaskedCardNumber();
+        metadata = token.getMetadata();
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
