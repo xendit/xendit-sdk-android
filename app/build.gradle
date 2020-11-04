@@ -39,7 +39,7 @@ repositories {
     maven {
         url "https://cardinalcommerce.bintray.com/android"
         credentials {
-            username ''
+            username 'nigel@cardinalcommerce'
             password ''
         }
     }
