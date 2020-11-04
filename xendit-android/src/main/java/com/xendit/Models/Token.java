@@ -12,6 +12,7 @@ public class Token {
     private Authentication authentication;
     private String masked_card_number;
     private Boolean should_3ds;
+    private CardMetadata metadata;
 
     public Token(Authentication authentication) {
         this.id = authentication.getId();
@@ -19,6 +20,7 @@ public class Token {
         this.authentication_id = authentication.getAuthenticationId();
         this.authentication = authentication;
         this.masked_card_number = authentication.getMaskedCardNumber();
+        this.metadata = authentication.getMetadata();
         this.should_3ds = true;
     }
 
@@ -29,6 +31,7 @@ public class Token {
         this.authentication = authentication;
         this.masked_card_number = authentication.getMaskedCardNumber();
         this.should_3ds = rec.getShould_3DS();
+        this.metadata = authentication.getMetadata();
     }
 
     public String getId() {
@@ -44,6 +47,8 @@ public class Token {
     public String getMaskedCardNumber() { return masked_card_number; }
 
     public Boolean getShould_3DS() { return should_3ds; }
+
+    public CardMetadata getMetadata() { return metadata; }
 
     @Deprecated
     public Authentication getAuthentication() {
