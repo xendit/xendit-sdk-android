@@ -1,28 +1,28 @@
 package com.xendit.Models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by Sergey on 3/22/17.
+ * Response object for unbundled authentication flows
  */
+public class Authentication implements HasAuthenticationUrl {
 
-public class Authentication implements Parcelable {
-
+    /**
+     * Authentication ID
+     */
     @SerializedName("id")
     private String id;
 
-    @SerializedName("status")
-    private String status;
-
-    @SerializedName("authentication_id")
-    private String authentication_id;
+    @SerializedName("credit_card_token_id")
+    private String creditCardTokenId;
 
     @SerializedName("payer_authentication_url")
     private String payerAuthenticationUrl;
+
+    @SerializedName("status")
+    private String status;
 
     @SerializedName("masked_card_number")
     private String maskedCardNumber;
@@ -30,11 +30,44 @@ public class Authentication implements Parcelable {
     @SerializedName("metadata")
     private CardMetadata metadata;
 
-    private Authentication(Parcel in) {
+    @SerializedName("pa_req")
+    private String requestPayload;
+
+    @SerializedName("authentication_transaction_id")
+    private String authenticationTransactionId;
+
+    protected Authentication(Parcel in) {
         id = in.readString();
-        status = in.readString();
+        creditCardTokenId = in.readString();
         payerAuthenticationUrl = in.readString();
+        status = in.readString();
         maskedCardNumber = in.readString();
+        requestPayload = in.readString();
+        authenticationTransactionId = in.readString();
+    }
+
+    public Authentication(Token token) {
+        id = token.getAuthenticationId();
+        creditCardTokenId = token.getId();
+        status = token.getStatus();
+        maskedCardNumber = token.getMaskedCardNumber();
+        metadata = token.getMetadata();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(creditCardTokenId);
+        dest.writeString(payerAuthenticationUrl);
+        dest.writeString(status);
+        dest.writeString(maskedCardNumber);
+        dest.writeString(requestPayload);
+        dest.writeString(authenticationTransactionId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Authentication> CREATOR = new Creator<Authentication>() {
@@ -53,36 +86,32 @@ public class Authentication implements Parcelable {
         return id;
     }
 
+    public String getCreditCardTokenId() {
+        return creditCardTokenId;
+    }
+
     public String getStatus() {
         return status;
     }
 
+    public String getMaskedCardNumber() {
+        return maskedCardNumber;
+    }
+
+    public CardMetadata getMetadata() {
+        return metadata;
+    }
+
+    public String getRequestPayload() {
+        return requestPayload;
+    }
+
+    public String getAuthenticationTransactionId() {
+        return authenticationTransactionId;
+    }
+
+    @Override
     public String getPayerAuthenticationUrl() {
         return payerAuthenticationUrl;
-    }
-
-    public String getAuthenticationId() { return authentication_id; }
-
-    public String getMaskedCardNumber() { return maskedCardNumber; }
-
-    public CardMetadata getMetadata() { return metadata; }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(id);
-        parcel.writeString(status);
-        parcel.writeString(payerAuthenticationUrl);
-        parcel.writeString(maskedCardNumber);
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "{"+this.id+","+this.status+"}";
     }
 }

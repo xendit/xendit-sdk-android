@@ -9,12 +9,12 @@ public class Token {
     private String id;
     private String status;
     private String authentication_id;
-    private Authentication authentication;
+    private AuthenticatedToken authentication;
     private String masked_card_number;
     private Boolean should_3ds;
     private CardMetadata metadata;
 
-    public Token(Authentication authentication) {
+    public Token(AuthenticatedToken authentication) {
         this.id = authentication.getId();
         this.status = authentication.getStatus();
         this.authentication_id = authentication.getAuthenticationId();
@@ -24,7 +24,7 @@ public class Token {
         this.should_3ds = true;
     }
 
-    public Token(Authentication authentication, ThreeDSRecommendation rec) {
+    public Token(AuthenticatedToken authentication, ThreeDSRecommendation rec) {
         this.id = authentication.getId();
         this.status = authentication.getStatus();
         this.authentication_id = authentication.getAuthenticationId();
@@ -32,6 +32,24 @@ public class Token {
         this.masked_card_number = authentication.getMaskedCardNumber();
         this.should_3ds = rec.getShould_3DS();
         this.metadata = authentication.getMetadata();
+    }
+
+    public Token(Authentication authenticatedToken) {
+        this.id = authenticatedToken.getCreditCardTokenId();
+        this.authentication_id = authenticatedToken.getId();
+        this.status = authenticatedToken.getStatus();
+        this.should_3ds = true;
+        this.masked_card_number = authenticatedToken.getMaskedCardNumber();
+        this.metadata = authenticatedToken.getMetadata();
+    }
+
+    public Token(Authentication authenticatedToken, String tokenId) {
+        this.id = tokenId;
+        this.authentication_id = authenticatedToken.getId();
+        this.status = authenticatedToken.getStatus();
+        this.should_3ds = true;
+        this.masked_card_number = authenticatedToken.getMaskedCardNumber();
+        this.metadata = authenticatedToken.getMetadata();
     }
 
     public String getId() {
@@ -51,7 +69,7 @@ public class Token {
     public CardMetadata getMetadata() { return metadata; }
 
     @Deprecated
-    public Authentication getAuthentication() {
+    public AuthenticatedToken getAuthentication() {
         return authentication;
     }
 }

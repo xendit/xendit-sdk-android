@@ -15,11 +15,11 @@ android {
     productFlavors {
         product{
             dimension "api"
-            minSdkVersion 16
+            minSdkVersion 21
         }
-        minApi18 {
+        minApi21 {
             dimension "api"
-            minSdkVersion 18
+            minSdkVersion 21
         }
     }
 
@@ -31,6 +31,16 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    maven {
+        url "https://cardinalcommerce.bintray.com/android"
+        credentials {
+            username ''
+            password ''
         }
     }
 }
