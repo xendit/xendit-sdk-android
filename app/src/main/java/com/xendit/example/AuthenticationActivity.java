@@ -65,7 +65,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View view) {
 
-        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY);
+        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY, this);
 
         String tokenId = tokenIdEditText.getText().toString();
         int amount = Integer.parseInt(amountEditText.getText().toString());
