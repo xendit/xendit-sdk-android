@@ -12,6 +12,8 @@ Slack Mentions: `@troops-tpi`
 ## Requirements
 The Xendit SDK is compatible with Android 2.3.3 and above.
 
+NOTE: For version 3.0.0 onwards, only Android 5.0 (SDK 28) and above is supported.
+
 ## Example
 Visit and try the `app` module to see an example of how the SDK works.
 
@@ -47,6 +49,20 @@ Ivy:
 ```
 
 For more information, visit https://bintray.com/xendit/android/xendit-sdk-android
+
+Note: For version 3.0.0 and above, you will need to include cardinal commerce repository credentials to download libraries required for EMV 3DS. Please contact customer support to activate EMV 3DS for your account and we will provide the credentials.
+
+```
+repositories {
+    maven {
+        url "https://cardinalcommerce.bintray.com/android"
+        credentials {
+            username 'xxxx'
+            password 'xxxx'
+        }
+    }
+}
+```
 
 ### Initializing Xendit
 ```
