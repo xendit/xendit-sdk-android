@@ -79,7 +79,7 @@ import static com.xendit.Tracker.SnowplowTrackerBuilder.getTracker;
 public class Xendit {
 
     private static final String TAG = "Xendit";
-    private static final String PRODUCTION_XENDIT_BASE_URL = "https://api-integration.xendit.co";
+    private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
@@ -935,7 +935,9 @@ public class Xendit {
         BaseRequest request = this.buildBaseRequest(Request.Method.POST, url, Jwt.class, new DefaultResponseHandler(handler));
         request.addParam("amount", amount);
         request.addParam("currency", currency);
-        request.addParam("customer", gsonMapper.toJson(customer));
+        if (customer != null) {
+            request.addParam("customer", gsonMapper.toJson(customer));
+        }
 
         sendRequest(request, handler);
     }
