@@ -752,7 +752,7 @@ public class Xendit {
         NetworkHandler handler = new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication responseObject) {
-                if (responseObject.getAuthenticationTransactionId() == null) {
+                if (responseObject.getAuthenticationTransactionId() == null || responseObject.getStatus().equalsIgnoreCase("VERIFIED") || responseObject.getStatus().equalsIgnoreCase("FAILED")) {
                     // Fallback to 3DS1 flow
                     handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
                 } else {
@@ -812,12 +812,12 @@ public class Xendit {
     }
 
     private void handleAuthenticatedToken(String tokenId, Authentication authenticatedToken, TokenCallback tokenCallback) {
-        if (!authenticatedToken.getStatus().equalsIgnoreCase("VERIFIED")) {
-            registerBroadcastReceiverAuthenticatedToken(tokenCallback);
-            context.startActivity(XenditActivity.getLaunchIntent(context, authenticatedToken));
-        } else {
+        if (authenticatedToken.getStatus().equalsIgnoreCase("VERIFIED") || authenticatedToken.getStatus().equalsIgnoreCase("FAILED")) {
             Token token = new Token(authenticatedToken, tokenId);
             tokenCallback.onSuccess(token);
+        } else {
+            registerBroadcastReceiverAuthenticatedToken(tokenCallback);
+            context.startActivity(XenditActivity.getLaunchIntent(context, authenticatedToken));
         }
     }
 
