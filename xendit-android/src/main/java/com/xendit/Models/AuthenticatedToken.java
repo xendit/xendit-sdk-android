@@ -34,6 +34,9 @@ public class AuthenticatedToken implements HasAuthenticationUrl {
     @SerializedName("metadata")
     private CardMetadata metadata;
 
+    @SerializedName("card_info")
+    private CardInfo card_info;
+
     @SerializedName("jwt")
     private String jwt;
 
@@ -79,6 +82,8 @@ public class AuthenticatedToken implements HasAuthenticationUrl {
     public String getMaskedCardNumber() { return maskedCardNumber; }
 
     public CardMetadata getMetadata() { return metadata; }
+
+    public CardInfo getCardInfo() { return card_info; }
 
     public String getJwt() {
         return jwt;

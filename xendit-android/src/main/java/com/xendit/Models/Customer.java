@@ -44,6 +44,9 @@ public class Customer {
     @SerializedName("metadata")
     private Map<String, String> metadata;
 
+    @SerializedName("card_info")
+    private Map<String, String> card_info;
+
     @SerializedName("addresses")
     private Address[] addresses;
 
@@ -131,10 +134,18 @@ public class Customer {
         return metadata;
     }
 
+    public Map<String, String> getCardInfo() {
+        return card_info;
+    }
+
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
     }
 
+    public void setCardInfo(Map<String, String> card_info) {
+        this.card_info = card_info;
+    }
+    
     public Address[] getAddresses() {
         return addresses;
     }

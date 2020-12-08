@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.xendit.Models.Address;
 import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
+import com.xendit.Models.CardInfo;
 import com.xendit.Models.CardMetadata;
 import com.xendit.Models.Customer;
 import com.xendit.Models.Token;
@@ -59,6 +60,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         private String masked_card_number;
         private boolean should_3ds;
         private CardMetadata metadata;
+        private CardInfo card_info;
 
         public TokenizationResponse(Token token) {
             id = token.getId();
@@ -67,6 +69,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             masked_card_number = token.getMaskedCardNumber();
             should_3ds = token.getShould_3DS();
             metadata = token.getMetadata();
+            card_info = token.getCardInfo();
         }
     }
 
