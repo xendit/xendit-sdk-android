@@ -40,3 +40,7 @@
 # Gson
 -keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.stream.** { *; }
+
+# Cardinal commerce
+-keep class com.cardinalcommerce.dependencies.internal.bouncycastle.**
+-keep class com.cardinalcommerce.dependencies.internal.nimbusds.**

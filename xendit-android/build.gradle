@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '3.0.0-alpha'
+version '3.0.0-alpha2'
 
 ext {
     bintrayOrg = 'xendit'
@@ -108,7 +108,7 @@ dependencies {
     api 'com.snowplowanalytics:snowplow-android-tracker:0.8.0'
 
     // cardinal commerce
-    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
 }
 
 publishing {
