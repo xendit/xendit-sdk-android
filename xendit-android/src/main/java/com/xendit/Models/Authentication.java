@@ -27,9 +27,6 @@ public class Authentication implements HasAuthenticationUrl {
     @SerializedName("masked_card_number")
     private String maskedCardNumber;
 
-    @SerializedName("metadata")
-    private CardMetadata metadata;
-
     @SerializedName("card_info")
     private CardInfo card_info;
 
@@ -54,7 +51,6 @@ public class Authentication implements HasAuthenticationUrl {
         creditCardTokenId = token.getId();
         status = token.getStatus();
         maskedCardNumber = token.getMaskedCardNumber();
-        metadata = token.getMetadata();
         card_info = token.getCardInfo();
     }
 
@@ -100,10 +96,6 @@ public class Authentication implements HasAuthenticationUrl {
 
     public String getMaskedCardNumber() {
         return maskedCardNumber;
-    }
-
-    public CardMetadata getMetadata() {
-        return metadata;
     }
 
     public CardInfo getCardInfo() {

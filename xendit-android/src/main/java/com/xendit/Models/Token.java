@@ -12,7 +12,6 @@ public class Token {
     private AuthenticatedToken authentication;
     private String masked_card_number;
     private Boolean should_3ds;
-    private CardMetadata metadata;
     private CardInfo card_info;
 
     public Token(AuthenticatedToken authentication) {
@@ -21,7 +20,6 @@ public class Token {
         this.authentication_id = authentication.getAuthenticationId();
         this.authentication = authentication;
         this.masked_card_number = authentication.getMaskedCardNumber();
-        this.metadata = authentication.getMetadata();
         this.card_info = authentication.getCardInfo();
         this.should_3ds = true;
     }
@@ -33,7 +31,6 @@ public class Token {
         this.authentication = authentication;
         this.masked_card_number = authentication.getMaskedCardNumber();
         this.should_3ds = rec.getShould_3DS();
-        this.metadata = authentication.getMetadata();
         this.card_info = authentication.getCardInfo();
     }
 
@@ -43,7 +40,6 @@ public class Token {
         this.status = authenticatedToken.getStatus();
         this.should_3ds = true;
         this.masked_card_number = authenticatedToken.getMaskedCardNumber();
-        this.metadata = authenticatedToken.getMetadata();
         this.card_info = authenticatedToken.getCardInfo();
     }
 
@@ -53,7 +49,6 @@ public class Token {
         this.status = authenticatedToken.getStatus();
         this.should_3ds = true;
         this.masked_card_number = authenticatedToken.getMaskedCardNumber();
-        this.metadata = authenticatedToken.getMetadata();
         this.card_info = authenticatedToken.getCardInfo();
     }
 
@@ -70,8 +65,6 @@ public class Token {
     public String getMaskedCardNumber() { return masked_card_number; }
 
     public Boolean getShould_3DS() { return should_3ds; }
-
-    public CardMetadata getMetadata() { return metadata; }
 
     public CardInfo getCardInfo() { return card_info; }
 

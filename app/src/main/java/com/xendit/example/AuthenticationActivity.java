@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import com.xendit.AuthenticationCallback;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.CardInfo;
-import com.xendit.Models.CardMetadata;
 import com.xendit.Models.XenditError;
 import com.xendit.Xendit;
 
@@ -38,7 +37,6 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         private String credit_card_token_id;
         private String status;
         private String masked_card_number;
-        private CardMetadata metadata;
         private CardInfo card_info;
 
         public AuthenticationResponse(Authentication authentication) {
@@ -46,7 +44,6 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
             credit_card_token_id = authentication.getCreditCardTokenId();
             status = authentication.getStatus();
             masked_card_number = authentication.getMaskedCardNumber();
-            metadata = authentication.getMetadata();
             card_info = authentication.getCardInfo();
         }
     }

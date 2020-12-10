@@ -41,9 +41,6 @@ public class Customer {
     @SerializedName("date_of_birth")
     private String dateOfBirth; // e.g. 1990-04-13
 
-    @SerializedName("metadata")
-    private Map<String, String> metadata;
-
     @SerializedName("card_info")
     private Map<String, String> card_info;
 
@@ -130,16 +127,8 @@ public class Customer {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
     public Map<String, String> getCardInfo() {
         return card_info;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
     }
 
     public void setCardInfo(Map<String, String> card_info) {
