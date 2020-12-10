@@ -6,8 +6,8 @@ public class CardInfo {
     @SerializedName("bank")
     private String bank;
 
-    @SerializedName("country_code")
-    private String country_code;
+    @SerializedName("country")
+    private String country;
 
     @SerializedName("type")
     private String type;
@@ -22,8 +22,8 @@ public class CardInfo {
         return bank;
     }
 
-    public String getCountryCode() {
-        return country_code;
+    public String getCountry() {
+        return country;
     }
 
     public String getType() {
