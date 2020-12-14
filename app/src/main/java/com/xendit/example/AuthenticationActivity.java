@@ -13,8 +13,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.xendit.AuthenticationCallback;
 import com.xendit.Models.Authentication;
+import com.xendit.Models.CardInfo;
 import com.xendit.Models.XenditError;
 import com.xendit.Xendit;
 
@@ -29,6 +31,22 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private EditText cardCvnEditText;
     private Button authenticateBtn;
     private TextView resultTextView;
+
+    private class AuthenticationResponse {
+        private String id;
+        private String credit_card_token_id;
+        private String status;
+        private String masked_card_number;
+        private CardInfo card_info;
+
+        public AuthenticationResponse(Authentication authentication) {
+            id = authentication.getId();
+            credit_card_token_id = authentication.getCreditCardTokenId();
+            status = authentication.getStatus();
+            masked_card_number = authentication.getMaskedCardNumber();
+            card_info = authentication.getCardInfo();
+        }
+    }
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, AuthenticationActivity.class);
@@ -73,7 +91,10 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         xendit.createAuthentication(tokenId, amount, new AuthenticationCallback() {
             @Override
             public void onSuccess(Authentication authentication) {
-                resultTextView.setText("{ id: \"" + authentication.getId() + "\", status: \"" + authentication.getStatus() + "\" }");
+                Gson gson = new Gson();
+                AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
+                String json = gson.toJson(authenticationResponse);
+                resultTextView.setText(json);
                 Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
             }
 

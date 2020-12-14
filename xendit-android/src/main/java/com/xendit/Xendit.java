@@ -891,7 +891,7 @@ public class Xendit {
     private BaseRequest buildBaseRequest(int method, String url, Type type, DefaultResponseHandler handler) {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
-        BaseRequest request = new BaseRequest<>(Request.Method.POST, url, type, handler);
+        BaseRequest request = new BaseRequest<>(method, url, type, handler);
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addHeader("x-client-identifier", CLIENT_IDENTIFIER);
         request.addHeader("client-version", CLIENT_API_VERSION);
