@@ -752,9 +752,13 @@ public class Xendit {
         NetworkHandler handler = new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication responseObject) {
-                if (responseObject.getAuthenticationTransactionId() == null || responseObject.getStatus().equalsIgnoreCase("VERIFIED") || responseObject.getStatus().equalsIgnoreCase("FAILED")) {
-                    // Fallback to 3DS1 flow
+                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED")) {
+                    // Authentication completed
                     handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
+                }
+                else if (responseObject.getAuthenticationTransactionId() == null || responseObject.getRequestPayload() == null) {
+                    // Fallback to 3DS1 flow
+                    _createAuthenticationToken(tokenId, amount, tokenCallback);
                 } else {
                     final String transactionId = responseObject.getAuthenticationTransactionId();
                     final String reqPayload = responseObject.getRequestPayload();
@@ -783,7 +787,8 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                tokenCallback.onError(new XenditError(error));
+                // Fallback to 3DS1 flow
+                _createAuthenticationToken(tokenId, amount, tokenCallback);
             }
         });
 
