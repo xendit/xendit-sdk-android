@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 3.0.0-beta (2020-12-16)
+
+Features:
+
+- Tokenization and authentication returns card details such as issuing bank, card type, card scheme (brand) and card art.
+- Support EMV 3DS (3DS 2.0)
+
 ## 2.3.0 (2020-03-30)
 
 Features:
