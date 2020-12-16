@@ -756,7 +756,10 @@ public class Xendit {
                     // Authentication completed
                     handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
                 }
-                else if (responseObject.getAuthenticationTransactionId() == null || responseObject.getRequestPayload() == null) {
+                else if (
+                        responseObject.getStatus().equalsIgnoreCase("FAILED") ||
+                        responseObject.getAuthenticationTransactionId() == null ||
+                        responseObject.getRequestPayload() == null) {
                     // Fallback to 3DS1 flow
                     _createAuthenticationToken(tokenId, amount, tokenCallback);
                 } else {
