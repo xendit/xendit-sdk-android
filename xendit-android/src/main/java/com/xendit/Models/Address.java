@@ -6,23 +6,23 @@ public class Address {
     @SerializedName("country")
     private String country;
 
-    @SerializedName("street_line_1")
+    @SerializedName("street_line1")
     private String streetLine1;
 
-    @SerializedName("street_line_2")
+    @SerializedName("street_line2")
     private String streetLine2;
 
     @SerializedName("city")
     private String city;
 
-    @SerializedName("province")
-    private String province;
-
-    @SerializedName("state")
-    private String state;
+    @SerializedName("province_state")
+    private String provinceState;
 
     @SerializedName("postal_code")
     private String postalCode;
+
+    @SerializedName("category")
+    private String category;
 
     public String getCountry() {
         return country;
@@ -56,20 +56,12 @@ public class Address {
         this.city = city;
     }
 
-    public String getProvince() {
-        return province;
+    public String getProvinceState() {
+        return provinceState;
     }
 
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
+    public void setProvinceState(String provinceState) {
+        this.provinceState = provinceState;
     }
 
     public String getPostalCode() {
@@ -78,5 +70,13 @@ public class Address {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

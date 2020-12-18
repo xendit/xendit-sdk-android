@@ -362,6 +362,20 @@ public class Xendit {
     }
 
     /**
+     * Creates a multiple-use token. Authentication must be created separately if shouldAuthenticate
+     * is true.
+     *
+     * @param  card A credit card
+     * @param onBehalfOf The onBehalfOf is sub account business id
+     * @param billingDetails Billing details of the card
+     * @param tokenCallback The callback that will be called when the token creation completes or
+     *                      fails
+     */
+    public void createMultipleUseToken(final Card card, final String onBehalfOf, BillingDetails billingDetails, Customer customer, final TokenCallback tokenCallback) {
+        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, billingDetails, customer, tokenCallback);
+    }
+
+    /**
      * @deprecated As of v.2.0.0.
      * Replaced by {@link #createSingleUseToken(Card, int, boolean, TokenCallback)} for single use token
      * and {@link #createMultipleUseToken(Card, TokenCallback)} for multiple use token

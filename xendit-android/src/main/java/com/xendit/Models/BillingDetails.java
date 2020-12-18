@@ -6,9 +6,6 @@ public class BillingDetails {
     @SerializedName("given_names")
     private String givenNames;
 
-    @SerializedName("middle_name")
-    private String middleName;
-
     @SerializedName("surname")
     private String surname;
 
@@ -30,14 +27,6 @@ public class BillingDetails {
 
     public void setGivenNames(String givenNames) {
         this.givenNames = givenNames;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
     }
 
     public String getSurname() {

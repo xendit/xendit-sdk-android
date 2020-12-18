@@ -125,17 +125,37 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
                 expYearEditText.getText().toString(),
                 cvnEditText.getText().toString());
 
-        Customer customer = new Customer();
-        customer.setEmail("test@xendit.co");
-        customer.setGivenNames("tester");
-
-        BillingDetails billingDetails = new BillingDetails();
-        billingDetails.setGivenNames("tester");
         Address billingAddress = new Address();
         billingAddress.setCountry("ID");
+        billingAddress.setStreetLine1("Panglima Polim IV");
+        billingAddress.setStreetLine2("Ruko Grand Panglima Polim, Blok E");
+        billingAddress.setCity("Jakarta Selatan");
+        billingAddress.setProvinceState("DKI Jakarta");
+        billingAddress.setCategory("WORK");
         billingAddress.setPostalCode("123123");
+
+        BillingDetails billingDetails = new BillingDetails();
+        billingDetails.setMobileNumber("+6208123123123");
+        billingDetails.setEmail("john@xendit.co");
+        billingDetails.setGivenNames("John");
+        billingDetails.setSurname("Hudson");
+        billingDetails.setPhoneNumber("+6208123123123");
         billingDetails.setAddress(billingAddress);
 
+        Address shippingAddress = billingAddress;
+        Address[] customerAddress = { shippingAddress };
+
+        Customer customer = new Customer();
+        customer.setMobileNumber("+6208123123123");
+        customer.setEmail("john@xendit.co");
+        customer.setGivenNames("John");
+        customer.setSurname("Hudson");
+        customer.setPhoneNumber("+6208123123123");
+        customer.setNationality("ID");
+        customer.setDateOfBirth("1990-04-13");
+        customer.setDescription("test user");
+        customer.setAddresses(customerAddress);
+        
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
@@ -157,7 +177,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         };
 
         if (isMultipleUse) {
-            xendit.createMultipleUseToken(card, onBehalfOf, callback);
+            xendit.createMultipleUseToken(card, onBehalfOf, billingDetails, customer, callback);
         } else {
             int amount = Integer.parseInt(amountEditText.getText().toString());
 
