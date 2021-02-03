@@ -125,5 +125,5 @@ publishing {
 
 tasks.withType(Javadoc).all { enabled = false }
 
-apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/xendit/JCenter/master/bintrayv1.gradle'
+apply from: 'https://raw.githubusercontent.com/xendit/xendit-sdk-android/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/xendit/xendit-sdk-android/master/bintrayv1.gradle'
