@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 3.0.0 (2021-02-17)
+
+Features:
+
+- Support multiple currencies for tokenization and authentication
+
+Fixes:
+
+- Updated snowplow to 1.4.2
+
 ## 3.0.0-beta (2020-12-16)
 
 Features:
