@@ -93,7 +93,7 @@ dependencies {
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
     // snowplow
-    api 'com.snowplowanalytics:snowplow-android-tracker:0.8.0'
+    api 'com.snowplowanalytics:snowplow-android-tracker:1.4.2'
 }
 
 publishing {
