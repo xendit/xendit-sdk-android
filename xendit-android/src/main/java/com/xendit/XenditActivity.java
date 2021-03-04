@@ -43,6 +43,7 @@ public class XenditActivity extends Activity {
         setContentView(R.layout.activity_xendit);
 
         HasAuthenticationUrl authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
+
         WebView webView = findViewById(R.id.webView_XenditActivity);
         progressBar = findViewById(R.id.progressBar_XenditActivity);
 
