@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -42,9 +43,15 @@ public class XenditActivity extends Activity {
         setContentView(R.layout.activity_xendit);
 
         Authentication authentication = getIntent().getParcelableExtra(AUTHENTICATION_KEY);
+
         WebView webView = findViewById(R.id.webView_XenditActivity);
         progressBar = findViewById(R.id.progressBar_XenditActivity);
 
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        } else {
+            CookieManager.getInstance().setAcceptCookie(true);
+        }
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
