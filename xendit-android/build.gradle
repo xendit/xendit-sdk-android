@@ -105,10 +105,11 @@ dependencies {
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
     // snowplow
-    api 'com.snowplowanalytics:snowplow-android-tracker:1.4.2'
+    api 'com.snowplowanalytics:snowplow-android-tracker:1.7.1'
 
     // cardinal commerce
     api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+
 }
 
 publishing {
