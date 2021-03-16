@@ -130,3 +130,15 @@ xendit.createAuthentication(tokenId, amount, "user-id", new AuthenticationCallba
 
 ## Creating a charge
 When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
+
+
+## Compability with ProGuard
+
+You will need to add the following to your proguard rules file (`proguard-rules.pro`). Else, proguard might affect deserialization of the authentication response body.
+```
+# xendit
+-keep public class com.xendit.** { public *;}
+-keep class com.xendit.Models.** { *; }
+-keepattributes *Annotation*
+-keepattributes LocalVariableTable,LocalVariableTypeTable
+```
