@@ -18,6 +18,9 @@ public class CardInfo {
     @SerializedName("card_art_url")
     private String card_art_url;
 
+    @SerializedName("fingerprint")
+    private String fingerprint;
+
     public String getBank() {
         return bank;
     }
@@ -37,4 +40,6 @@ public class CardInfo {
     public String getCardArtUrl() {
         return card_art_url;
     }
+
+    public String getFingerprint() { return fingerprint; }
 }
