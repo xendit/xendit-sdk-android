@@ -23,6 +23,8 @@ public class CardValidator {
         VISA_ELECTRON("VISA_ELECTRON", "033"),
         DANKORT("DANKORT", "034"),
         MAESTRO("MAESTRO", "042"),
+        UNIONPAY("UNIONPAY", "062"),
+        DINER("DINER", "005"),
         OTHER("OTHER", null);
 
         private String cardName;
@@ -56,13 +58,11 @@ public class CardValidator {
         }
 
         String cleanCardNumber = cleanCardNumber(cardNumber);
-        CardType cardType = getCardType(cleanCardNumber);
 
         return cleanCardNumber.length() >= 12 &&
                 cleanCardNumber.length() <= 19 &&
                 isNumeric(cleanCardNumber) &&
-                isValidLuhnNumber(cleanCardNumber) &&
-                cardType != null && !cardType.equals(CardType.OTHER);
+                isValidLuhnNumber(cleanCardNumber);
     }
 
     /**
@@ -177,6 +177,10 @@ public class CardValidator {
         } else if (isCardDankort(cleanCardNumber)) {
             return CardType.DANKORT;
         } else if (isCardMaestro(cleanCardNumber)) {
+            return CardType.MAESTRO;
+        } else if (isCardDiner(cleanCardNumber)) {
+            return CardType.MAESTRO;
+        } else if (isCardUnionPay(cleanCardNumber)) {
             return CardType.MAESTRO;
         } else {
             return CardType.OTHER;
@@ -307,6 +311,23 @@ public class CardValidator {
                 || cardNumber.indexOf("4844") == 0
                 || cardNumber.indexOf("4913") == 0
                 || cardNumber.indexOf("4917") == 0);
+    }
+
+    // Validate Card for type Diner
+    private static boolean isCardDiner(String cardNumber) {
+        return cardNumber != null && (cardNumber.indexOf("36") == 0
+                || cardNumber.indexOf("309") == 0
+                || cardNumber.indexOf("300") == 0
+                || cardNumber.indexOf("301") == 0
+                || cardNumber.indexOf("302") == 0
+                || cardNumber.indexOf("303") == 0
+                || cardNumber.indexOf("304") == 0
+                || cardNumber.indexOf("305") == 0);
+    }
+
+    // Validate Card for type UnionPay
+    private static boolean isCardUnionPay(String cardNumber) {
+        return cardNumber != null && (cardNumber.indexOf("62") == 0);
     }
 
     private static int number(String sNumber) {
