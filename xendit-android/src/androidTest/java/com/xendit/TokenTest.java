@@ -3,14 +3,12 @@ package com.xendit;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
-import com.xendit.TokenCallback;
-import com.xendit.Xendit;
 
 import org.junit.Before;
 import org.junit.Test;
