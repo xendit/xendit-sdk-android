@@ -225,4 +225,5 @@ nexusStaging {
     username = ossrhUser
     password = ossrhPassword
     repositoryDescription = 'Closed and released using gradle script'
+    packageGroup = publishedGroupId
 }
