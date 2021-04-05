@@ -4,4 +4,5 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true" />
+    <meta-data android:name="io.sentry.dsn" android:value="https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922" />
 </manifest>

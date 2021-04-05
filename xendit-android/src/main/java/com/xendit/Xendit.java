@@ -61,14 +61,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import io.sentry.Sentry;
-import io.sentry.SentryClient;
-import io.sentry.android.AndroidSentryClientFactory;
-import io.sentry.event.Event;
-import io.sentry.event.helper.ShouldSendEventCallback;
-import io.sentry.event.interfaces.ExceptionInterface;
-import io.sentry.event.interfaces.SentryException;
-import io.sentry.event.interfaces.SentryInterface;
-import io.sentry.event.interfaces.SentryStackTraceElement;
+import io.sentry.SentryEvent;
+import io.sentry.SentryOptions;
+import io.sentry.android.core.SentryAndroid;
+import io.sentry.android.core.SentryAndroidOptions;
+import io.sentry.protocol.SentryException;
+import io.sentry.protocol.SentryStackFrame;
+import io.sentry.protocol.SentryStackTrace;
 
 import static com.xendit.Tracker.SnowplowTrackerBuilder.getTracker;
 
@@ -115,9 +114,26 @@ public class Xendit {
 
         // init sentry
         // Use the Sentry DSN (client key) from the Project Settings page on Sentry
-        Sentry.init(DNS_SERVER, new AndroidSentryClientFactory(context));
-        // filter out exceptions
-        shouldSendException();
+        SentryAndroid.init(context, new Sentry.OptionsConfiguration<SentryAndroidOptions>() {
+            @Override
+            public void configure(SentryAndroidOptions sentryAndroidOptions) {
+                sentryAndroidOptions.setBeforeSend(new SentryOptions.BeforeSendCallback() {
+                    @Override
+                    public SentryEvent execute(SentryEvent event, Object o) {
+                        // decide whether to send the event
+                        for (SentryException sentryException : event.getExceptions()) {
+                            SentryStackTrace stackTrace = sentryException.getStacktrace();
+                            for (SentryStackFrame frame : stackTrace.getFrames()) {
+                                if (frame.getContextLine().contains("com.xendit")) {
+                                    return event;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                });
+            }
+        });
 
         //get device info
         new Thread(new Runnable() {
@@ -965,37 +981,6 @@ public class Xendit {
         request.addHeader("client-version", CLIENT_API_VERSION);
         request.addHeader("client-type", CLIENT_TYPE);
         return request;
-    }
-
-
-    /**
-     * Method that will filter that only exception that are generated with our library
-     * are sent to sentry
-     */
-    private void shouldSendException() {
-        SentryClient client = Sentry.getStoredClient();
-
-        client.addShouldSendEventCallback(new ShouldSendEventCallback() {
-            @Override
-            public boolean shouldSend(Event event) {
-                // decide whether to send the event
-                for (Map.Entry<String, SentryInterface> interfaceEntry : event.getSentryInterfaces().entrySet()) {
-                    if (interfaceEntry.getValue() instanceof ExceptionInterface) {
-                        ExceptionInterface i = (ExceptionInterface) interfaceEntry.getValue();
-                        for (SentryException sentryException : i.getExceptions()) {
-                            for (SentryStackTraceElement element : sentryException.getStackTraceInterface().getStackTrace()) {
-                                if (element.getModule().contains("com.xendit")) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // send event
-                return true;
-            }
-        });
     }
 
     private void _createJWT(String tokenId, String amount, String currency, Customer customer, NetworkHandler<Jwt> handler) {

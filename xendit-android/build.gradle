@@ -78,7 +78,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
 
     // sentry
-    api 'io.sentry:sentry-android:1.7.10'
+    api 'io.sentry:sentry-android:4.3.0'
 
     // this dependency is not required if you are already using your own
     // slf4j implementation
