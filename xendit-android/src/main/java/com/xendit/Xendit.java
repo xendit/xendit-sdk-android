@@ -124,7 +124,7 @@ public class Xendit {
                         for (SentryException sentryException : event.getExceptions()) {
                             SentryStackTrace stackTrace = sentryException.getStacktrace();
                             for (SentryStackFrame frame : stackTrace.getFrames()) {
-                                if (frame.getContextLine().contains("com.xendit")) {
+                                if (frame.getModule().contains("com.xendit")) {
                                     return event;
                                 }
                             }
@@ -132,6 +132,7 @@ public class Xendit {
                         return null;
                     }
                 });
+                sentryAndroidOptions.setDsn(DNS_SERVER);
             }
         });
 

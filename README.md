@@ -62,6 +62,10 @@ repositories {
         }
     }
 }
+dependencies {
+    ...
+    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+}
 ```
 
 ### Initializing Xendit
