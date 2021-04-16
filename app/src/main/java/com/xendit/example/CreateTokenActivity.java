@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.TokenCallback;
 import com.xendit.Xendit;
+import com.xendit.example.models.TokenizationResponse;
 
 import java.util.Calendar;
 
@@ -53,24 +55,6 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     private boolean shouldAuthenticate;
 
     private static String tokenId;
-
-    private class TokenizationResponse {
-        private String id;
-        private String authentication_id;
-        private String status;
-        private String masked_card_number;
-        private boolean should_3ds;
-        private CardInfo card_info;
-
-        public TokenizationResponse(Token token) {
-            id = token.getId();
-            authentication_id = token.getAuthenticationId();
-            status = token.getStatus();
-            masked_card_number = token.getMaskedCardNumber();
-            should_3ds = token.getShould_3DS();
-            card_info = token.getCardInfo();
-        }
-    }
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, CreateTokenActivity.class);
