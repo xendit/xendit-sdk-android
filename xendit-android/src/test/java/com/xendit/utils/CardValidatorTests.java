@@ -94,11 +94,6 @@ public class CardValidatorTests {
     }
 
     @Test
-    public void isCardNumberValid_shouldNotAllowCardOfUnkownType() {
-        assertThat(CardValidator.isCardNumberValid("122000000000003")).isFalse();
-    }
-
-    @Test
     public void isExpiryValid_shouldNotPassNonNumericValues() {
         assertThat(CardValidator.isExpiryValid("A", "2020")).isFalse();
         assertThat(CardValidator.isExpiryValid("12", "B")).isFalse();
