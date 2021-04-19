@@ -20,6 +20,7 @@ import com.xendit.Models.Authentication;
 import com.xendit.Models.CardInfo;
 import com.xendit.Models.XenditError;
 import com.xendit.Xendit;
+import com.xendit.example.models.AuthenticationResponse;
 
 /**
  * Created by Sergey on 4/3/17.
@@ -32,22 +33,6 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private EditText cardCvnEditText;
     private Button authenticateBtn;
     private TextView resultTextView;
-
-    private class AuthenticationResponse {
-        private String id;
-        private String credit_card_token_id;
-        private String status;
-        private String masked_card_number;
-        private CardInfo card_info;
-
-        public AuthenticationResponse(Authentication authentication) {
-            id = authentication.getId();
-            credit_card_token_id = authentication.getCreditCardTokenId();
-            status = authentication.getStatus();
-            masked_card_number = authentication.getMaskedCardNumber();
-            card_info = authentication.getCardInfo();
-        }
-    }
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, AuthenticationActivity.class);
