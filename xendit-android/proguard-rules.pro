@@ -25,8 +25,10 @@
 #-renamesourcefileattribute SourceFile
 
 # xendit
--keep public class com.xendit.** { public *;}
--keep class com.xendit.Models.** { *; }
+-keepclassmembers,allowoptimization public class com.xendit.Models.* {
+    public <methods>;
+    public <fields>;
+}
 -keepattributes *Annotation*
 -keepattributes LocalVariableTable,LocalVariableTypeTable
 
