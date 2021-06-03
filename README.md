@@ -50,7 +50,7 @@ Ivy:
 
 For more information, visit https://bintray.com/xendit/android/xendit-sdk-android
 
-Note: For version 3.0.0 and above, you will need to include cardinal commerce repository credentials to download libraries required for EMV 3DS. Please contact customer support to activate EMV 3DS for your account and we will provide the credentials.
+Note: For version 3.0.0 and above, you will need to include cardinal commerce repository credentials to download libraries required for EMV 3DS. Please configure the crendentials below to download the cardinal commerce SDK.
 
 ```
 repositories {
