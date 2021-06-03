@@ -68,6 +68,12 @@ dependencies {
 }
 ```
 
+### Add XenditActivity in your AndroidManifest
+```
+<activity android:name="com.xendit.XenditActivity"/>
+```
+
+
 ### Initializing Xendit
 ```
 Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==");
