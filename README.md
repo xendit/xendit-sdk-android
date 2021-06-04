@@ -12,7 +12,7 @@ Slack Mentions: `@troops-tpi`
 ## Requirements
 The Xendit SDK is compatible with Android 2.3.3 and above.
 
-NOTE: For version 3.0.0 onwards, only Android 5.0 (SDK 28) and above is supported.
+NOTE: For version 3.0.0 onwards, only Android 5.0 (SDK 21) and above is supported.
 
 ## Example
 Visit and try the `app` module to see an example of how the SDK works.
