@@ -887,7 +887,9 @@ public class Xendit {
     }
 
     private void handle3ds1Tokenization(AuthenticatedToken authentication, TokenCallback tokenCallback) {
-        if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+        if (authentication.getStatus().equalsIgnoreCase("FAILED")) {
+            tokenCallback.onSuccess(new Token(authentication));
+        } else if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
             registerBroadcastReceiver(tokenCallback);
             context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
         } else { //for multi token
