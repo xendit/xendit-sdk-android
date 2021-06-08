@@ -77,6 +77,9 @@ dependencies {
 ### Initializing Xendit
 ```
 Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==");
+
+// If using EMV 3DS (3DS 2.0), please send the activity in the constructor,
+Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==", thisActivity);
 ```
 
 ### Creating a single-use token
