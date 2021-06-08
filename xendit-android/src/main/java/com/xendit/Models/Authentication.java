@@ -36,6 +36,9 @@ public class Authentication implements HasAuthenticationUrl {
     @SerializedName("authentication_transaction_id")
     private String authenticationTransactionId;
 
+    @SerializedName("threeds_version")
+    private String threedsVersion;
+
     protected Authentication(Parcel in) {
         id = in.readString();
         creditCardTokenId = in.readString();
@@ -108,6 +111,10 @@ public class Authentication implements HasAuthenticationUrl {
 
     public String getAuthenticationTransactionId() {
         return authenticationTransactionId;
+    }
+
+    public String getThreedsVersion() {
+        return threedsVersion;
     }
 
     @Override

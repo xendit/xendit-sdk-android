@@ -826,7 +826,7 @@ public class Xendit {
         NetworkHandler handler = new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication responseObject) {
-                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED")) {
+                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED") || !is3ds2Version(responseObject.getThreedsVersion())) {
                     // Authentication completed
                     handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
                 }
