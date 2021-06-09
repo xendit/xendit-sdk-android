@@ -78,7 +78,7 @@ import static com.xendit.Tracker.SnowplowTrackerBuilder.getTracker;
 public class Xendit {
 
     private static final String TAG = "Xendit";
-    private static final String PRODUCTION_XENDIT_BASE_URL = "https://api.xendit.co";
+    private static final String PRODUCTION_XENDIT_BASE_URL = "https://api-staging.xendit.co";
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
@@ -909,7 +909,11 @@ public class Xendit {
     }
 
     private boolean is3ds2Version(String version) {
-        return "2.0".equals(version);
+        if (version != null) {
+            int currentMajorVersion = Integer.parseInt(version.substring(0, 1));
+            return currentMajorVersion >= 2;
+        }
+        return false;
     }
 
     private void create3ds2Authentication(final String tokenId, final String environment, final String jwt, final String amount, final String currency, final TokenCallback tokenCallback) {
