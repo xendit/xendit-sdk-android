@@ -39,6 +39,9 @@ public class Authentication implements HasAuthenticationUrl {
     @SerializedName("threeds_version")
     private String threedsVersion;
 
+    @SerializedName("failure_reason")
+    private String failureReason;
+
     protected Authentication(Parcel in) {
         id = in.readString();
         creditCardTokenId = in.readString();
@@ -47,6 +50,7 @@ public class Authentication implements HasAuthenticationUrl {
         maskedCardNumber = in.readString();
         requestPayload = in.readString();
         authenticationTransactionId = in.readString();
+        failureReason = in.readString();
     }
 
     public Authentication(Token token) {
@@ -55,6 +59,7 @@ public class Authentication implements HasAuthenticationUrl {
         status = token.getStatus();
         maskedCardNumber = token.getMaskedCardNumber();
         card_info = token.getCardInfo();
+        failureReason = token.getFailureReason();
     }
 
     @Override
@@ -66,6 +71,7 @@ public class Authentication implements HasAuthenticationUrl {
         dest.writeString(maskedCardNumber);
         dest.writeString(requestPayload);
         dest.writeString(authenticationTransactionId);
+        dest.writeString(failureReason);
     }
 
     @Override
@@ -115,6 +121,10 @@ public class Authentication implements HasAuthenticationUrl {
 
     public String getThreedsVersion() {
         return threedsVersion;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
     }
 
     @Override

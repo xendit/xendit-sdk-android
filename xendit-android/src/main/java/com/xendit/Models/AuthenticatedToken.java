@@ -44,11 +44,15 @@ public class AuthenticatedToken implements HasAuthenticationUrl {
     @SerializedName("environment")
     private String environment;
 
+    @SerializedName("failure_reason")
+    private String failureReason;
+
     private AuthenticatedToken(Parcel in) {
         id = in.readString();
         status = in.readString();
         payerAuthenticationUrl = in.readString();
         maskedCardNumber = in.readString();
+        failureReason = in.readString();
     }
 
     public static final Creator<AuthenticatedToken> CREATOR = new Creator<AuthenticatedToken>() {
@@ -93,6 +97,10 @@ public class AuthenticatedToken implements HasAuthenticationUrl {
         return environment;
     }
 
+    public String getFailureReason() {
+        return failureReason;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -104,6 +112,7 @@ public class AuthenticatedToken implements HasAuthenticationUrl {
         parcel.writeString(status);
         parcel.writeString(payerAuthenticationUrl);
         parcel.writeString(maskedCardNumber);
+        parcel.writeString(failureReason);
     }
 
     @NonNull

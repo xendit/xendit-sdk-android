@@ -13,6 +13,7 @@ public class TokenizationResponse {
     private String masked_card_number;
     private boolean should_3ds;
     private CardInfo card_info;
+    private String failure_reason;
 
     public TokenizationResponse(Token token) {
         id = token.getId();
@@ -21,5 +22,6 @@ public class TokenizationResponse {
         masked_card_number = token.getMaskedCardNumber();
         should_3ds = token.getShould_3DS();
         card_info = token.getCardInfo();
+        failure_reason = token.getFailureReason();
     }
 }

@@ -12,6 +12,7 @@ public class AuthenticationResponse {
     private String status;
     private String masked_card_number;
     private CardInfo card_info;
+    private String failure_reason;
 
     public AuthenticationResponse(Authentication authentication) {
         id = authentication.getId();
@@ -19,5 +20,6 @@ public class AuthenticationResponse {
         status = authentication.getStatus();
         masked_card_number = authentication.getMaskedCardNumber();
         card_info = authentication.getCardInfo();
+        failure_reason = authentication.getFailureReason();
     }
 }

@@ -827,7 +827,7 @@ public class Xendit {
             @Override
             public void onSuccess(Authentication responseObject) {
                 if (responseObject.getStatus().equalsIgnoreCase("VERIFIED") || !is3ds2Version(responseObject.getThreedsVersion())) {
-                    // Authentication completed
+                    // Authentication completed or 3DS 1.0 transaction
                     handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
                 }
                 else if (

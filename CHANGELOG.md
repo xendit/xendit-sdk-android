@@ -1,6 +1,12 @@
 # CHANGELOG
 
-## 3.2.3 (2021-06-10)
+## 3.3.0 (2021-06-10)
+
+Features:
+
+- Return `failure_reason` for FAILED 3DS
+
+Fixes:
 
 - Improve 3ds handling
 
