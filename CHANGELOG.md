@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.2.3 (2021-06-10)
+
+- Improve 3ds handling
+
 ## 3.0.0 (2021-02-17)
 
 Features:
