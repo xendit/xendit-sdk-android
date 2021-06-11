@@ -13,6 +13,7 @@ public class Token {
     private String masked_card_number;
     private Boolean should_3ds;
     private CardInfo card_info;
+    private String failure_reason;
 
     public Token(AuthenticatedToken authentication) {
         this.id = authentication.getId();
@@ -22,6 +23,7 @@ public class Token {
         this.masked_card_number = authentication.getMaskedCardNumber();
         this.card_info = authentication.getCardInfo();
         this.should_3ds = true;
+        this.failure_reason = authentication.getFailureReason();
     }
 
     public Token(AuthenticatedToken authentication, ThreeDSRecommendation rec) {
@@ -32,6 +34,7 @@ public class Token {
         this.masked_card_number = authentication.getMaskedCardNumber();
         this.should_3ds = rec.getShould_3DS();
         this.card_info = authentication.getCardInfo();
+        this.failure_reason = authentication.getFailureReason();
     }
 
     public Token(Authentication authenticatedToken) {
@@ -41,6 +44,7 @@ public class Token {
         this.should_3ds = true;
         this.masked_card_number = authenticatedToken.getMaskedCardNumber();
         this.card_info = authenticatedToken.getCardInfo();
+        this.failure_reason = authenticatedToken.getFailureReason();
     }
 
     public Token(Authentication authenticatedToken, String tokenId) {
@@ -50,6 +54,7 @@ public class Token {
         this.should_3ds = true;
         this.masked_card_number = authenticatedToken.getMaskedCardNumber();
         this.card_info = authenticatedToken.getCardInfo();
+        this.failure_reason = authenticatedToken.getFailureReason();
     }
 
     public String getId() {
@@ -67,6 +72,8 @@ public class Token {
     public Boolean getShould_3DS() { return should_3ds; }
 
     public CardInfo getCardInfo() { return card_info; }
+
+    public String getFailureReason() { return failure_reason; }
 
     @Deprecated
     public AuthenticatedToken getAuthentication() {

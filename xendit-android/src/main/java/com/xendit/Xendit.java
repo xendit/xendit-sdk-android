@@ -826,8 +826,8 @@ public class Xendit {
         NetworkHandler handler = new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication responseObject) {
-                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED")) {
-                    // Authentication completed
+                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED") || !is3ds2Version(responseObject.getThreedsVersion())) {
+                    // Authentication completed or 3DS 1.0 transaction
                     handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
                 }
                 else if (
@@ -887,7 +887,9 @@ public class Xendit {
     }
 
     private void handle3ds1Tokenization(AuthenticatedToken authentication, TokenCallback tokenCallback) {
-        if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+        if (authentication.getStatus().equalsIgnoreCase("FAILED")) {
+            tokenCallback.onSuccess(new Token(authentication));
+        } else if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
             registerBroadcastReceiver(tokenCallback);
             context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
         } else { //for multi token
@@ -907,7 +909,11 @@ public class Xendit {
     }
 
     private boolean is3ds2Version(String version) {
-        return "2.0".equals(version);
+        if (version != null) {
+            int currentMajorVersion = Integer.parseInt(version.substring(0, 1));
+            return currentMajorVersion >= 2;
+        }
+        return false;
     }
 
     private void create3ds2Authentication(final String tokenId, final String environment, final String jwt, final String amount, final String currency, final TokenCallback tokenCallback) {
