@@ -28,8 +28,8 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.snowplowanalytics.snowplow.tracker.Tracker;
-import com.snowplowanalytics.snowplow.tracker.events.Structured;
+import com.snowplowanalytics.snowplow.controller.TrackerController;
+import com.snowplowanalytics.snowplow.event.Structured;
 import com.xendit.DeviceInfo.AdInfo;
 import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.Logger.Logger;
@@ -159,25 +159,6 @@ public class Xendit {
         mLogger.log(Logger.Level.DEBUG, "Language: " + DeviceInfo.getLanguage());
         mLogger.log(Logger.Level.DEBUG, "IP: " + DeviceInfo.getIPAddress(true));
 
-        // remove location logging
-//        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-//             mLogger.log(Logger.Level.DEBUG, "Access Fine Location permission is not granted");
-//        } else {
-//            GPSLocation gpsLocation = new GPSLocation(context);
-//            DeviceLocation deviceLocation = gpsLocation.getLocation();
-//            if (deviceLocation != null && deviceLocation.getLatitude() != null) {
-//                mLogger.log(Logger.Level.DEBUG, "Latitude: " + deviceLocation.getLatitude());
-//                mLogger.log(Logger.Level.DEBUG, "Longitude: " + deviceLocation.getLongitude());
-//            }
-//            mLogger.log(Logger.Level.DEBUG, "Latitude: " + gpsLocation.getLatitude());
-//            mLogger.log(Logger.Level.DEBUG, "Longitude: " + gpsLocation.getLongitude());
-//            if (gpsLocation.getLac(context) != 0) {
-//                mLogger.log(Logger.Level.DEBUG, "Lac: " + gpsLocation.getLac(context));
-//            }
-//            if (gpsLocation.getCid(context) != 0) {
-//                mLogger.log(Logger.Level.DEBUG, "Cid: " + gpsLocation.getCid(context));
-//            }
-//        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
 
@@ -479,20 +460,20 @@ public class Xendit {
             return;
         }
 
-        if (amount < 0) {
             mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
-
-        final String amountStr = Integer.toString(amount);
-
-        _createJWT(tokenId, amountStr, "IDR", null, new NetworkHandler<Jwt>().setResultListener(new ResultListener<Jwt>() {
             @Override
             public void onSuccess(Jwt jwt) {
-                create3ds2Authentication(tokenId, jwt.getEnvironment(), jwt.getJwt(), amountStr, currency, new TokenCallback() {
                     @Override
                     public void onSuccess(Token token) {
+                        TrackerController tracker = getTracker(context);
+                        tracker.track(Structured.builder()
+                                .category("api-request")
+                                .action("create-authentication-emv-3ds")
+                                .label("Create EMV 3DS")
+                                .build());
                         authenticationCallback.onSuccess(new Authentication(token));
                     }
 
@@ -508,7 +489,7 @@ public class Xendit {
                 _createAuthentication(tokenId, amountStr, currency, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
                     @Override
                     public void onSuccess(Authentication authentication) {
-                        Tracker tracker = getTracker(context);
+                        TrackerController tracker = getTracker(context);
                         tracker.track(Structured.builder()
                                 .category("api-request")
                                 .action("create-authentication")
@@ -624,7 +605,7 @@ public class Xendit {
         _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("get-3ds-recommendation")
@@ -646,8 +627,8 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, "", isMultipleUse, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(AuthenticatedToken authentication) {
-                Tracker tracker = getTracker(context);
-                tracker.track(Structured.builder()
+                    TrackerController tracker = getTracker(context);
+                    tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-token")
                         .label("Create Token")
@@ -675,7 +656,7 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(final AuthenticatedToken authentication) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-token")
@@ -709,7 +690,7 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, billingDetails, customer, currency, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(final AuthenticatedToken authentication) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-token")

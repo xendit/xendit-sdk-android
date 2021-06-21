@@ -23,10 +23,6 @@ android {
             dimension "api"
             minSdkVersion 21
         }
-        minApi21 {
-            dimension "api"
-            minSdkVersion 21
-        }
     }
 
     buildTypes {
