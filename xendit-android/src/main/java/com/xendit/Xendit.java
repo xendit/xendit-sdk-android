@@ -17,8 +17,8 @@ import com.android.volley.toolbox.BaseHttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
-import com.snowplowanalytics.snowplow.tracker.Tracker;
-import com.snowplowanalytics.snowplow.tracker.events.Structured;
+import com.snowplowanalytics.snowplow.controller.TrackerController;
+import com.snowplowanalytics.snowplow.event.Structured;
 import com.xendit.DeviceInfo.AdInfo;
 import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.Logger.Logger;
@@ -334,7 +334,7 @@ public class Xendit {
         _createAuthentication(tokenId, amountStr, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-authentication")
@@ -435,7 +435,7 @@ public class Xendit {
         _get3DSRecommendation(tokenId, new NetworkHandler<ThreeDSRecommendation>().setResultListener(new ResultListener<ThreeDSRecommendation>(){
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("get-3ds-recommendation")
@@ -457,7 +457,7 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, "", isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-token")
@@ -486,7 +486,7 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
-                Tracker tracker = getTracker(context);
+                TrackerController tracker = getTracker(context);
                 tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-token")

@@ -10,7 +10,7 @@ Slack Channel: [#integration-product](https://xendit.slack.com/messages/integrat
 Slack Mentions: `@troops-tpi`
 
 ## Requirements
-The Xendit SDK is compatible with Android 2.3.3 and above.
+The Xendit SDK is compatible with Android 5.0 and above.
 
 ## Example
 Visit and try the `app` module to see an example of how the SDK works.
