@@ -34,7 +34,7 @@ public class SnowplowTrackerBuilder {
                 .emitRange(500)
                 .byteLimitPost(52000);
         TrackerConfiguration trackerConfiguration =
-                new TrackerConfiguration("Xendit Android SDK")
+                new TrackerConfiguration("xendit-android-sdk")
                         .base64encoding(false)
                         .devicePlatform(DevicePlatform.Mobile)
                         .sessionContext(true)
@@ -58,7 +58,7 @@ public class SnowplowTrackerBuilder {
         );
         TrackerController tracker = Snowplow.createTracker(
                 context,
-                "appTracker",
+                "TPI",
                 networkConfig,
                 trackerConfiguration,
                 emitterConfiguration,
