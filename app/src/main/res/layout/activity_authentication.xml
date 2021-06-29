@@ -28,9 +28,9 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:hint="Amount"
-            android:inputType="number"
+            android:inputType="number|numberDecimal"
             android:textColor="@android:color/black"
-            android:textColorHint="#cccccc"/>
+            android:textColorHint="#cccccc" />
 
         <EditText
             android:id="@+id/cardCvnEditText_AuthenticationActivity"

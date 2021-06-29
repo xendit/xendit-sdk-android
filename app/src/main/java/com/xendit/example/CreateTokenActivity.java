@@ -164,9 +164,8 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         if (isMultipleUse) {
             xendit.createMultipleUseToken(card, onBehalfOf, billingDetails, customer, callback);
         } else {
-            int amount = Integer.parseInt(amountEditText.getText().toString());
-
-            xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, callback);
+            String amount = amountEditText.getText().toString();
+            xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, "IDR", callback);
         }
     }
 
