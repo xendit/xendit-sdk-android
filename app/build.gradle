@@ -21,11 +21,7 @@ android {
     productFlavors {
         product{
             dimension "api"
-            minSdkVersion 16
-        }
-        minApi18 {
-            dimension "api"
-            minSdkVersion 18
+            minSdkVersion 21
         }
     }
 
