@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
-import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.XenditError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.xendit.Xendit.mLogger;
 
 /**
  * Created by gonzalez on 7/26/17.
@@ -29,7 +27,6 @@ public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        mLogger.log(Logger.Level.INFO, "AuthenticationBroadcastReceiver onReceive");
         try {
             String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
             if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
@@ -55,7 +52,6 @@ public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
                 }
             }
         } catch (NullPointerException e) {
-            mLogger.log(Logger.Level.ERROR, e.getMessage());
             e.printStackTrace();
             authenticationCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
 

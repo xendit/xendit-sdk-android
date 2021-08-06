@@ -21,7 +21,6 @@ import com.snowplowanalytics.snowplow.controller.TrackerController;
 import com.snowplowanalytics.snowplow.event.Structured;
 import com.xendit.DeviceInfo.AdInfo;
 import com.xendit.DeviceInfo.DeviceInfo;
-import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Card;
 import com.xendit.Models.ThreeDSRecommendation;
@@ -74,14 +73,10 @@ public class Xendit {
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
 
-    public static Logger mLogger;
     public Xendit(final Context context, String publishableKey) {
         this.context = context;
         this.publishableKey = publishableKey;
 
-        // init logdna logger
-        mLogger = new Logger(context, publishableKey);
-        mLogger.log(Logger.Level.DEBUG, "Start debugging");
 
         // init sentry
         // Use the Sentry DSN (client key) from the Project Settings page on Sentry
@@ -95,42 +90,12 @@ public class Xendit {
                 try {
                     AdInfo adInfo = DeviceInfo.getAdvertisingIdInfo(context);
                     String advertisingId = adInfo.getId();
-                    mLogger.log(Logger.Level.DEBUG, "ADID: " + advertisingId);
                 } catch (Exception e) {
-                    mLogger.log(Logger.Level.ERROR, e.getMessage());
                     e.printStackTrace();
                 }
             }
         }).start();
-        mLogger.log(Logger.Level.DEBUG, "OS version: " + DeviceInfo.getOSVersion() + "\n OS API Level: " +
-                 DeviceInfo.getAPILevel() + "\n Device: " + DeviceInfo.getDevice() +
-                "\n Model (and Product): " + DeviceInfo.getModel() + " (" + DeviceInfo.getProduct() + ")"
-        );
-        if (DeviceInfo.getWifiSSID(context).equals("Does not have ACCESS_WIFI_STATE permission")) {
-            mLogger.log(Logger.Level.DEBUG, "SSID: " + DeviceInfo.getWifiSSID(context));
-        }
-        mLogger.log(Logger.Level.DEBUG, "Language: " + DeviceInfo.getLanguage());
-        mLogger.log(Logger.Level.DEBUG, "IP: " + DeviceInfo.getIPAddress(true));
 
-        // remove location logging
-//        if(!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-//             mLogger.log(Logger.Level.DEBUG, "Access Fine Location permission is not granted");
-//        } else {
-//            GPSLocation gpsLocation = new GPSLocation(context);
-//            DeviceLocation deviceLocation = gpsLocation.getLocation();
-//            if (deviceLocation != null && deviceLocation.getLatitude() != null) {
-//                mLogger.log(Logger.Level.DEBUG, "Latitude: " + deviceLocation.getLatitude());
-//                mLogger.log(Logger.Level.DEBUG, "Longitude: " + deviceLocation.getLongitude());
-//            }
-//            mLogger.log(Logger.Level.DEBUG, "Latitude: " + gpsLocation.getLatitude());
-//            mLogger.log(Logger.Level.DEBUG, "Longitude: " + gpsLocation.getLongitude());
-//            if (gpsLocation.getLac(context) != 0) {
-//                mLogger.log(Logger.Level.DEBUG, "Lac: " + gpsLocation.getLac(context));
-//            }
-//            if (gpsLocation.getCid(context) != 0) {
-//                mLogger.log(Logger.Level.DEBUG, "Cid: " + gpsLocation.getCid(context));
-//            }
-//        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
 
@@ -138,11 +103,9 @@ public class Xendit {
             try {
                 stack = new HurlStack(null, new TLSSocketFactory());
             } catch (KeyManagementException e) {
-                mLogger.log(Logger.Level.ERROR, e.getMessage());
                 e.printStackTrace();
                 stack = new HurlStack();
             } catch (NoSuchAlgorithmException e) {
-                mLogger.log(Logger.Level.ERROR, e.getMessage());
                 e.printStackTrace();
                 stack = new HurlStack();
             }
@@ -280,25 +243,21 @@ public class Xendit {
     private void createSingleOrMultipleUseToken(final Card card, final String amount, final boolean shouldAuthenticate, final String onBehalfOf, final boolean isMultipleUse, final TokenCallback tokenCallback) {
         if (card != null && tokenCallback != null) {
             if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
-                mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_card_number)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
                 return;
             }
 
             if (!CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
-                mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_card_expiration)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
-                mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
 
             if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
-                mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)).getErrorMessage());
                 tokenCallback.onError(new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)));
                 return;
             }
@@ -318,13 +277,11 @@ public class Xendit {
      */
     public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
         if (tokenId == null || tokenId.equals("")) {
-            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (amount < 0) {
-            mLogger.log(Logger.Level.ERROR, new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
@@ -351,7 +308,6 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
                 authenticationCallback.onError(new XenditError(error));
             }
         }));
@@ -364,21 +320,18 @@ public class Xendit {
     @Deprecated
     public void createAuthentication(final String tokenId, final String cardCvn, final String amount, final TokenCallback tokenCallback) {
         if (tokenId == null || tokenId.isEmpty()) {
-            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (amount == null || Integer.parseInt(amount) < 0) {
 
-            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_validation)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
 
         if (!isCvnValid(cardCvn)) {
 
-            mLogger.log(Logger.Level.ERROR,  new XenditError(context.getString(R.string.create_token_error_card_cvn)).getErrorMessage());
             tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
             return;
         }
@@ -396,7 +349,6 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
@@ -425,7 +377,6 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR, error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
@@ -447,7 +398,6 @@ public class Xendit {
 
             @Override
             public void onFailure (NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  "3DS Recommendation Error: " + error.responseCode + " " + error.getMessage());
                 callback.onSuccess(new Token(authentication));
             }
         }));
@@ -476,7 +426,6 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  "Tokenization Error: " + error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
@@ -505,7 +454,6 @@ public class Xendit {
 
             @Override
             public void onFailure(NetworkError error) {
-                mLogger.log(Logger.Level.ERROR,  "Tokenization Error: " + error.responseCode + " " + error.getMessage());
                 tokenCallback.onError(new XenditError(error));
             }
         }));
@@ -583,7 +531,6 @@ public class Xendit {
             byte[] keyData = key.getBytes("UTF-8");
             return Base64.encodeToString(keyData, Base64.DEFAULT);
         } catch (UnsupportedEncodingException e) {
-            mLogger.log(Logger.Level.ERROR, e.getCause() + " " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -593,7 +540,6 @@ public class Xendit {
         if (isConnectionAvailable()) {
             requestQueue.add(request);
         } else if (handler != null) {
-            mLogger.log(Logger.Level.ERROR, new ConnectionError().getMessage());
             handler.handleError(new ConnectionError());
         }
     }
@@ -603,7 +549,6 @@ public class Xendit {
             @SuppressLint("MissingPermission") NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         } else {
-            mLogger.log(Logger.Level.ERROR, context.getString(R.string.not_granted_access_network_state));
             return false;
         }
 

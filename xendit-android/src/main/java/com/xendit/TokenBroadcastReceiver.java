@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
-import com.xendit.Logger.Logger;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -13,7 +12,6 @@ import com.xendit.Models.XenditError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.xendit.Xendit.mLogger;
 
 /**
  * Created by Sergey on 3/30/17.
@@ -47,7 +45,6 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
                         String errorMessage = errorJson.getString("failure_reason");
                         tokenCallback.onError(new XenditError(errorMessage, authentication));
                     } catch (JSONException e) {
-                        mLogger.log(Logger.Level.ERROR, e.getMessage());
                         e.printStackTrace();
                         tokenCallback.onError(new XenditError("SERVER_ERROR", context.getString(R.string.tokenization_error)));
                     }
@@ -55,7 +52,6 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
                 }
             }
         } catch (NullPointerException e) {
-            mLogger.log(Logger.Level.ERROR, e.getMessage());
             e.printStackTrace();
             tokenCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
         }
