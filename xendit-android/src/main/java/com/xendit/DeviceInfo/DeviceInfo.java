@@ -16,7 +16,6 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.xendit.Logger.Logger;
 import com.xendit.utils.PermissionUtils;
 
 import java.io.IOException;
