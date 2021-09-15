@@ -55,10 +55,10 @@ Note: For version 3.0.0 and above, you will need to include cardinal commerce re
 ```
 repositories {
     maven {
-        url "https://cardinalcommerce.bintray.com/android"
+        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
         credentials {
-            username 'cards@cardinalcommerce'
-            password 'd2358b841891b65b0610f7d51361c13bf4915350'
+            username 'cybersource_xendit_payfac_cards'
+            password 'AKCp8k7kDxqgxY63sahozmx9h2wLR8QikWwSPnQyZZxy63juWsQJ8PevpWY6s3eREW4rrzTyj'
         }
     }
 }
