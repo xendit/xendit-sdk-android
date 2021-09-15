@@ -1,4 +1,7 @@
 # CHANGELOG
+## 3.4.2 (2021-09-15)
+- Updated Cardinal Commerce Library credentials
+
 
 ## 3.3.0 (2021-06-10)
 
