@@ -73,8 +73,9 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
         String tokenId = tokenIdEditText.getText().toString();
         String amount = amountEditText.getText().toString();
+        String cardCvn = cardCvnEditText.getText().toString();
 
-        xendit.createAuthentication(tokenId, amount, "IDR", new AuthenticationCallback() {
+        xendit.createAuthentication(tokenId, amount, "IDR", cardCvn,new AuthenticationCallback() {
             @Override
             public void onSuccess(Authentication authentication) {
                 Gson gson = new Gson();
