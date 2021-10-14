@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.XenditError;
 
@@ -53,8 +54,11 @@ public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
-            authenticationCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
+            authenticationCallback.onError(new XenditError("SERVER_ERROR", "Received an empty body. Please try again."));
 
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            authenticationCallback.onError(new XenditError("SERVER_ERROR", "Error parsing response from 3DS. Please try again."));
         }
 
 
