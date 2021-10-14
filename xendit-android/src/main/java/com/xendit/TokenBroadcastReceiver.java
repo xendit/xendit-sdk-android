@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -54,6 +55,9 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
         } catch (NullPointerException e) {
             e.printStackTrace();
             tokenCallback.onError(new XenditError("SERVER_ERROR", e.getMessage()));
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            tokenCallback.onError(new XenditError("SERVER_ERROR", "Error parsing response from 3DS. Please try again."));
         }
 
         context.unregisterReceiver(this);
