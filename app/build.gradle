@@ -53,7 +53,7 @@ dependencies {
 
     // json converter
     implementation 'com.google.code.gson:gson:2.8.9'
-    
+
     // Testing-only dependencies
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+group = 'com.github.yovi-ep'
+
 android {
     compileSdkVersion 31
 
