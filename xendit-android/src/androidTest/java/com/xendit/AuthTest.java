@@ -1,12 +1,12 @@
 package com.xendit;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 
-import com.xendit.Models.AuthenticatedToken;
-import com.xendit.Models.Token;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
+
+import com.xendit.Models.Authentication;
 import com.xendit.Models.XenditError;
 
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class AuthTest {
     public void test_createAuth() {
         AuthenticationCallback callback = new AuthenticationCallback() {
             @Override
-            public void onSuccess(AuthenticatedToken authentication) {
+            public void onSuccess(Authentication authentication) {
             }
 
             @Override
@@ -37,15 +37,18 @@ public class AuthTest {
 
     @Test
     public void test_createAuth_deprecated() {
-        TokenCallback callback = new TokenCallback() {
+        AuthenticationCallback callback = new AuthenticationCallback() {
             @Override
-            public void onSuccess(Token token) {
+            public void onSuccess(Authentication authentication) {
+
             }
 
             @Override
             public void onError(XenditError xenditError) {
             }
         };
-        xendit.createAuthentication("9823104219412", "123", "250", callback);
+
+
+        xendit.createAuthentication("9823104219412", 123, "250", callback);
     }
 }

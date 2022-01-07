@@ -3,7 +3,6 @@ package com.xendit.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +20,6 @@ import com.google.gson.Gson;
 import com.xendit.Models.Address;
 import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
-import com.xendit.Models.CardInfo;
 import com.xendit.Models.Customer;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
