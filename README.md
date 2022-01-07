@@ -155,3 +155,8 @@ You will need to add the following to your proguard rules file (`proguard-rules.
 -keepattributes *Annotation*
 -keepattributes LocalVariableTable,LocalVariableTypeTable
 ```
+
+## Improve
+1. Upgrade dependency
+2. Change cardinal to io.github.airwallex:cardinalmobilesdk
+3. Move to github.io
