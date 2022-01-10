@@ -40,7 +40,6 @@
 -keepattributes EnclosingMethod
 
 # Gson
--keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.stream.** { *; }
 
 # Cardinal commerce
@@ -50,12 +49,6 @@
 
 -keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.asymmetric.**
 
--keep class com.cardinalcommerce.dependencies.internal.bouncycastle.openssl.PEMParser
--keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.symmetric
--keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.asymmetric
--keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.digest
--keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.keystore
--keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.drbg
 -keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.symmetric.util.ClassUtil
 -keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.util.AlgorithmProvider
 -keep class com.cardinalcommerce.dependencies.internal.bouncycastle.jcajce.provider.util.AsymmetricKeyInfoConverter
@@ -113,7 +106,6 @@
 
 -keep class com.cardinalcommerce.dependencies.internal.nimbusds.jwt.EncryptedJWT
 -keep class com.cardinalcommerce.dependencies.internal.nimbusds.jwt.JWTClaimsSet
--keep class com.cardinalcommerce.dependencies.internal.minidev.asm.FieldFilter
 
 -ignorewarnings
 -keep class com.cardinalcommerce.dependencies.internal.minidev.json.* {
