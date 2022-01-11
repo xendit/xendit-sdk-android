@@ -1,7 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-
-group = 'com.github.yovi-ep'
 
 android {
     compileSdkVersion 31
@@ -12,6 +9,7 @@ android {
         versionName
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -22,11 +20,18 @@ android {
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
+
     productFlavors {
     }
+
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
