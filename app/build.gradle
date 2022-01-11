@@ -1,5 +1,16 @@
 plugins {
     id 'com.android.application'
+    id 'maven-publish'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.github.yovi-ep'
+            artifactId = 'xendit-android'
+            version = '3.7.0'
+        }
+    }
 }
 
 android {
