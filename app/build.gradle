@@ -1,16 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'maven-publish'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = 'com.github.yovi-ep'
-            artifactId = 'xendit-android'
-            version = '3.7.0'
-        }
-    }
 }
 
 android {
@@ -48,8 +37,8 @@ dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     testImplementation 'junit:junit:4.13.2'
     implementation project(':xendit-android')
     implementation 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
