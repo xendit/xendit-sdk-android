@@ -49,8 +49,9 @@ dependencies {
     // this dependency is not required if you are already using your own
     // slf4j implementation
     implementation 'org.slf4j:slf4j-nop:1.7.25'
-    implementation 'androidx.test:runner:1.4.0'
+    implementation 'androidx.test:runner:1.2.0'
 
+    // Testing-only dependenciesorg.jfrog.cardinalcommerce.gradle:cardinalmobilesdk
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.13.2'
     // Optional -- Robolectric environment
@@ -71,6 +72,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3'
 
     // cardinal commerce
+    //implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-4'
     implementation 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
 
 }
