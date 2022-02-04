@@ -3,21 +3,17 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 30
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            consumerProguardFiles 'proguard-rules.pro'
-        }
-        debug {
-            minifyEnabled true
+            minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
