@@ -6,7 +6,7 @@ plugins {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = 'com.github.yovi-ep'
+            groupId = 'com.github.yoviep'
             artifactId = 'xendit-android'
             version = '3.7.0'
         }
