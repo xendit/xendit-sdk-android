@@ -27,6 +27,7 @@ PUBLISHABLE_KEY="xnd_public_development_XXX"
 
 ## Installation
 maven jetpack.io
+
 ```
 repositories {
     mavenCentral()
@@ -36,9 +37,10 @@ repositories {
 }
 dependencies {
     ...
-    implementation 'com.github.yoviep:xendit-sdk-android:3.7.0'
+    implementation 'com.github.yoviep:xendit-sdk-android:tag'
 }
 ```
+Histories: [![](https://jitpack.io/v/yoviep/xendit-sdk-android.svg)](https://jitpack.io/#yoviep/xendit-sdk-android)
 
 ### Initializing Xendit
 ```
