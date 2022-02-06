@@ -36,7 +36,7 @@ repositories {
 }
 dependencies {
     ...
-    implementation 'com.github.yovi-ep:xendit-sdk-android:3.7.0'
+    implementation 'com.github.yoviep:xendit-sdk-android:3.7.0'
 }
 ```
 
