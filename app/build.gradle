@@ -1,16 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'maven-publish'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = 'com.github.yoviep'
-            artifactId = 'xendit-android'
-            version = '3.7.0'
-        }
-    }
 }
 
 android {
@@ -26,8 +15,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
