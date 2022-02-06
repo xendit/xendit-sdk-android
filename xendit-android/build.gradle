@@ -11,17 +11,6 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
-    buildTypes {
-        debug {
-            minifyEnabled true
-            consumerProguardFiles 'proguard-rules.pro'
-        }
-        release {
-            minifyEnabled true
-            consumerProguardFiles 'proguard-rules.pro'
-        }
-    }
-
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
