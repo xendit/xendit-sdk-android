@@ -1,0 +1,25 @@
+openapi: 3.0.1
+info:
+  title: xendit-sdk-android
+  description: xendit-sdk-android
+  x-cortex-git:
+    github:
+      repository: xendit/xendit-sdk-android
+  x-cortex-tag: xendit-sdk-android
+  x-cortex-oncall:
+    pagerduty:
+      id: PGCFM8X
+      type: SERVICE
+  x-cortex-owners:
+  - type: GROUP
+    name: xendit/cards-production
+  - type: SLACK
+    channel: cards-dev
+  x-cortex-dependency: []
+  x-cortex-service-groups:
+  - other
+  x-cortex-link:
+  - url: https://xendit.atlassian.net/wiki/spaces/CA/pages/2162263615/Cards+Handbook
+    name: Issue Handling Handbook
+    type: RUNBOOK
+    description: Handbook for handling common issues in cards
