@@ -59,6 +59,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
+import io.sentry.Scope;
+import io.sentry.ScopeCallback;
 import io.sentry.Sentry;
 import io.sentry.SentryEvent;
 import io.sentry.SentryOptions;
@@ -82,7 +84,10 @@ public class Xendit {
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
     private static final String CREATE_JWT_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens/:token_id/jwt";
-    private static final String DNS_SERVER = "https://182c197ad5c04f878fef7eab1e0cbcd6@sentry.io/262922";
+    /**
+     * TODO : update the DNS_SERVER to be the one for xendit-a
+     */
+    private static final String DNS_SERVER = "https://10f8efb998514c4bbb38f5e9409fa269@o30316.ingest.sentry.io/5385360";
     private static final String CLIENT_IDENTIFIER = "Xendit Android SDK";
     private static final String CLIENT_API_VERSION = "2.0.0";
     private static final String CLIENT_TYPE = "SDK";
@@ -914,7 +919,24 @@ public class Xendit {
              * @param serverJwt        will be an empty
              */
             @Override
-            public void onValidated(ValidateResponse validateResponse, String serverJwt) {
+            public void onValidated(final ValidateResponse validateResponse, String serverJwt) {
+                /**
+                 * Send the error to sentry
+                 */
+                Sentry.configureScope(new ScopeCallback() {
+                    @Override
+                    public void run(Scope scope) {
+                        scope.setExtra("action_code", String.valueOf(validateResponse.getActionCode()));
+                        scope.setExtra("environment", environment);
+                        scope.setExtra("error_description", String.valueOf(validateResponse.getErrorDescription()));
+                        scope.setExtra("error_number", String.valueOf(validateResponse.getErrorNumber()));
+                        scope.setExtra("token_id", tokenId);
+                        scope.setTag("app_name", "xendit-sdk-android");
+                    }
+                });
+                  
+                Sentry.captureException(new Exception("EMV_3DS_ERROR"));
+
                 _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf, tokenCallback);
             }
         });
