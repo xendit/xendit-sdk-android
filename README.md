@@ -3,11 +3,11 @@ The Xendit Android SDK makes it easy to collect sensitive credit card informatio
 
 ## Ownership
 
-Team: [TPI](https://www.draw.io/?state=%7B%22ids%22:%5B%221Vk1zqYgX2YqjJYieQ6qDPh0PhB2yAd0j%22%5D,%22action%22:%22open%22,%22userId%22:%22104938211257040552218%22%7D)
+Team: [Credit Cards Team](https://www.draw.io/?state=%7B%22ids%22:%5B%221Vk1zqYgX2YqjJYieQ6qDPh0PhB2yAd0j%22%5D,%22action%22:%22open%22,%22userId%22:%22104938211257040552218%22%7D)
 
-Slack Channel: [#integration-product](https://xendit.slack.com/messages/integration-product/)
+Slack Channel: [#cards-dev](https://xendit.slack.com/messages/cards-dev)
 
-Slack Mentions: `@troops-tpi`
+Slack Mentions: `@troops-cards`
 
 ## Requirements
 The Xendit SDK is compatible with Android 5.0 and above.
