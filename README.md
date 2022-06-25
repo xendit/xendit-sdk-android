@@ -26,53 +26,21 @@ PUBLISHABLE_KEY="xnd_public_development_XXX"
 ```
 
 ## Installation
-Maven:
-```
-<dependency>
-  <groupId>com.xendit</groupId>
-  <artifactId>xendit-android</artifactId>
-  <version>3.2.2</version>
-  <type>pom</type>
-</dependency>
-```
-
-Gradle:
-```
-compile 'com.xendit:xendit-android:3.2.2'
-```
-
-Ivy:
-```
-<dependency org='com.xendit' name='xendit-android' rev='3.2.2'>
-  <artifact name='xendit-android' ext='pom' ></artifact>
-</dependency>
-```
-
-For more information, visit https://bintray.com/xendit/android/xendit-sdk-android
-
-Note: For version 3.0.0 and above, you will need to include cardinal commerce repository credentials to download libraries required for EMV 3DS. Please configure the crendentials below to download the cardinal commerce SDK.
+maven jetpack.io
 
 ```
 repositories {
+    mavenCentral()
     maven {
-        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
-        credentials {
-            username 'cybersource_xendit_payfac_cards'
-            password 'AKCp8k7kDxqgxY63sahozmx9h2wLR8QikWwSPnQyZZxy63juWsQJ8PevpWY6s3eREW4rrzTyj'
-        }
+      url "https://jitpack.io"
     }
 }
 dependencies {
     ...
-    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+    implementation 'com.github.yoviep:xendit-sdk-android:tag'
 }
 ```
-
-### Add XenditActivity in your AndroidManifest
-```
-<activity android:name="com.xendit.XenditActivity"/>
-```
-
+Histories: [![](https://jitpack.io/v/yoviep/xendit-sdk-android.svg)](https://jitpack.io/#yoviep/xendit-sdk-android)
 
 ### Initializing Xendit
 ```

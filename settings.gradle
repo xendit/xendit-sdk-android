@@ -1,1 +1,2 @@
 include ':app', ':xendit-android'
+rootProject.name ="xendit-sdk-android"

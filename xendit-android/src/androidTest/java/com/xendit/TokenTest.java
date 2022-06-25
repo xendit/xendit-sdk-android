@@ -2,15 +2,14 @@ package com.xendit;
 
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
 
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
-import com.xendit.TokenCallback;
-import com.xendit.Xendit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class TokenTest {
 
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2030",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override

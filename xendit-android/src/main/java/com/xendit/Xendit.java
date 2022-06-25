@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.snowplowanalytics.snowplow.controller.TrackerController;
 import com.snowplowanalytics.snowplow.event.Structured;
-import com.xendit.DeviceInfo.AdInfo;
 import com.xendit.DeviceInfo.DeviceInfo;
 import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Authentication;
@@ -57,13 +56,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
-import io.sentry.Sentry;
-import io.sentry.SentryEvent;
-import io.sentry.SentryOptions;
 import io.sentry.android.core.SentryAndroid;
-import io.sentry.android.core.SentryAndroidOptions;
 import io.sentry.protocol.SentryException;
 import io.sentry.protocol.SentryStackFrame;
 import io.sentry.protocol.SentryStackTrace;
@@ -88,13 +82,13 @@ public class Xendit {
     private static final String CLIENT_TYPE = "SDK";
     static final String ACTION_KEY = "ACTION_KEY";
 
-    private Context context;
-    private String publishableKey;
-    private RequestQueue requestQueue;
-    private ConnectivityManager connectivityManager;
-    private Cardinal cardinal;
+    private final Context context;
+    private final String publishableKey;
+    private final RequestQueue requestQueue;
+    private final ConnectivityManager connectivityManager;
+    private final Cardinal cardinal;
     private Activity activity;
-    private Gson gsonMapper;
+    private final Gson gsonMapper;
 
     public Xendit(final Context context, String publishableKey, Activity activity) {
         this(context, publishableKey);
@@ -108,37 +102,28 @@ public class Xendit {
 
         // init sentry
         // Use the Sentry DSN (client key) from the Project Settings page on Sentry
-        SentryAndroid.init(context, new Sentry.OptionsConfiguration<SentryAndroidOptions>() {
-            @Override
-            public void configure(SentryAndroidOptions sentryAndroidOptions) {
-                sentryAndroidOptions.setBeforeSend(new SentryOptions.BeforeSendCallback() {
-                    @Override
-                    public SentryEvent execute(SentryEvent event, Object o) {
-                        // decide whether to send the event
-                        for (SentryException sentryException : event.getExceptions()) {
-                            SentryStackTrace stackTrace = sentryException.getStacktrace();
-                            for (SentryStackFrame frame : stackTrace.getFrames()) {
-                                if (frame.getModule().contains("com.xendit")) {
-                                    return event;
-                                }
-                            }
+        SentryAndroid.init(context, sentryAndroidOptions -> {
+            sentryAndroidOptions.setBeforeSend((event, o) -> {
+                // decide whether to send the event
+                for (SentryException sentryException : event.getExceptions()) {
+                    SentryStackTrace stackTrace = sentryException.getStacktrace();
+                    for (SentryStackFrame frame : stackTrace.getFrames()) {
+                        if (frame.getModule().contains("com.xendit")) {
+                            return event;
                         }
-                        return null;
                     }
-                });
-                sentryAndroidOptions.setDsn(DNS_SERVER);
-            }
+                }
+                return null;
+            });
+            sentryAndroidOptions.setDsn(DNS_SERVER);
         });
 
         //get device info
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    AdInfo adInfo = DeviceInfo.getAdvertisingIdInfo(context);
-                    String advertisingId = adInfo.getId();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        new Thread(() -> {
+            try {
+                DeviceInfo.getAdvertisingIdInfo(context).getId();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
 
@@ -148,10 +133,7 @@ public class Xendit {
             BaseHttpStack stack;
             try {
                 stack = new HurlStack(null, new TLSSocketFactory());
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-                stack = new HurlStack();
-            } catch (NoSuchAlgorithmException e) {
+            } catch (KeyManagementException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 stack = new HurlStack();
             }
@@ -555,11 +537,11 @@ public class Xendit {
                     @Override
                     public void onSuccess(Token token) {
                         TrackerController tracker = getTracker(context);
-                        tracker.track(Structured.builder()
-                                .category("api-request")
-                                .action("create-authentication-emv-3ds")
-                                .label("Create EMV 3DS")
-                                .build());
+                        Structured structured = new Structured(
+                                "api-request",
+                                "create-authentication-emv-3ds"
+                        ).label("Create EMV 3DS");
+                        tracker.track(structured);
                         authenticationCallback.onSuccess(new Authentication(token));
                     }
 
@@ -576,11 +558,11 @@ public class Xendit {
                     @Override
                     public void onSuccess(Authentication authentication) {
                         TrackerController tracker = getTracker(context);
-                        tracker.track(Structured.builder()
-                                .category("api-request")
-                                .action("create-authentication")
-                                .label("Create Authentication")
-                                .build());
+                        Structured structured = new Structured(
+                                "api-request",
+                                "create-authentication"
+                        ).label("Create Authentication");
+                        tracker.track(structured);
 
                         if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
                             registerBroadcastReceiver(authenticationCallback);
@@ -604,11 +586,11 @@ public class Xendit {
             @Override
             public void onSuccess (ThreeDSRecommendation rec) {
                 TrackerController tracker = getTracker(context);
-                tracker.track(Structured.builder()
-                        .category("api-request")
-                        .action("get-3ds-recommendation")
-                        .label("Get 3DS Recommendation")
-                        .build());
+                Structured structured = new Structured(
+                        "api-request",
+                        "get-3ds-recommendation"
+                ).label("Get 3DS Recommendation");
+                tracker.track(structured);
 
                 callback.onSuccess(new Token(authentication, rec));
             }
@@ -624,12 +606,12 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, "", isMultipleUse, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(AuthenticatedToken authentication) {
-                    TrackerController tracker = getTracker(context);
-                    tracker.track(Structured.builder()
-                        .category("api-request")
-                        .action("create-token")
-                        .label("Create Token")
-                        .build());
+                TrackerController tracker = getTracker(context);
+                Structured structured = new Structured(
+                        "api-request",
+                        "create-token"
+                ).label("Create Token");
+                tracker.track(structured);
 
                 if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) { //single token = automatically attempt 3DS
                     registerBroadcastReceiver(tokenCallback);
@@ -653,11 +635,12 @@ public class Xendit {
             @Override
             public void onSuccess(final AuthenticatedToken authentication) {
                 TrackerController tracker = getTracker(context);
-                tracker.track(Structured.builder()
-                        .category("api-request")
-                        .action("create-token")
-                        .label("Create Token")
-                        .build());
+                Structured structured = new Structured(
+                        "api-request",
+                        "create-token"
+                ).label("Create Token");
+                tracker.track(structured);
+
                 if (is3ds2Version(authentication.getThreedsVersion())) {
                     create3ds2Authentication(authentication.getId(), authentication.getEnvironment(), authentication.getJwt(), amount, null, card.getCreditCardCVN(), onBehalfOf, tokenCallback);
                 } else {
@@ -686,11 +669,12 @@ public class Xendit {
             @Override
             public void onSuccess(final AuthenticatedToken authentication) {
                 TrackerController tracker = getTracker(context);
-                tracker.track(Structured.builder()
-                        .category("api-request")
-                        .action("create-token")
-                        .label("Create Token")
-                        .build());
+                Structured structured = new Structured(
+                        "api-request",
+                        "create-token"
+                ).label("Create Token");
+                tracker.track(structured);
+
                 if (is3ds2Version(authentication.getThreedsVersion())) {
                     create3ds2Authentication(authentication.getId(), authentication.getEnvironment(), authentication.getJwt(), amount, currency, card.getCreditCardCVN(), onBehalfOf, tokenCallback);
                 } else {
@@ -706,30 +690,15 @@ public class Xendit {
     }
 
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                context.registerReceiver(new AuthenticationBroadcastReceiver(authenticationCallback), new IntentFilter(ACTION_KEY));
-            }
-        });
+        new Handler(Looper.getMainLooper()).post(() -> context.registerReceiver(new AuthenticationBroadcastReceiver(authenticationCallback), new IntentFilter(ACTION_KEY)));
     }
 
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                context.registerReceiver(new TokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY));
-            }
-        });
+        new Handler(Looper.getMainLooper()).post(() -> context.registerReceiver(new TokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY)));
     }
 
     private void registerBroadcastReceiverAuthenticatedToken(final TokenCallback tokenCallback) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                context.registerReceiver(new AuthenticatedTokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY));
-            }
-        });
+        new Handler(Looper.getMainLooper()).post(() -> context.registerReceiver(new AuthenticatedTokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY)));
     }
 
     private void _createToken(Card card, String amount, boolean shouldAuthenticate, String onBehalfOf, boolean isMultipleUse, BillingDetails billingDetails, Customer customer, String currency, NetworkHandler<AuthenticatedToken> handler) {
@@ -809,8 +778,8 @@ public class Xendit {
                 }
                 else if (
                         responseObject.getStatus().equalsIgnoreCase("FAILED") ||
-                        responseObject.getAuthenticationTransactionId() == null ||
-                        responseObject.getRequestPayload() == null) {
+                                responseObject.getAuthenticationTransactionId() == null ||
+                                responseObject.getRequestPayload() == null) {
                     // Fallback to 3DS1 flow
                     _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf,tokenCallback);
                 } else {
@@ -945,7 +914,6 @@ public class Xendit {
         } else {
             return false;
         }
-
     }
 
     private boolean getEnvironment() {

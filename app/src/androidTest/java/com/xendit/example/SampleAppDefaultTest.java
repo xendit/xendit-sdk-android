@@ -1,16 +1,7 @@
 package com.xendit.example;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.UiObjectNotFoundException;
-import android.support.test.uiautomator.UiSelector;
-import android.support.test.uiautomator.Until;
+import androidx.test.InstrumentationRegistry;
 import android.widget.Button;
 
 import org.hamcrest.CoreMatchers;
@@ -25,6 +16,16 @@ import java.util.Calendar;
 
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.*;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.Until;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -140,7 +141,7 @@ public class SampleAppDefaultTest {
 
         try {
             JSONObject jsonObject = new JSONObject(resultText.getText());
-            assertEquals(jsonObject.get("should_3ds"), "true");
+            assertEquals(jsonObject.get("should_3ds"), true);
         } catch (JSONException e) {
             e.printStackTrace();
             fail();
