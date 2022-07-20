@@ -96,6 +96,10 @@ public class Xendit {
     private Activity activity;
     private Gson gsonMapper;
 
+    private AuthenticationBroadcastReceiver authenticationBroadcastReceiver;
+    private TokenBroadcastReceiver tokenBroadcastReceiver;
+    private AuthenticatedTokenBroadcastReceiver authenticatedTokenBroadcastReceiver;
+
     public Xendit(final Context context, String publishableKey, Activity activity) {
         this(context, publishableKey);
         this.activity = activity;
@@ -709,7 +713,12 @@ public class Xendit {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                context.registerReceiver(new AuthenticationBroadcastReceiver(authenticationCallback), new IntentFilter(ACTION_KEY));
+                if (authenticationBroadcastReceiver != null) {
+                    context.unregisterReceiver(authenticationBroadcastReceiver);
+                }
+
+                authenticationBroadcastReceiver = new AuthenticationBroadcastReceiver(authenticationCallback);
+                context.registerReceiver(authenticationBroadcastReceiver, new IntentFilter(ACTION_KEY));
             }
         });
     }
@@ -718,7 +727,12 @@ public class Xendit {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                context.registerReceiver(new TokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY));
+                if (tokenBroadcastReceiver != null) {
+                    context.unregisterReceiver(tokenBroadcastReceiver);
+                }
+
+                tokenBroadcastReceiver = new TokenBroadcastReceiver(tokenCallback);
+                context.registerReceiver(tokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
             }
         });
     }
@@ -727,7 +741,12 @@ public class Xendit {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                context.registerReceiver(new AuthenticatedTokenBroadcastReceiver(tokenCallback), new IntentFilter(ACTION_KEY));
+                if (authenticatedTokenBroadcastReceiver != null) {
+                    context.unregisterReceiver(authenticatedTokenBroadcastReceiver);
+                }
+
+                authenticatedTokenBroadcastReceiver = new AuthenticatedTokenBroadcastReceiver(tokenCallback);
+                context.registerReceiver(authenticatedTokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
             }
         });
     }
