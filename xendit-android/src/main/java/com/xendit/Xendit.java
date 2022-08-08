@@ -709,6 +709,20 @@ public class Xendit {
         }));
     }
 
+    public void unregisterAllBroadcastReceiver() {
+        if (authenticationBroadcastReceiver != null) {
+            context.unregisterReceiver(authenticationBroadcastReceiver);
+        }
+
+        if (tokenBroadcastReceiver != null) {
+            context.unregisterReceiver(tokenBroadcastReceiver);
+        }
+
+        if (authenticatedTokenBroadcastReceiver != null) {
+            context.unregisterReceiver(authenticatedTokenBroadcastReceiver);
+        }
+    }
+
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
