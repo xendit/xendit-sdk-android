@@ -57,7 +57,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation project(':xendit-android')
 //    implementation 'com.xendit:xendit-android:3.2.0'
-    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 
     // App's dependencies, including test
     implementation 'androidx.annotation:annotation:1.0.0'

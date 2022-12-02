@@ -106,7 +106,7 @@ dependencies {
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
     // cardinal commerce
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 
 }
 
