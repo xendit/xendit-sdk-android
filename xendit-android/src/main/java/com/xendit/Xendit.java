@@ -240,7 +240,7 @@ public class Xendit {
     public void createSingleUseToken(final Card card, final int amount, final TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
-        createSingleOrMultipleUseToken(card, amountStr, true, "", false, null, null, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, amountStr, true, "", false, null, null, null, null, null, tokenCallback);
     }
 
     /**
@@ -257,7 +257,7 @@ public class Xendit {
     public void createSingleUseToken(final Card card, final int amount, final boolean shouldAuthenticate, final TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
-        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, "", false, null, null, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, "", false, null, null, null, null, null, tokenCallback);
     }
 
     /**
@@ -275,7 +275,7 @@ public class Xendit {
     public void createSingleUseToken(final Card card, final int amount, final boolean shouldAuthenticate, final String onBehalfOf, final TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
-        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, onBehalfOf, false, null, null, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, onBehalfOf, false, null, null, null, null, null, tokenCallback);
     }
 
     /**
@@ -302,7 +302,7 @@ public class Xendit {
             TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
-        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, onBehalfOf, false, billingDetails, customer, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, onBehalfOf, false, billingDetails, customer, null, null, null, tokenCallback);
     }
 
     /**
@@ -331,7 +331,7 @@ public class Xendit {
             TokenCallback tokenCallback) {
         String amountStr = Integer.toString(amount);
 
-        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, onBehalfOf, false, billingDetails, customer, currency, tokenCallback);
+        createSingleOrMultipleUseToken(card, amountStr, shouldAuthenticate, onBehalfOf, false, billingDetails, customer, currency, null, null, tokenCallback);
     }
 
     /**
@@ -358,7 +358,7 @@ public class Xendit {
             final Customer customer,
             final String currency,
             TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, amount, shouldAuthenticate, onBehalfOf, false, billingDetails, customer, currency, tokenCallback);
+        createSingleOrMultipleUseToken(card, amount, shouldAuthenticate, onBehalfOf, false, billingDetails, customer, currency, null, null, tokenCallback);
     }
 
     /**
@@ -379,7 +379,25 @@ public class Xendit {
             final boolean shouldAuthenticate,
             final String currency,
             TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, amount, shouldAuthenticate, null, false, null, null, currency, tokenCallback);
+        createSingleOrMultipleUseToken(card, amount, shouldAuthenticate, null, false, null, null, currency, null, null, tokenCallback);
+    }
+
+    /**
+     * Creates a single-use token. 3DS authentication will be bundled into this method unless you
+     * set shouldAuthenticate as false.
+     *
+     * @param tokenId ID of the token as the identifier
+     * @param cardCvn CVV number of the card
+     * @param tokenCallback The callback that will be called when the token creation completes or
+     *                      fails
+     */
+    public void createSingleUseToken(
+            final BillingDetails billingDetails,
+            final Customer customer,
+            final String tokenId,
+            final String cardCvn,
+            TokenCallback tokenCallback) {
+        createSingleOrMultipleUseToken(null, null,false, null, false, billingDetails, customer, null, tokenId, cardCvn, tokenCallback);
     }
 
     /**
@@ -391,7 +409,7 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, "0", false, "", true, null, null, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, "0", false, "", true, null, null, null, null, null, tokenCallback);
     }
 
     /**
@@ -404,7 +422,7 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final String onBehalfOf, final TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, null, null, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, null, null, null, null, null, tokenCallback);
     }
 
     /**
@@ -418,7 +436,7 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final String onBehalfOf, BillingDetails billingDetails, final TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, billingDetails, null, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, billingDetails, null, null, null, null, tokenCallback);
     }
 
     /**
@@ -433,7 +451,27 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(final Card card, final String onBehalfOf, BillingDetails billingDetails, Customer customer, final TokenCallback tokenCallback) {
-        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, billingDetails, customer, null, tokenCallback);
+        createSingleOrMultipleUseToken(card, "0", false, onBehalfOf, true, billingDetails, customer, null, null, null, tokenCallback);
+    }
+
+    /**
+     * Creates a multiple-use token. Authentication must be created separately if shouldAuthenticate
+     * is true.
+     *
+     * @param tokenId ID of the token as the identifier
+     * @param cardCvn CVV number of the card
+     * @param billingDetails Billing details of the card
+     * @param customer Customer linked to the payment method
+     * @param tokenCallback The callback that will be called when the token creation completes or
+     *                      fails
+     */
+    public void createMultipleUseToken(
+        final BillingDetails billingDetails,
+        final Customer customer,
+        final String tokenId,
+        final String cardCvn,
+        final TokenCallback tokenCallback) {
+        createSingleOrMultipleUseToken(null, null, false, null, true, billingDetails, customer, null, tokenId, cardCvn, tokenCallback);
     }
 
     private void createSingleOrMultipleUseToken(
@@ -445,31 +483,44 @@ public class Xendit {
             final BillingDetails billingDetails,
             final Customer customer,
             final String currency,
+            final String tokenId,
+            final String cardCvn,
             final TokenCallback tokenCallback
     ) {
-        if (card != null && tokenCallback != null) {
-            if (!CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
+        /**
+        * card must exist when doing normal tokenization
+        * tokenId must exist when doing re-tokenization
+        */
+        if ((card != null || tokenId != null) && tokenCallback != null) {
+            if (card != null && !CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
                 return;
             }
 
-            if (!CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
+            if (card != null && !CardValidator.isExpiryValid(card.getCardExpirationMonth(), card.getCardExpirationYear())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_expiration)));
                 return;
             }
 
-            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
+            if (card != null && card.getCreditCardCVN() != null && !CardValidator.isCvnValid(card.getCreditCardCVN())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
                 return;
             }
 
-            if (card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
+            if (card != null && card.getCreditCardCVN() != null && !CardValidator.isCvnValidForCardType(card.getCreditCardCVN(), card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.error_card_cvn_invalid_for_type)));
                 return;
             }
 
-            createCreditCardToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, billingDetails, customer, currency, tokenCallback);
+            if (cardCvn != null && !CardValidator.isCvnValid(cardCvn)) {
+                tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+                return;
+            }
+
+            createCreditCardToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, billingDetails, customer, currency, tokenId, cardCvn, tokenCallback);
         }
+
+
     }
 
     /**
@@ -625,7 +676,7 @@ public class Xendit {
     }
 
     public void createCreditCardToken(Card card, String amount, boolean shouldAuthenticate, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        _createToken(card, amount, shouldAuthenticate, "", isMultipleUse, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
+        _createToken(card, amount, shouldAuthenticate, "", isMultipleUse, null, null, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(AuthenticatedToken authentication) {
                     TrackerController tracker = getTracker(context);
@@ -653,7 +704,7 @@ public class Xendit {
     }
 
     public void createCreditCardToken(final Card card, final String amount, boolean shouldAuthenticate, final String onBehalfOf, boolean isMultipleUse, final TokenCallback tokenCallback) {
-        _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
+        _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, null, null, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(final AuthenticatedToken authentication) {
                 TrackerController tracker = getTracker(context);
@@ -685,8 +736,10 @@ public class Xendit {
             BillingDetails billingDetails,
             Customer customer,
             final String currency,
+            final String tokenId,
+            final String cardCvn,
             final TokenCallback tokenCallback) {
-        _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, billingDetails, customer, currency, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
+        _createToken(card, amount, shouldAuthenticate, onBehalfOf, isMultipleUse, billingDetails, customer, currency, tokenId, cardCvn, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(final AuthenticatedToken authentication) {
                 TrackerController tracker = getTracker(context);
@@ -765,17 +818,23 @@ public class Xendit {
         });
     }
 
-    private void _createToken(Card card, String amount, boolean shouldAuthenticate, String onBehalfOf, boolean isMultipleUse, BillingDetails billingDetails, Customer customer, String currency, NetworkHandler<AuthenticatedToken> handler) {
-        JsonObject cardData = new JsonObject();
-        cardData.addProperty("account_number", card.getCreditCardNumber());
-        cardData.addProperty("exp_year", card.getCardExpirationYear());
-        cardData.addProperty("exp_month", card.getCardExpirationMonth());
-        cardData.addProperty("cvn", card.getCreditCardCVN());
-
+    private void _createToken(Card card, String amount, boolean shouldAuthenticate, String onBehalfOf, boolean isMultipleUse, BillingDetails billingDetails, Customer customer, String currency, String tokenId, String cardCvn, NetworkHandler<AuthenticatedToken> handler) {
         BaseRequest<AuthenticatedToken> request = buildBaseRequest(Request.Method.POST, CREATE_CREDIT_CARD_TOKEN_URL, onBehalfOf, AuthenticatedToken.class, new DefaultResponseHandler<>(handler));
-        request.addParam("is_single_use", String.valueOf(!isMultipleUse));
-        request.addParam("should_authenticate", String.valueOf(shouldAuthenticate));
-        request.addJsonParam("card_data", cardData);
+
+        JsonObject cardData = new JsonObject();
+        if (card != null) {
+            cardData.addProperty("account_number", card.getCreditCardNumber());
+            cardData.addProperty("exp_year", card.getCardExpirationYear());
+            cardData.addProperty("exp_month", card.getCardExpirationMonth());
+            cardData.addProperty("cvn", card.getCreditCardCVN());
+            request.addJsonParam("card_data", cardData);
+        }
+
+        // If tokenId doesn't exist add is_single_use and should_authenticate
+        if (tokenId == null) {
+            request.addParam("is_single_use", String.valueOf(!isMultipleUse));
+            request.addParam("should_authenticate", String.valueOf(shouldAuthenticate));
+        }
 
         if (customer != null) {
             request.addJsonParam("customer", gsonMapper.toJsonTree(customer));
@@ -791,6 +850,14 @@ public class Xendit {
 
         if (currency != null) {
             request.addParam("currency", currency);
+        }
+
+        if (tokenId != null) {
+            request.addParam("token_id", tokenId);
+        }
+
+        if (cardCvn != null) {
+            request.addParam("card_cvn", cardCvn);
         }
 
         sendRequest(request, handler);
