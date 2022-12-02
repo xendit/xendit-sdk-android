@@ -84,7 +84,7 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 
 ### Creating a single-use token
 ```
-Card card = new Card("4000000000000002", "12", "2017", "123");
+Card card = new Card("4000000000001091", "12", "2017", "123");
 
 xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
     @Override
@@ -103,7 +103,7 @@ xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
 
 ### Creating a multiple-use token
 ```
-Card card = new Card("4000000000000002", "12", "2017", "123");
+Card card = new Card("4000000000001091", "12", "2017", "123");
 
 xendit.createMultipleUseToken(card, "user-id", new TokenCallback() {
     @Override
