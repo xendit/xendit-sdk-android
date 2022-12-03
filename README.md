@@ -31,19 +31,19 @@ Maven:
 <dependency>
   <groupId>com.xendit</groupId>
   <artifactId>xendit-android</artifactId>
-  <version>3.6.1</version>
+  <version>3.6.4</version>
   <type>pom</type>
 </dependency>
 ```
 
 Gradle:
 ```
-compile 'com.xendit:xendit-android:3.6.1'
+compile 'com.xendit:xendit-android:3.6.4'
 ```
 
 Ivy:
 ```
-<dependency org='com.xendit' name='xendit-android' rev='3.6.1'>
+<dependency org='com.xendit' name='xendit-android' rev='3.6.4'>
   <artifact name='xendit-android' ext='pom' ></artifact>
 </dependency>
 ```
