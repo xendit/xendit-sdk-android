@@ -31,19 +31,19 @@ Maven:
 <dependency>
   <groupId>com.xendit</groupId>
   <artifactId>xendit-android</artifactId>
-  <version>3.6.1</version>
+  <version>3.6.4</version>
   <type>pom</type>
 </dependency>
 ```
 
 Gradle:
 ```
-compile 'com.xendit:xendit-android:3.6.1'
+compile 'com.xendit:xendit-android:3.6.4'
 ```
 
 Ivy:
 ```
-<dependency org='com.xendit' name='xendit-android' rev='3.6.1'>
+<dependency org='com.xendit' name='xendit-android' rev='3.6.4'>
   <artifact name='xendit-android' ext='pom' ></artifact>
 </dependency>
 ```
@@ -64,7 +64,7 @@ repositories {
 }
 dependencies {
     ...
-    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.4-1'
+    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 }
 ```
 
@@ -84,7 +84,7 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 
 ### Creating a single-use token
 ```
-Card card = new Card("4000000000000002", "12", "2017", "123");
+Card card = new Card("4000000000001091", "12", "2017", "123");
 
 xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
     @Override
@@ -103,7 +103,7 @@ xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
 
 ### Creating a multiple-use token
 ```
-Card card = new Card("4000000000000002", "12", "2017", "123");
+Card card = new Card("4000000000001091", "12", "2017", "123");
 
 xendit.createMultipleUseToken(card, "user-id", new TokenCallback() {
     @Override
