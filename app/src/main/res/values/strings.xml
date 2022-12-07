@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">xendit_example</string>
-    <string name="cardNumbTest">4000000000000002</string>
+    <string name="cardNumbTest">4000000000001091</string>
     <string name="expMonthTest">12</string>
     <string name="cvnTest">123</string>
     <string name="amountTest">123000</string>
