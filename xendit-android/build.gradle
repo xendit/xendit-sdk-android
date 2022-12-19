@@ -58,16 +58,6 @@ android {
     }
 }
 
-repositories {
-    maven {
-        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
-        credentials {
-            username 'cybersource_xendit_payfac_cards'
-            password 'AKCp8k7kDxqgxY63sahozmx9h2wLR8QikWwSPnQyZZxy63juWsQJ8PevpWY6s3eREW4rrzTyj'
-        }
-    }
-}
-
 dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -104,9 +94,6 @@ dependencies {
     api 'com.squareup.retrofit2:converter-scalars:2.5.0'
     //Logging Network Calls
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-
-    // cardinal commerce
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 
 }
 

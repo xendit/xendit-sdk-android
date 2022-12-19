@@ -37,16 +37,6 @@ android {
     }
 }
 
-repositories {
-    maven {
-        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
-        credentials {
-            username 'cybersource_xendit_payfac_cards'
-            password 'AKCp8k7kDxqgxY63sahozmx9h2wLR8QikWwSPnQyZZxy63juWsQJ8PevpWY6s3eREW4rrzTyj'
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
@@ -57,7 +47,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation project(':xendit-android')
 //    implementation 'com.xendit:xendit-android:3.2.0'
-    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 
     // App's dependencies, including test
     implementation 'androidx.annotation:annotation:1.0.0'
