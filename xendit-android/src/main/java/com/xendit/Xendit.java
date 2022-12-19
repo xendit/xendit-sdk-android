@@ -653,14 +653,7 @@ public class Xendit {
                         .label("Create Token")
                         .build());
 
-                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) { //single token = automatically attempt 3DS
-                    registerBroadcastReceiver(tokenCallback);
-                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
-                }
-                else { //for multi token
-                    String tokenId = authentication.getId();
-                    get3DSRecommendation(tokenId, authentication, tokenCallback);
-                }
+                handle3ds1Tokenization(authentication, tokenCallback);
             }
 
             @Override
@@ -680,11 +673,8 @@ public class Xendit {
                         .action("create-token")
                         .label("Create Token")
                         .build());
-                if (is3ds2Version(authentication.getThreedsVersion())) {
-                    create3ds2Authentication(authentication.getId(), authentication.getEnvironment(), authentication.getJwt(), amount, null, card.getCreditCardCVN(), onBehalfOf, tokenCallback);
-                } else {
-                    handle3ds1Tokenization(authentication, tokenCallback);
-                }
+
+                handle3ds1Tokenization(authentication, tokenCallback);
             }
 
             @Override
@@ -715,11 +705,8 @@ public class Xendit {
                         .action("create-token")
                         .label("Create Token")
                         .build());
-                if (is3ds2Version(authentication.getThreedsVersion())) {
-                    create3ds2Authentication(authentication.getId(), authentication.getEnvironment(), authentication.getJwt(), amount, currency, card.getCreditCardCVN(), onBehalfOf, tokenCallback);
-                } else {
-                    handle3ds1Tokenization(authentication, tokenCallback);
-                }
+
+                handle3ds1Tokenization(authentication, tokenCallback);
             }
 
             @Override
