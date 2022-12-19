@@ -827,72 +827,6 @@ public class Xendit {
         }));
     }
 
-    private void _createAuthenticationWithSessionId(final String tokenId, final String amount, final String sessionId, final String currency, final String cardCvn, final String onBehalfOf, final TokenCallback tokenCallback) {
-        String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
-        NetworkHandler handler = new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-            @Override
-            public void onSuccess(Authentication responseObject) {
-                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED") || !is3ds2Version(responseObject.getThreedsVersion())) {
-                    // Authentication completed or 3DS 1.0 transaction
-                    handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
-                }
-                else if (
-                        responseObject.getStatus().equalsIgnoreCase("FAILED") ||
-                        responseObject.getAuthenticationTransactionId() == null ||
-                        responseObject.getRequestPayload() == null) {
-                    // Fallback to 3DS1 flow
-                    _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf,tokenCallback);
-                } else {
-                    final String transactionId = responseObject.getAuthenticationTransactionId();
-                    final String reqPayload = responseObject.getRequestPayload();
-                    final String authenticationId = responseObject.getId();
-                    cardinal.cca_continue(transactionId, reqPayload, activity, new CardinalValidateReceiver() {
-                        @Override
-                        public void onValidated(Context context, ValidateResponse validateResponse, String serverJwt) {
-                            _verifyAuthentication(authenticationId, transactionId, onBehalfOf, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-                                @Override
-                                public void onSuccess(Authentication responseObject) {
-                                    Token token = new Token(responseObject);
-                                    tokenCallback.onSuccess(token);
-                                }
-
-                                @Override
-                                public void onFailure(NetworkError error) {
-                                    tokenCallback.onError(new XenditError(error));
-                                }
-                            }));
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(NetworkError error) {
-                // Fallback to 3DS1 flow
-                _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf, tokenCallback);
-            }
-        });
-
-        BaseRequest<Authentication> request = buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class, new DefaultResponseHandler<>(handler));
-        request.addParam("amount", amount);
-        request.addParam("session_id", sessionId);
-        if (currency != null && currency != "") {
-            request.addParam("currency", currency);
-        }
-        if (cardCvn != null && cardCvn != "") {
-            request.addParam("card_cvn", cardCvn);
-        }
-        sendRequest(request, handler);
-    }
-
-    private void _verifyAuthentication(String authenticationId, String authenticationTransactionId, String onBehalfOf, NetworkHandler<Authentication> handler) {
-        String requestUrl = PRODUCTION_XENDIT_BASE_URL + "/credit_card_authentications/" + authenticationId + "/verification";
-
-        BaseRequest<AuthenticatedToken> request = buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class, new DefaultResponseHandler<>(handler));
-        request.addParam("authentication_transaction_id", authenticationTransactionId);
-        sendRequest(request, handler);
-    }
-
     private void handle3ds1Tokenization(AuthenticatedToken authentication, TokenCallback tokenCallback) {
         if (authentication.getStatus().equalsIgnoreCase("FAILED")) {
             tokenCallback.onSuccess(new Token(authentication));
@@ -921,32 +855,6 @@ public class Xendit {
             return currentMajorVersion >= 2;
         }
         return false;
-    }
-
-    private void create3ds2Authentication(final String tokenId, final String environment, final String jwt, final String amount, final String currency, final String cardCvn, final String onBehalfOf, final TokenCallback tokenCallback) {
-        if ("DEVELOPMENT".equals(environment)) {
-            configureCardinal(CardinalEnvironment.STAGING);
-        } else {
-            configureCardinal(CardinalEnvironment.PRODUCTION);
-        }
-        cardinal.init(jwt, new CardinalInitService() {
-            @Override
-            public void onSetupCompleted(String consumerSessionId) {
-                _createAuthenticationWithSessionId(tokenId, amount, consumerSessionId, currency, cardCvn, onBehalfOf, tokenCallback);
-            }
-
-            /**
-             * If there was an error with set up, Cardinal will call this function with
-             * validate response and empty serverJWT. We will fallback to 3DS 1.0 flow.
-             *
-             * @param validateResponse
-             * @param serverJwt        will be an empty
-             */
-            @Override
-            public void onValidated(ValidateResponse validateResponse, String serverJwt) {
-                _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf, tokenCallback);
-            }
-        });
     }
 
     private String encodeBase64(String key) {
@@ -994,17 +902,5 @@ public class Xendit {
         request.addHeader("client-version", CLIENT_API_VERSION);
         request.addHeader("client-type", CLIENT_TYPE);
         return request;
-    }
-
-    private void _createJWT(String tokenId, String amount, String currency, Customer customer, String onBehalfOf, NetworkHandler<Jwt> handler) {
-        String url = CREATE_JWT_URL.replace(":token_id", tokenId);
-        BaseRequest request = this.buildBaseRequest(Request.Method.POST, url, onBehalfOf, Jwt.class, new DefaultResponseHandler(handler));
-        request.addParam("amount", amount);
-        request.addParam("currency", currency);
-        if (customer != null) {
-            request.addParam("customer", gsonMapper.toJson(customer));
-        }
-
-        sendRequest(request, handler);
     }
 }
