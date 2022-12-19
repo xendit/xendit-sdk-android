@@ -570,53 +570,28 @@ public class Xendit {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
-        _createJWT(tokenId, amount, "IDR", null, onBehalfOf, new NetworkHandler<Jwt>().setResultListener(new ResultListener<Jwt>() {
-            @Override
-            public void onSuccess(Jwt jwt) {
-                create3ds2Authentication(tokenId, jwt.getEnvironment(), jwt.getJwt(), amount, currency, cardCvn, onBehalfOf, new TokenCallback() {
-                    @Override
-                    public void onSuccess(Token token) {
-                        TrackerController tracker = getTracker(context);
-                        tracker.track(Structured.builder()
-                                .category("api-request")
-                                .action("create-authentication-emv-3ds")
-                                .label("Create EMV 3DS")
-                                .build());
-                        authenticationCallback.onSuccess(new Authentication(token));
-                    }
 
-                    @Override
-                    public void onError(XenditError error) {
-                        authenticationCallback.onError(error);
-                    }
-                });
+        _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+            @Override
+            public void onSuccess(Authentication authentication) {
+                TrackerController tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("create-authentication")
+                        .label("Create Authentication")
+                        .build());
+
+                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                    registerBroadcastReceiver(authenticationCallback);
+                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                } else {
+                    authenticationCallback.onSuccess(authentication);
+                }
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-                    @Override
-                    public void onSuccess(Authentication authentication) {
-                        TrackerController tracker = getTracker(context);
-                        tracker.track(Structured.builder()
-                                .category("api-request")
-                                .action("create-authentication")
-                                .label("Create Authentication")
-                                .build());
-
-                        if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
-                            registerBroadcastReceiver(authenticationCallback);
-                            context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
-                        } else {
-                            authenticationCallback.onSuccess(authentication);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(NetworkError error) {
-                        authenticationCallback.onError(new XenditError(error));
-                    }
-                }));
+                authenticationCallback.onError(new XenditError(error));
             }
         }));
     }
