@@ -17,15 +17,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BaseHttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
-import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.snowplowanalytics.snowplow.controller.TrackerController;
@@ -92,7 +83,6 @@ public class Xendit {
     private String publishableKey;
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
-    private Cardinal cardinal;
     private Activity activity;
     private Gson gsonMapper;
 
@@ -165,29 +155,6 @@ public class Xendit {
         }
 
         connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        cardinal = Cardinal.getInstance();
-    }
-
-    private void configureCardinal(CardinalEnvironment environment) {
-        CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
-        cardinalConfigurationParameters.setEnvironment(environment);
-        cardinalConfigurationParameters.setRequestTimeout(8000);
-        cardinalConfigurationParameters.setChallengeTimeout(5);
-
-        JSONArray rType = new JSONArray();
-        rType.put(CardinalRenderType.OTP);
-        rType.put(CardinalRenderType.SINGLE_SELECT);
-        rType.put(CardinalRenderType.MULTI_SELECT);
-        rType.put(CardinalRenderType.OOB);
-        rType.put(CardinalRenderType.HTML);
-        cardinalConfigurationParameters.setRenderType(rType);
-
-        cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
-
-        UiCustomization yourUICustomizationObject = new UiCustomization();
-        cardinalConfigurationParameters.setUICustomization(yourUICustomizationObject);
-        cardinal.configure(context, cardinalConfigurationParameters);
     }
 
     /**
