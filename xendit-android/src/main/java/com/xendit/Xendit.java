@@ -17,15 +17,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BaseHttpStack;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
-import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.snowplowanalytics.snowplow.controller.TrackerController;
@@ -92,7 +83,6 @@ public class Xendit {
     private String publishableKey;
     private RequestQueue requestQueue;
     private ConnectivityManager connectivityManager;
-    private Cardinal cardinal;
     private Activity activity;
     private Gson gsonMapper;
 
@@ -165,29 +155,6 @@ public class Xendit {
         }
 
         connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        cardinal = Cardinal.getInstance();
-    }
-
-    private void configureCardinal(CardinalEnvironment environment) {
-        CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
-        cardinalConfigurationParameters.setEnvironment(environment);
-        cardinalConfigurationParameters.setRequestTimeout(8000);
-        cardinalConfigurationParameters.setChallengeTimeout(5);
-
-        JSONArray rType = new JSONArray();
-        rType.put(CardinalRenderType.OTP);
-        rType.put(CardinalRenderType.SINGLE_SELECT);
-        rType.put(CardinalRenderType.MULTI_SELECT);
-        rType.put(CardinalRenderType.OOB);
-        rType.put(CardinalRenderType.HTML);
-        cardinalConfigurationParameters.setRenderType(rType);
-
-        cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
-
-        UiCustomization yourUICustomizationObject = new UiCustomization();
-        cardinalConfigurationParameters.setUICustomization(yourUICustomizationObject);
-        cardinal.configure(context, cardinalConfigurationParameters);
     }
 
     /**
@@ -603,53 +570,28 @@ public class Xendit {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
             return;
         }
-        _createJWT(tokenId, amount, "IDR", null, onBehalfOf, new NetworkHandler<Jwt>().setResultListener(new ResultListener<Jwt>() {
-            @Override
-            public void onSuccess(Jwt jwt) {
-                create3ds2Authentication(tokenId, jwt.getEnvironment(), jwt.getJwt(), amount, currency, cardCvn, onBehalfOf, new TokenCallback() {
-                    @Override
-                    public void onSuccess(Token token) {
-                        TrackerController tracker = getTracker(context);
-                        tracker.track(Structured.builder()
-                                .category("api-request")
-                                .action("create-authentication-emv-3ds")
-                                .label("Create EMV 3DS")
-                                .build());
-                        authenticationCallback.onSuccess(new Authentication(token));
-                    }
 
-                    @Override
-                    public void onError(XenditError error) {
-                        authenticationCallback.onError(error);
-                    }
-                });
+        _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
+            @Override
+            public void onSuccess(Authentication authentication) {
+                TrackerController tracker = getTracker(context);
+                tracker.track(Structured.builder()
+                        .category("api-request")
+                        .action("create-authentication")
+                        .label("Create Authentication")
+                        .build());
+
+                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
+                    registerBroadcastReceiver(authenticationCallback);
+                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
+                } else {
+                    authenticationCallback.onSuccess(authentication);
+                }
             }
 
             @Override
             public void onFailure(NetworkError error) {
-                _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-                    @Override
-                    public void onSuccess(Authentication authentication) {
-                        TrackerController tracker = getTracker(context);
-                        tracker.track(Structured.builder()
-                                .category("api-request")
-                                .action("create-authentication")
-                                .label("Create Authentication")
-                                .build());
-
-                        if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
-                            registerBroadcastReceiver(authenticationCallback);
-                            context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
-                        } else {
-                            authenticationCallback.onSuccess(authentication);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(NetworkError error) {
-                        authenticationCallback.onError(new XenditError(error));
-                    }
-                }));
+                authenticationCallback.onError(new XenditError(error));
             }
         }));
     }
@@ -686,14 +628,7 @@ public class Xendit {
                         .label("Create Token")
                         .build());
 
-                if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) { //single token = automatically attempt 3DS
-                    registerBroadcastReceiver(tokenCallback);
-                    context.startActivity(XenditActivity.getLaunchIntent(context, authentication));
-                }
-                else { //for multi token
-                    String tokenId = authentication.getId();
-                    get3DSRecommendation(tokenId, authentication, tokenCallback);
-                }
+                handle3ds1Tokenization(authentication, tokenCallback);
             }
 
             @Override
@@ -713,11 +648,8 @@ public class Xendit {
                         .action("create-token")
                         .label("Create Token")
                         .build());
-                if (is3ds2Version(authentication.getThreedsVersion())) {
-                    create3ds2Authentication(authentication.getId(), authentication.getEnvironment(), authentication.getJwt(), amount, null, card.getCreditCardCVN(), onBehalfOf, tokenCallback);
-                } else {
-                    handle3ds1Tokenization(authentication, tokenCallback);
-                }
+
+                handle3ds1Tokenization(authentication, tokenCallback);
             }
 
             @Override
@@ -748,11 +680,8 @@ public class Xendit {
                         .action("create-token")
                         .label("Create Token")
                         .build());
-                if (is3ds2Version(authentication.getThreedsVersion())) {
-                    create3ds2Authentication(authentication.getId(), authentication.getEnvironment(), authentication.getJwt(), amount, currency, card.getCreditCardCVN(), onBehalfOf, tokenCallback);
-                } else {
-                    handle3ds1Tokenization(authentication, tokenCallback);
-                }
+
+                handle3ds1Tokenization(authentication, tokenCallback);
             }
 
             @Override
@@ -898,72 +827,6 @@ public class Xendit {
         }));
     }
 
-    private void _createAuthenticationWithSessionId(final String tokenId, final String amount, final String sessionId, final String currency, final String cardCvn, final String onBehalfOf, final TokenCallback tokenCallback) {
-        String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
-        NetworkHandler handler = new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-            @Override
-            public void onSuccess(Authentication responseObject) {
-                if (responseObject.getStatus().equalsIgnoreCase("VERIFIED") || !is3ds2Version(responseObject.getThreedsVersion())) {
-                    // Authentication completed or 3DS 1.0 transaction
-                    handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
-                }
-                else if (
-                        responseObject.getStatus().equalsIgnoreCase("FAILED") ||
-                        responseObject.getAuthenticationTransactionId() == null ||
-                        responseObject.getRequestPayload() == null) {
-                    // Fallback to 3DS1 flow
-                    _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf,tokenCallback);
-                } else {
-                    final String transactionId = responseObject.getAuthenticationTransactionId();
-                    final String reqPayload = responseObject.getRequestPayload();
-                    final String authenticationId = responseObject.getId();
-                    cardinal.cca_continue(transactionId, reqPayload, activity, new CardinalValidateReceiver() {
-                        @Override
-                        public void onValidated(Context context, ValidateResponse validateResponse, String serverJwt) {
-                            _verifyAuthentication(authenticationId, transactionId, onBehalfOf, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-                                @Override
-                                public void onSuccess(Authentication responseObject) {
-                                    Token token = new Token(responseObject);
-                                    tokenCallback.onSuccess(token);
-                                }
-
-                                @Override
-                                public void onFailure(NetworkError error) {
-                                    tokenCallback.onError(new XenditError(error));
-                                }
-                            }));
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(NetworkError error) {
-                // Fallback to 3DS1 flow
-                _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf, tokenCallback);
-            }
-        });
-
-        BaseRequest<Authentication> request = buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class, new DefaultResponseHandler<>(handler));
-        request.addParam("amount", amount);
-        request.addParam("session_id", sessionId);
-        if (currency != null && currency != "") {
-            request.addParam("currency", currency);
-        }
-        if (cardCvn != null && cardCvn != "") {
-            request.addParam("card_cvn", cardCvn);
-        }
-        sendRequest(request, handler);
-    }
-
-    private void _verifyAuthentication(String authenticationId, String authenticationTransactionId, String onBehalfOf, NetworkHandler<Authentication> handler) {
-        String requestUrl = PRODUCTION_XENDIT_BASE_URL + "/credit_card_authentications/" + authenticationId + "/verification";
-
-        BaseRequest<AuthenticatedToken> request = buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class, new DefaultResponseHandler<>(handler));
-        request.addParam("authentication_transaction_id", authenticationTransactionId);
-        sendRequest(request, handler);
-    }
-
     private void handle3ds1Tokenization(AuthenticatedToken authentication, TokenCallback tokenCallback) {
         if (authentication.getStatus().equalsIgnoreCase("FAILED")) {
             tokenCallback.onSuccess(new Token(authentication));
@@ -992,32 +855,6 @@ public class Xendit {
             return currentMajorVersion >= 2;
         }
         return false;
-    }
-
-    private void create3ds2Authentication(final String tokenId, final String environment, final String jwt, final String amount, final String currency, final String cardCvn, final String onBehalfOf, final TokenCallback tokenCallback) {
-        if ("DEVELOPMENT".equals(environment)) {
-            configureCardinal(CardinalEnvironment.STAGING);
-        } else {
-            configureCardinal(CardinalEnvironment.PRODUCTION);
-        }
-        cardinal.init(jwt, new CardinalInitService() {
-            @Override
-            public void onSetupCompleted(String consumerSessionId) {
-                _createAuthenticationWithSessionId(tokenId, amount, consumerSessionId, currency, cardCvn, onBehalfOf, tokenCallback);
-            }
-
-            /**
-             * If there was an error with set up, Cardinal will call this function with
-             * validate response and empty serverJWT. We will fallback to 3DS 1.0 flow.
-             *
-             * @param validateResponse
-             * @param serverJwt        will be an empty
-             */
-            @Override
-            public void onValidated(ValidateResponse validateResponse, String serverJwt) {
-                _createAuthenticationToken(tokenId, amount, currency, cardCvn, onBehalfOf, tokenCallback);
-            }
-        });
     }
 
     private String encodeBase64(String key) {
@@ -1065,17 +902,5 @@ public class Xendit {
         request.addHeader("client-version", CLIENT_API_VERSION);
         request.addHeader("client-type", CLIENT_TYPE);
         return request;
-    }
-
-    private void _createJWT(String tokenId, String amount, String currency, Customer customer, String onBehalfOf, NetworkHandler<Jwt> handler) {
-        String url = CREATE_JWT_URL.replace(":token_id", tokenId);
-        BaseRequest request = this.buildBaseRequest(Request.Method.POST, url, onBehalfOf, Jwt.class, new DefaultResponseHandler(handler));
-        request.addParam("amount", amount);
-        request.addParam("currency", currency);
-        if (customer != null) {
-            request.addParam("customer", gsonMapper.toJson(customer));
-        }
-
-        sendRequest(request, handler);
     }
 }

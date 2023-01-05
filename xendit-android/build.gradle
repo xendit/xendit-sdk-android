@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '3.6.4'
+version '3.7.0'
 
 ext {
     bintrayOrg = 'xendit'
@@ -31,11 +31,10 @@ ext {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion '29.0.3'
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 28
         versionCode 1
         versionName
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -55,16 +54,6 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
-    }
-}
-
-repositories {
-    maven {
-        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
-        credentials {
-            username 'cybersource_xendit_payfac_cards'
-            password 'AKCp8k7kDxqgxY63sahozmx9h2wLR8QikWwSPnQyZZxy63juWsQJ8PevpWY6s3eREW4rrzTyj'
-        }
     }
 }
 
@@ -104,9 +93,6 @@ dependencies {
     api 'com.squareup.retrofit2:converter-scalars:2.5.0'
     //Logging Network Calls
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-
-    // cardinal commerce
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 
 }
 

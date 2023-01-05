@@ -31,26 +31,30 @@ Maven:
 <dependency>
   <groupId>com.xendit</groupId>
   <artifactId>xendit-android</artifactId>
-  <version>3.6.4</version>
+  <version>3.7.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 Gradle:
 ```
-compile 'com.xendit:xendit-android:3.6.4'
+compile 'com.xendit:xendit-android:3.7.0'
 ```
 
 Ivy:
 ```
-<dependency org='com.xendit' name='xendit-android' rev='3.6.4'>
+<dependency org='com.xendit' name='xendit-android' rev='3.7.0'>
   <artifact name='xendit-android' ext='pom' ></artifact>
 </dependency>
 ```
 
-For more information, visit https://bintray.com/xendit/android/xendit-sdk-android
+For more information, visit https://central.sonatype.dev/artifact/com.xendit/xendit-android/3.7.0/versions
 
-Note: For version 3.0.0 and above, you will need to include cardinal commerce repository credentials to download libraries required for EMV 3DS. Please configure the crendentials below to download the cardinal commerce SDK.
+**Note**:
+
+Starting from version `3.7.0`, setting up cardinal commerce below is no longer needed.
+
+For version `3.0.0` up to version `3.6.4`, you will need to include cardinal commerce repository credentials to download libraries required for EMV 3DS. Please configure the crendentials below to download the cardinal commerce SDK.
 
 ```
 repositories {
