@@ -24,6 +24,7 @@ import com.xendit.Models.Customer;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.Xendit;
+import com.xendit.example.models.StoreCVNResponse;
 import com.xendit.example.models.TokenizationResponse;
 import com.xendit.utils.StoreCVNCallback;
 
@@ -61,70 +62,65 @@ public class StoreCvnActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        try{
-            final Xendit xendit = new Xendit(getApplicationContext(), DUMMY_PUBLISHABLE_KEY, this);
+        final Xendit xendit = new Xendit(getApplicationContext(), DUMMY_PUBLISHABLE_KEY, this);
 
-            final ProgressBar progressBar = findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.VISIBLE);
+        final ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
-            // Dummy data
-            Address billingAddress = new Address();
-            billingAddress.setCountry("ID");
-            billingAddress.setStreetLine1("Panglima Polim IV");
-            billingAddress.setStreetLine2("Ruko Grand Panglima Polim, Blok E");
-            billingAddress.setCity("Jakarta Selatan");
-            billingAddress.setProvinceState("DKI Jakarta");
-            billingAddress.setCategory("WORK");
-            billingAddress.setPostalCode("123123");
+        // Dummy data
+        Address billingAddress = new Address();
+        billingAddress.setCountry("ID");
+        billingAddress.setStreetLine1("Panglima Polim IV");
+        billingAddress.setStreetLine2("Ruko Grand Panglima Polim, Blok E");
+        billingAddress.setCity("Jakarta Selatan");
+        billingAddress.setProvinceState("DKI Jakarta");
+        billingAddress.setCategory("WORK");
+        billingAddress.setPostalCode("123123");
 
-            BillingDetails billingDetails = new BillingDetails();
-            billingDetails.setMobileNumber("+6208123123123");
-            billingDetails.setEmail("john@xendit.co");
-            billingDetails.setGivenNames("John");
-            billingDetails.setSurname("Hudson");
-            billingDetails.setPhoneNumber("+6208123123123");
-            billingDetails.setAddress(billingAddress);
+        BillingDetails billingDetails = new BillingDetails();
+        billingDetails.setMobileNumber("+6208123123123");
+        billingDetails.setEmail("john@xendit.co");
+        billingDetails.setGivenNames("John");
+        billingDetails.setSurname("Hudson");
+        billingDetails.setPhoneNumber("+6208123123123");
+        billingDetails.setAddress(billingAddress);
 
-            Address shippingAddress = billingAddress;
-            Address[] customerAddress = { shippingAddress };
+        Address shippingAddress = billingAddress;
+        Address[] customerAddress = { shippingAddress };
 
-            Customer customer = new Customer();
-            customer.setMobileNumber("+6208123123123");
-            customer.setEmail("john@xendit.co");
-            customer.setGivenNames("John");
-            customer.setSurname("Hudson");
-            customer.setPhoneNumber("+6208123123123");
-            customer.setNationality("ID");
-            customer.setDateOfBirth("1990-04-13");
-            customer.setDescription("test user");
-            customer.setAddresses(customerAddress);
+        Customer customer = new Customer();
+        customer.setMobileNumber("+6208123123123");
+        customer.setEmail("john@xendit.co");
+        customer.setGivenNames("John");
+        customer.setSurname("Hudson");
+        customer.setPhoneNumber("+6208123123123");
+        customer.setNationality("ID");
+        customer.setDateOfBirth("1990-04-13");
+        customer.setDescription("test user");
+        customer.setAddresses(customerAddress);
 
-            StoreCVNCallback callback = new StoreCVNCallback() {
-                @Override
-                public void onSuccess(Token token) {
-                    progressBar.setVisibility(View.GONE);
-                    Gson gson = new Gson();
-                    TokenizationResponse tokenizationResponse = new TokenizationResponse(token);
-                    String json = gson.toJson(tokenizationResponse);
-                    storeCVNResult.setText(json);
-                    Log.d("STORE_CVN_SUCCESS", json.toString());
-                    Toast.makeText(StoreCvnActivity.this, "Store CVN Successful", Toast.LENGTH_SHORT).show();
-                }
+        StoreCVNCallback callback = new StoreCVNCallback() {
+            @Override
+            public void onSuccess(Token token) {
+                progressBar.setVisibility(View.GONE);
+                Gson gson = new Gson();
+                StoreCVNResponse storeCVNResponse = new StoreCVNResponse(token);
+                String json = gson.toJson(storeCVNResponse);
+                storeCVNResult.setText(json);
+                Log.d("STORE_CVN_SUCCESS", json.toString());
+                Toast.makeText(StoreCvnActivity.this, "Store CVN Successful", Toast.LENGTH_SHORT).show();
+            }
 
-                @Override
-                public void onError(XenditError xenditError) {
-                    progressBar.setVisibility(View.GONE);
-                    Log.d("STORE_CVN_FAILED", xenditError.toString());
-                    Toast.makeText(StoreCvnActivity.this, xenditError.getErrorCode() + " " +
-                            xenditError.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                }
-            };
+            @Override
+            public void onError(XenditError xenditError) {
+                progressBar.setVisibility(View.GONE);
+                Log.d("STORE_CVN_FAILED", xenditError.toString());
+                Toast.makeText(StoreCvnActivity.this, xenditError.getErrorCode() + " " +
+                        xenditError.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        };
 
-            Log.d("JEB_DEBUG", tokenId.getText().toString() + this.cardCVN.getText().toString());
-            xendit.storeCVN(tokenId.getText().toString(), this.cardCVN.getText().toString(), billingDetails, customer, "", callback);
-        } catch (Exception e){
-            Log.d("JEB_DEBUG", e.toString());
-        }
+        xendit.storeCVN(tokenId.getText().toString(), cardCVN.getText().toString(), billingDetails, customer, "", callback);
     }
 
     @Override

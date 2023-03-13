@@ -511,16 +511,18 @@ public class Xendit {
             final String onBehalfOf,
             final StoreCVNCallback storeCVNCallback
     ) {
-        NetworkHandler<AuthenticatedToken> handler = new NetworkHandler<AuthenticatedToken>().setResultListener(
-                new ResultListener<AuthenticatedToken>() {
+        NetworkHandler<Token> handler = new NetworkHandler<Token>().setResultListener(
+                new ResultListener<Token>() {
                     @Override
-                    public void onSuccess(AuthenticatedToken responseObject) {
+                    public void onSuccess(Token token) {
                         TrackerController tracker = getTracker(context);
                         tracker.track(Structured.builder()
                                 .category("api-request")
                                 .action("store-cvn")
                                 .label("Store CVN")
                                 .build());
+
+                        storeCVNCallback.onSuccess(token);
                     }
 
                     @Override
@@ -529,11 +531,11 @@ public class Xendit {
                     }
                 });
 
-        BaseRequest<AuthenticatedToken> request = buildBaseRequest(
+        BaseRequest<Token> request = buildBaseRequest(
                 Request.Method.POST,
                 CREATE_CREDIT_CARD_TOKEN_URL,
                 onBehalfOf == null || onBehalfOf.equals("") ? "" : onBehalfOf,
-                AuthenticatedToken.class,
+                Token.class,
                 new DefaultResponseHandler<>(handler)
         );
 
