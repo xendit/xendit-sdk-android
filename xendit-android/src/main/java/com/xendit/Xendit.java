@@ -492,11 +492,11 @@ public class Xendit {
     }
 
     /**
-     *  Store CVN method will perform retokenization.
+     *  Store CVN method will perform store cvn using an existing tokenId (retokenization).
      *  This method is commonly used for performing re-tokenization on subsequent usage of a multi-use token in the purpose of re-caching cardCVN.
      *
-     * @param tokenId is a previously created Xendit multiple-use tokenId.
-     * @param cardCvn is card cvn code linked to the tokenId created.
+     * @param tokenId is a previously created Xendit multiple-use tokenId. Required field.
+     * @param cardCvn is card cvn code linked to the tokenId created. Required field.
      * @param billingDetails Billing details of the card
      * @param customer Customer linked to the payment method
      * @param onBehalfOf The onBehalfOf is sub account business id. This field is used for merchants utilizing xenPlatform feature.
@@ -543,12 +543,12 @@ public class Xendit {
         }
         request.addParam("token_id", tokenId);
 
-        if (cardCvn == null && cardCvn.equals("")) {
+        if (cardCvn == null || cardCvn.equals("")) {
             storeCVNCallback.onError(new XenditError("CVN is required"));
             return;
         } else {
             if (!CardValidator.isCvnValid(cardCvn)){
-                storeCVNCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_cvn)));
+                storeCVNCallback.onError(new XenditError("CVN in invalid"));
                 return;
             }
             request.addParam("card_cvn", cardCvn);

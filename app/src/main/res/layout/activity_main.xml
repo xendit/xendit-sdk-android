@@ -25,6 +25,16 @@
             android:textSize="16sp"/>
 
         <TextView
+            android:id="@+id/storeCVNTextView_MainActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Retokenization for Store CVN"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"/>
+
+        <TextView
             android:id="@+id/authenticationTextView_MainActivity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

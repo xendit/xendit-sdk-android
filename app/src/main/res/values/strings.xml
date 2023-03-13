@@ -5,4 +5,5 @@
     <string name="cvnTest">123</string>
     <string name="amountTest">123000</string>
     <string name="create_token">Create Token</string>
+    <string name="store_cvn">Store CVN</string>
 </resources>

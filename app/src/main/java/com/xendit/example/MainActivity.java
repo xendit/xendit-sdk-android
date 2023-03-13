@@ -14,6 +14,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView authenticationTextView;
     private TextView validationUtilTextView;
 
+    private TextView storeCVNTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,9 +26,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         createTokenTextView = (TextView) findViewById(R.id.createTokenTextView_MainActivity);
         authenticationTextView = (TextView) findViewById(R.id.authenticationTextView_MainActivity);
         validationUtilTextView = (TextView) findViewById(R.id.validationUtilTextView_MainActivity);
+        storeCVNTextView = (TextView) findViewById(R.id.storeCVNTextView_MainActivity);
 
         createTokenTextView.setOnClickListener(this);
         authenticationTextView.setOnClickListener(this);
+        storeCVNTextView.setOnClickListener(this);
         validationUtilTextView.setOnClickListener(this);
     }
 
@@ -41,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.validationUtilTextView_MainActivity:
                 startActivity(ValidationUtilActivity.getLaunchIntent(this));
+                break;
+            case R.id.storeCVNTextView_MainActivity:
+                startActivity(StoreCvnActivity.getLaunchIntent(this));
                 break;
         }
     }
