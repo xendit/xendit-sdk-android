@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="TokenId"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"/>
+
+    <EditText
+        android:id="@+id/tokenIdEditText_StoreCVNActivity"
+        android:text="640ec814c51ddd001a4f7e85"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:hint="TokenId"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc" />
+
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="Card CVN"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"/>
+
+    <EditText
+        android:id="@+id/cvnEditText_StoreCVNActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:hint="3-4 Digit Code"
+        android:inputType="number"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc" />
+
+    <Button
+        android:id="@+id/btnStoreCVN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:text="Store CVN" />
+
+    <TextView
+        android:id="@+id/result_storeCVNActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text=""
+        android:textColor="@android:color/black"
+        android:textIsSelectable="true"
+        android:textSize="18sp" />
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"></ProgressBar>
+
+</LinearLayout>

@@ -1,4 +1,12 @@
 # CHANGELOG
+
+## 3.8.0 (2023-03-13)
+- Feat: Added storeCVN method for caching cvn on subsequent multi-use token purpose
+- Feat: Added storeCVN test page
+- Bug: Bug fix for validation on createAuthentication method
+
+## NOTE: 3.4.2 - 3.7.0 is being skipped due to inconsistency github release tag version with sdk version. Starting on 3.8.0 these 2 version are sync.
+
 ## 3.4.2 (2021-09-15)
 - Updated Cardinal Commerce Library credentials
 

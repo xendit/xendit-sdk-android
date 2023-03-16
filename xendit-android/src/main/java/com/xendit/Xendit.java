@@ -41,6 +41,7 @@ import com.xendit.network.errors.NetworkError;
 import com.xendit.network.interfaces.ResultListener;
 import com.xendit.utils.CardValidator;
 import com.xendit.utils.PermissionUtils;
+import com.xendit.utils.StoreCVNCallback;
 
 import org.json.JSONArray;
 
@@ -491,6 +492,82 @@ public class Xendit {
     }
 
     /**
+     *  Store CVN method will perform store cvn using an existing tokenId (retokenization).
+     *  This method is commonly used for performing re-tokenization on subsequent usage of a multi-use token in the purpose of re-caching cardCVN.
+     *
+     * @param tokenId is a previously created Xendit multiple-use tokenId. Required field.
+     * @param cardCvn is card cvn code linked to the tokenId created. Required field.
+     * @param billingDetails Billing details of the card
+     * @param customer Customer linked to the payment method
+     * @param onBehalfOf The onBehalfOf is sub account business id. This field is used for merchants utilizing xenPlatform feature.
+     * @param storeCVNCallback The callback that will be called when the token re-creation completes or
+     *                      fails
+     */
+    public void storeCVN(
+            final String tokenId,
+            final String cardCvn,
+            final BillingDetails billingDetails,
+            final Customer customer,
+            final String onBehalfOf,
+            final StoreCVNCallback storeCVNCallback
+    ) {
+        NetworkHandler<Token> handler = new NetworkHandler<Token>().setResultListener(
+                new ResultListener<Token>() {
+                    @Override
+                    public void onSuccess(Token token) {
+                        TrackerController tracker = getTracker(context);
+                        tracker.track(Structured.builder()
+                                .category("api-request")
+                                .action("store-cvn")
+                                .label("Store CVN")
+                                .build());
+
+                        storeCVNCallback.onSuccess(token);
+                    }
+
+                    @Override
+                    public void onFailure(NetworkError error) {
+                        storeCVNCallback.onError(new XenditError(error));
+                    }
+                });
+
+        BaseRequest<Token> request = buildBaseRequest(
+                Request.Method.POST,
+                CREATE_CREDIT_CARD_TOKEN_URL,
+                onBehalfOf == null || onBehalfOf.equals("") ? "" : onBehalfOf,
+                Token.class,
+                new DefaultResponseHandler<>(handler)
+        );
+
+        if (tokenId == null || tokenId.equals("")){
+            storeCVNCallback.onError(new XenditError("TokenId is required"));
+            return;
+        }
+        request.addParam("token_id", tokenId);
+
+        if (cardCvn == null || cardCvn.equals("")) {
+            storeCVNCallback.onError(new XenditError("CVN is required"));
+            return;
+        } else {
+            if (!CardValidator.isCvnValid(cardCvn)){
+                storeCVNCallback.onError(new XenditError("CVN in invalid"));
+                return;
+            }
+            request.addParam("card_cvn", cardCvn);
+        }
+
+        if (customer != null) {
+            request.addJsonParam("customer", gsonMapper.toJsonTree(customer));
+        }
+
+        if (billingDetails != null) {
+            request.addJsonParam("billing_details", gsonMapper.toJsonTree(billingDetails));
+        }
+
+        sendRequest(request, handler);
+    }
+
+    /**
      * Creates a 3DS authentication for a multiple-use token
      *
      * @param tokenId A multi-use token id
@@ -807,7 +884,7 @@ public class Xendit {
         if (currency != null && currency != "") {
             request.addParam("currency", currency);
         }
-        if (cardCvn != null && currency != "") {
+        if (cardCvn != null && cardCvn != "") {
             request.addParam("card_cvn", cardCvn);
         }
         sendRequest(request, handler);
