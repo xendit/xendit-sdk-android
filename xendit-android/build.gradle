@@ -27,7 +27,7 @@ ext {
 
     licenseName = 'MIT'
     licenseUrl = 'https://opensource.org/licenses/MIT'
-    allLicenses = ["MIT"]
+    allLicenses = ['MIT']
 }
 
 android {
@@ -36,17 +36,21 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName
+        versionName '3.8.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
+            buildConfigField('long', 'VERSION_CODE', "${defaultConfig.versionCode}")
+            buildConfigField('String','VERSION_NAME', "\"${defaultConfig.versionName}\"")
         }
         debug {
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
+            buildConfigField('long', 'VERSION_CODE', "${defaultConfig.versionCode}")
+            buildConfigField('String','VERSION_NAME', "\"${defaultConfig.versionName}\"")
         }
     }
     productFlavors {

@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -107,6 +109,18 @@ public class Xendit {
         SentryAndroid.init(context, new Sentry.OptionsConfiguration<SentryAndroidOptions>() {
             @Override
             public void configure(SentryAndroidOptions sentryAndroidOptions) {
+                try {
+                    PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                    String versionName = pInfo.versionName;
+                    String applicationName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
+
+                    sentryAndroidOptions.setTag("applicationName", applicationName);
+                    sentryAndroidOptions.setTag("applicationVersionName", versionName);
+                    sentryAndroidOptions.setTag("sdkVersionName", BuildConfig.VERSION_NAME);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+
                 sentryAndroidOptions.setBeforeSend(new SentryOptions.BeforeSendCallback() {
                     @Override
                     public SentryEvent execute(SentryEvent event, Hint hint) {
