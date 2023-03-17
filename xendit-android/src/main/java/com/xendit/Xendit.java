@@ -30,7 +30,6 @@ import com.xendit.Models.Authentication;
 import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
 import com.xendit.Models.Customer;
-import com.xendit.Models.Jwt;
 import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -45,13 +44,10 @@ import com.xendit.utils.CardValidator;
 import com.xendit.utils.PermissionUtils;
 import com.xendit.utils.StoreCVNCallback;
 
-import org.json.JSONArray;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 import io.sentry.Hint;
 import io.sentry.Sentry;
@@ -76,7 +72,6 @@ public class Xendit {
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
-    private static final String CREATE_JWT_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens/:token_id/jwt";
     private static final String DNS_SERVER = "https://7190a1331444434eb6aed7b5a8d776f0@o30316.ingest.sentry.io/6314580";
     private static final String CLIENT_IDENTIFIER = "Xendit Android SDK";
     private static final String CLIENT_API_VERSION = "2.0.0";
@@ -136,6 +131,7 @@ public class Xendit {
                         return null;
                     }
                 });
+
                 sentryAndroidOptions.setDsn(DNS_SERVER);
             }
         });
@@ -896,10 +892,10 @@ public class Xendit {
 
         BaseRequest<Authentication> request = buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class, new DefaultResponseHandler<>(handler));
         request.addParam("amount", amount);
-        if (currency != null && currency != "") {
+        if (currency != null && !currency.isEmpty()) {
             request.addParam("currency", currency);
         }
-        if (cardCvn != null && cardCvn != "") {
+        if (cardCvn != null && !cardCvn.isEmpty()) {
             request.addParam("card_cvn", cardCvn);
         }
         sendRequest(request, handler);
@@ -986,7 +982,7 @@ public class Xendit {
         String encodedKey = encodeBase64(publishableKey + ":");
         String basicAuthCredentials = "Basic " + encodedKey;
         BaseRequest request = new BaseRequest<>(method, url, type, handler);
-        if (onBehalfOf != null && onBehalfOf != "") {
+        if (onBehalfOf != null && !onBehalfOf.isEmpty()) {
             request.addHeader("for-user-id", onBehalfOf);
         }
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
