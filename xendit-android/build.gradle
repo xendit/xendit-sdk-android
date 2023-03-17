@@ -68,7 +68,7 @@ dependencies {
     implementation 'com.snowplowanalytics:snowplow-android-tracker:2.1.1@aar'
 
     // sentry
-    api 'io.sentry:sentry-android:4.3.0'
+    api 'io.sentry:sentry-android:6.15.0'
 
     // this dependency is not required if you are already using your own
     // slf4j implementation
