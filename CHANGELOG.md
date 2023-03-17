@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.8.1 (2023-03-17)
+- Chore: Upgrade sentry-android to 6.15.0
+- Chore: Update sentry dsn
+
 ## 3.8.0 (2023-03-13)
 - Feat: Added storeCVN method for caching cvn on subsequent multi-use token purpose
 - Feat: Added storeCVN test page
