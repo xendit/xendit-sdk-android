@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '3.8.0'
+version '3.8.1'
 
 ext {
     bintrayOrg = 'xendit'
@@ -27,7 +27,7 @@ ext {
 
     licenseName = 'MIT'
     licenseUrl = 'https://opensource.org/licenses/MIT'
-    allLicenses = ["MIT"]
+    allLicenses = ['MIT']
 }
 
 android {
@@ -36,17 +36,21 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName
+        versionName '3.8.1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
+            buildConfigField('long', 'VERSION_CODE', "${defaultConfig.versionCode}")
+            buildConfigField('String','VERSION_NAME', "\"${defaultConfig.versionName}\"")
         }
         debug {
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
+            buildConfigField('long', 'VERSION_CODE', "${defaultConfig.versionCode}")
+            buildConfigField('String','VERSION_NAME', "\"${defaultConfig.versionName}\"")
         }
     }
     productFlavors {
@@ -68,7 +72,7 @@ dependencies {
     implementation 'com.snowplowanalytics:snowplow-android-tracker:2.1.1@aar'
 
     // sentry
-    api 'io.sentry:sentry-android:4.3.0'
+    api 'io.sentry:sentry-android:6.15.0'
 
     // this dependency is not required if you are already using your own
     // slf4j implementation
