@@ -7,7 +7,6 @@ import android.content.Intent;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -15,7 +14,7 @@ import com.xendit.Models.XenditError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -79,12 +78,12 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
             context.unregisterReceiver(this);
 
         }
-
     }
 
     private boolean is3DSResultEventFromXendit(String messageInString){
-        Type mapType = new TypeToken<Map<String, Map>>(){}.getType();
-        Map<String, String[]> messageInJson = new Gson().fromJson(messageInString, mapType);
+        Map<String, Object> messageInJson = new Gson().fromJson(
+                messageInString, new TypeToken<HashMap<String, Object>>() {}.getType()
+        );
 
         // A valid 3ds callback payload from Xendit, should contain required fields: id and status.
         return messageInJson.get("id") != null && messageInJson.get("status") != null;

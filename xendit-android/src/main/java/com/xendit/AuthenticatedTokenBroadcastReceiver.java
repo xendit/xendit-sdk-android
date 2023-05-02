@@ -14,7 +14,7 @@ import com.xendit.Models.XenditError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -86,8 +86,9 @@ public class AuthenticatedTokenBroadcastReceiver extends BroadcastReceiver {
     }
 
     private boolean is3DSResultEventFromXendit(String messageInString){
-        Type mapType = new TypeToken<Map<String, Map>>(){}.getType();
-        Map<String, String[]> messageInJson = new Gson().fromJson(messageInString, mapType);
+        Map<String, Object> messageInJson = new Gson().fromJson(
+                messageInString, new TypeToken<HashMap<String, Object>>() {}.getType()
+        );
 
         // A valid 3ds callback payload from Xendit, should contain required fields: id and status.
         return messageInJson.get("id") != null && messageInJson.get("status") != null;
