@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -46,7 +47,7 @@ public class TokenBroadcastReceiver extends BroadcastReceiver {
             } else {
                 if (is3DSResultEventFromXendit(message)){
                     Gson gson = new Gson();
-                    Authentication authentication = gson.fromJson(message, Authentication.class);
+                    AuthenticatedToken authentication = gson.fromJson(message, AuthenticatedToken.class);
                     if (authentication.getStatus().equals("VERIFIED")) {
                         tokenCallback.onSuccess(new Token(authentication));
                     } else {
