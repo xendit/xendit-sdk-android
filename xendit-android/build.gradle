@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '3.8.3'
+version '3.8.4'
 
 ext {
     bintrayOrg = 'xendit'
@@ -36,7 +36,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName '3.8.3'
+        versionName '3.8.4'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

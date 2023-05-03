@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 3.8.4 (2023-05-03)
+- Bug Fix: Fix Wrong Casting Bug
+
 ## 3.8.3 (2023-05-03)
 - Bug Fix: Redeploy
 
