@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## 3.8.2 (2023-05-03)
+## 3.8.3 (2023-05-03)
+- Bug Fix: Redeploy
+
+
+## [Broken]3.8.2 (2023-05-03)
 - Bug Fix: Handle External Event for 3DS
 
 ## 3.8.1 (2023-03-17)
