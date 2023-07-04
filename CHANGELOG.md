@@ -1,11 +1,13 @@
 # CHANGELOG
 
+## 3.8.5 (2023-07-04)
+- Chore: Upgrade sentry-android to 6.24.0
+
 ## 3.8.4 (2023-05-03)
 - Bug Fix: Fix Wrong Casting Bug
 
 ## 3.8.3 (2023-05-03)
 - Bug Fix: Redeploy
-
 
 ## [Broken]3.8.2 (2023-05-03)
 - Bug Fix: Handle External Event for 3DS
