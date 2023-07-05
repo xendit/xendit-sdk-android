@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group 'com.xendit'
-version '3.8.5'
+version '3.8.4-1'
 
 ext {
     bintrayOrg = 'xendit'
@@ -36,7 +36,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName '3.8.5'
+        versionName '3.8.4-1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.snowplowanalytics:snowplow-android-tracker:2.1.1@aar'
 
     // sentry
-    api 'io.sentry:sentry-android:6.24.0'
+    api 'io.sentry:sentry-android:4.3.0'
 
     // this dependency is not required if you are already using your own
     // slf4j implementation

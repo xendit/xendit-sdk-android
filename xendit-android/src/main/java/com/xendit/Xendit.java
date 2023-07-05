@@ -49,7 +49,6 @@ import java.lang.reflect.Type;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
-import io.sentry.Hint;
 import io.sentry.Sentry;
 import io.sentry.SentryEvent;
 import io.sentry.SentryOptions;
@@ -118,7 +117,7 @@ public class Xendit {
 
                 sentryAndroidOptions.setBeforeSend(new SentryOptions.BeforeSendCallback() {
                     @Override
-                    public SentryEvent execute(SentryEvent event, Hint hint) {
+                    public SentryEvent execute(SentryEvent event, Object hint) {
                         // decide whether to send the event
                         for (SentryException sentryException : event.getExceptions()) {
                             SentryStackTrace stackTrace = sentryException.getStacktrace();

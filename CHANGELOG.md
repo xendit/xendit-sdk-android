@@ -3,6 +3,9 @@
 ## 3.8.5 (2023-07-04)
 - Chore: Upgrade sentry-android to 6.24.0
 
+## 3.8.4-1 (2023-07-05)
+- Bug Fix: Downgrade sentry back to 4.3.0
+
 ## 3.8.4 (2023-05-03)
 - Bug Fix: Fix Wrong Casting Bug
 
