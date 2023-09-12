@@ -15,9 +15,14 @@ info:
     name: xendit/cards-production
   - type: SLACK
     channel: cards-dev
+  - email: shaun@xendit.co
+    type: EMAIL
   x-cortex-dependency: []
   x-cortex-service-groups:
   - other
+  - shaun@xendit.co
+  - P3
+  - Payment-Growth
   x-cortex-link:
   - url: https://xendit.atlassian.net/wiki/spaces/CA/pages/2162263615/Cards+Handbook
     name: Issue Handling Handbook
