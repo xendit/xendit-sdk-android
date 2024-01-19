@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdk 34
     defaultConfig {
         applicationId "com.xendit.example"
-        targetSdkVersion 30
+        targetSdkVersion 34
 
 
         versionCode 1
@@ -14,10 +14,11 @@ android {
     flavorDimensions "api"
     android {
         compileOptions {
-            sourceCompatibility 1.8
-            targetCompatibility 1.8
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
+
 
     productFlavors {
         product{

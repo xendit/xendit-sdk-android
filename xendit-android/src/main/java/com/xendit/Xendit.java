@@ -802,7 +802,12 @@ public class Xendit {
                 }
 
                 authenticationBroadcastReceiver = new AuthenticationBroadcastReceiver(authenticationCallback);
-                context.registerReceiver(authenticationBroadcastReceiver, new IntentFilter(ACTION_KEY));
+                // if version is over 33
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    context.registerReceiver(authenticationBroadcastReceiver, new IntentFilter(ACTION_KEY), Context.RECEIVER_EXPORTED);
+                } else {
+                    context.registerReceiver(authenticationBroadcastReceiver, new IntentFilter(ACTION_KEY));
+                }
             }
         });
     }
@@ -816,7 +821,11 @@ public class Xendit {
                 }
 
                 tokenBroadcastReceiver = new TokenBroadcastReceiver(tokenCallback);
-                context.registerReceiver(tokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    context.registerReceiver(tokenBroadcastReceiver, new IntentFilter(ACTION_KEY), Context.RECEIVER_EXPORTED);
+                } else {
+                    context.registerReceiver(tokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
+                }
             }
         });
     }
@@ -830,7 +839,11 @@ public class Xendit {
                 }
 
                 authenticatedTokenBroadcastReceiver = new AuthenticatedTokenBroadcastReceiver(tokenCallback);
-                context.registerReceiver(authenticatedTokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    context.registerReceiver(authenticatedTokenBroadcastReceiver, new IntentFilter(ACTION_KEY), Context.RECEIVER_EXPORTED);
+                } else {
+                    context.registerReceiver(authenticatedTokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
+                }
             }
         });
     }

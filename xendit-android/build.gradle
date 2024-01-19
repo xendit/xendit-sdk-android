@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'signing'
 
 group 'com.xendit'
 version '3.8.5'
@@ -31,10 +31,10 @@ ext {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdk 34
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 34
         versionCode 1
         versionName '3.8.5'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -54,6 +54,10 @@ android {
         }
     }
     productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -102,7 +106,7 @@ dependencies {
 
 publishing {
     publications {
-        Production(MavenPublication) {
+        mavenJava(MavenPublication) {
             artifact("$buildDir/outputs/aar/xendit-android-release.aar") // replace with your library name
             groupId this.group
             artifactId 'xendit-android' // replace with your library artifact id
@@ -129,12 +133,9 @@ publishing {
 
 tasks.withType(Javadoc).all { enabled = false }
 
-apply plugin: 'maven'
-apply plugin: 'signing'
-
 if (project.hasProperty("android")) { // Android libraries
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier.set('sources')
         from android.sourceSets.main.java.srcDirs
     }
 
@@ -144,7 +145,7 @@ if (project.hasProperty("android")) { // Android libraries
     }
 } else { // Java libraries
     task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
     }
 }
@@ -159,51 +160,55 @@ String ossrhUser = properties.getProperty('ossrh.username')
 String ossrhPassword = properties.getProperty('ossrh.password')
 
 signing {
-    sign configurations.archives
+    sign publishing.publications.mavenJava
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.findByName("release")
 
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            groupId publishedGroupId
+            artifactId artifact
+            version libraryVersion
 
-            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
-
-            pom.project {
-                name bintrayName
-                packaging 'aar'
-                // optionally artifactId can be defined here
-                description libraryDescription
-                url siteUrl
-
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url gitUrl
-                }
+            pom {
+                name = libraryName
+                description = libraryDescription
+                url = siteUrl
 
                 licenses {
                     license {
-                        name licenseName
-                        url licenseUrl
+                        name = licenseName
+                        url = licenseUrl
                     }
                 }
 
                 developers {
                     developer {
-                        id developerId
-                        name developerName
-                        email developerEmail
+                        id = developerId
+                        name = developerName
+                        email = developerEmail
                     }
                 }
+
+                scm {
+                    connection = gitUrl
+                    developerConnection = gitUrl
+                    url = siteUrl
+                }
             }
+        }
+    }
+}
+
+repositories {
+    maven {
+        name = "Sonatype"
+        url = version.endsWith('SNAPSHOT') ? "https://s01.oss.sonatype.org/content/repositories/snapshots/" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+        credentials {
+            username ossrhUser
+            password ossrhPassword
         }
     }
 }
