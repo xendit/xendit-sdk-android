@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.0.0 (2024-01-22)
+- Update to use Andriod API Version 34 (Android 14)
+
 ## 3.8.5 (2023-07-04)
 - Chore: Upgrade sentry-android to 6.24.0
 
