@@ -6,7 +6,6 @@ apply plugin: 'signing'
 group 'com.xendit'
 version '4.0.0'
 
-
 ext {
     bintrayOrg = 'xendit'
     bintrayRepo = 'android'
