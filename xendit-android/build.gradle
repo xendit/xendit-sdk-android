@@ -71,10 +71,10 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.volley:volley:1.2.1'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
-    implementation 'androidx.annotation:annotation:1.0.0'
-    implementation 'androidx.core:core:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
+    implementation 'androidx.annotation:annotation:1.7.1'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.snowplowanalytics:snowplow-android-tracker:2.1.1@aar'
 
     // sentry
@@ -162,10 +162,6 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 String ossrhUser = properties.getProperty('ossrh.username')
 String ossrhPassword = properties.getProperty('ossrh.password')
 
-signing {
-    useGpgCmd()
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -205,16 +201,8 @@ publishing {
 
     repositories {
         maven {
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = ossrhUser
-                password = ossrhPassword
-            }
-        }
+            url = version.endsWith('SNAPSHOT') ? uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") : uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 
-        maven {
-            name = "Snapshots"
-            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
             credentials {
                 username = ossrhUser
                 password = ossrhPassword
@@ -222,6 +210,11 @@ publishing {
         }
     }
 }
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
 
 nexusStaging {
     serverUrl = 'https://s01.oss.sonatype.org/service/local/'

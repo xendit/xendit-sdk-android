@@ -793,9 +793,11 @@ public class Xendit {
         }
     }
 
+
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
+            @SuppressLint("UnspecifiedRegisterReceiverFlag")
             public void run() {
                 if (authenticationBroadcastReceiver != null) {
                     context.unregisterReceiver(authenticationBroadcastReceiver);
@@ -814,6 +816,8 @@ public class Xendit {
 
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+            @SuppressLint("UnspecifiedRegisterReceiverFlag")
             @Override
             public void run() {
                 if (tokenBroadcastReceiver != null) {
@@ -832,6 +836,7 @@ public class Xendit {
 
     private void registerBroadcastReceiverAuthenticatedToken(final TokenCallback tokenCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @SuppressLint("UnspecifiedRegisterReceiverFlag")
             @Override
             public void run() {
                 if (authenticatedTokenBroadcastReceiver != null) {
