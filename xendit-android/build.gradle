@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'signing'
 
 group 'com.xendit'
@@ -31,6 +32,7 @@ ext {
 }
 
 android {
+    namespace 'com.xendit'
     compileSdk 34
     defaultConfig {
         minSdkVersion 21
@@ -55,13 +57,12 @@ android {
     }
     productFlavors {
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -69,10 +70,10 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.volley:volley:1.2.1'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
-    implementation 'androidx.annotation:annotation:1.0.0'
-    implementation 'androidx.core:core:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
+    implementation 'androidx.annotation:annotation:1.7.1'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.snowplowanalytics:snowplow-android-tracker:2.1.1@aar'
 
     // sentry
@@ -84,16 +85,16 @@ dependencies {
 
     // Testing-only dependencies
     // Required -- JUnit 4 framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     // Optional -- Robolectric environment
-    testImplementation 'androidx.test:core:1.3.0'
+    testImplementation 'androidx.test:core:1.5.0'
     testImplementation 'org.robolectric:robolectric:4.0-beta-1'
     testImplementation "com.google.truth:truth:0.42"
     androidTestImplementation "org.mockito:mockito-core:3.1.0"
     androidTestImplementation "com.google.truth:truth:0.42"
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // retrofit
     api 'com.squareup.retrofit2:retrofit:2.5.0'
@@ -104,34 +105,9 @@ dependencies {
 
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact("$buildDir/outputs/aar/xendit-android-release.aar") // replace with your library name
-            groupId this.group
-            artifactId 'xendit-android' // replace with your library artifact id
-            version this.version
-
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-
-                // Iterate over the implementation dependencies (we don't want the test ones),
-                // adding a <dependency> node for each
-                configurations.implementation.allDependencies.each {
-                    // Ensure dependencies such as fileTree are not included in the pom.
-                    if (it.name != 'unspecified') {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-            }
-        }
-    }
-}
 
 tasks.withType(Javadoc).all { enabled = false }
+
 
 if (project.hasProperty("android")) { // Android libraries
     task sourcesJar(type: Jar) {
@@ -159,23 +135,26 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 String ossrhUser = properties.getProperty('ossrh.username')
 String ossrhPassword = properties.getProperty('ossrh.password')
 
-signing {
-    sign publishing.publications.mavenJava
-}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.findByName("release")
-
-            groupId publishedGroupId
-            artifactId artifact
-            version libraryVersion
+            groupId = 'com.xendit'
+            artifactId = 'xendit-sdk-android'
+            bintrayOrg = 'xendit'
+            bintrayRepo = 'android'
 
             pom {
-                name = libraryName
+                name = bintrayName
+                packaging = 'aar'
                 description = libraryDescription
                 url = siteUrl
+
+                scm {
+                    connection = gitUrl
+                    developerConnection = gitUrl
+                    url = gitUrl
+                }
 
                 licenses {
                     license {
@@ -191,27 +170,61 @@ publishing {
                         email = developerEmail
                     }
                 }
+            }
+        }
+
+        Production(MavenPublication) {
+            artifact("$buildDir/outputs/aar/xendit-android-release.aar") // replace with your library name
+            groupId this.group
+            artifactId 'xendit-android' // replace with your library artifact id
+            version this.version
+
+            pom {
+                name = bintrayName
+                packaging = 'aar'
+                description = libraryDescription
+                url = siteUrl
 
                 scm {
                     connection = gitUrl
                     developerConnection = gitUrl
-                    url = siteUrl
+                    url = gitUrl
                 }
+
+                licenses {
+                    license {
+                        name = licenseName
+                        url = licenseUrl
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = developerId
+                        name = developerName
+                        email = developerEmail
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = version.endsWith('SNAPSHOT') ? uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") : uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+
+            credentials {
+                username = ossrhUser
+                password = ossrhPassword
             }
         }
     }
 }
 
-repositories {
-    maven {
-        name = "Sonatype"
-        url = version.endsWith('SNAPSHOT') ? "https://s01.oss.sonatype.org/content/repositories/snapshots/" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-        credentials {
-            username ossrhUser
-            password ossrhPassword
-        }
-    }
+signing {
+    sign publishing.publications
 }
+
 
 nexusStaging {
     serverUrl = 'https://s01.oss.sonatype.org/service/local/'

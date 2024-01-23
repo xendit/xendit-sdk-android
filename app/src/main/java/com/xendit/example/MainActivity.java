@@ -36,19 +36,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.createTokenTextView_MainActivity:
-                startActivity(CreateTokenActivity.getLaunchIntent(this));
-                break;
-            case R.id.authenticationTextView_MainActivity:
-                startActivity(AuthenticationActivity.getLaunchIntent(this));
-                break;
-            case R.id.validationUtilTextView_MainActivity:
-                startActivity(ValidationUtilActivity.getLaunchIntent(this));
-                break;
-            case R.id.storeCVNTextView_MainActivity:
-                startActivity(StoreCvnActivity.getLaunchIntent(this));
-                break;
+        int id = view.getId();
+        if (id == R.id.createTokenTextView_MainActivity) {
+            startActivity(CreateTokenActivity.getLaunchIntent(this));
+        } else if (id == R.id.authenticationTextView_MainActivity) {
+            startActivity(AuthenticationActivity.getLaunchIntent(this));
+        } else if (id == R.id.validationUtilTextView_MainActivity) {
+            startActivity(ValidationUtilActivity.getLaunchIntent(this));
+        } else if (id == R.id.storeCVNTextView_MainActivity) {
+            startActivity(StoreCvnActivity.getLaunchIntent(this));
         }
     }
 
