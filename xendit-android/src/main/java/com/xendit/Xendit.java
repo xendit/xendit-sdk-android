@@ -445,11 +445,11 @@ public class Xendit {
      *                      fails
      */
     public void createMultipleUseToken(
-        final BillingDetails billingDetails,
-        final Customer customer,
-        final String tokenId,
-        final String cardCvn,
-        final TokenCallback tokenCallback) {
+            final BillingDetails billingDetails,
+            final Customer customer,
+            final String tokenId,
+            final String cardCvn,
+            final TokenCallback tokenCallback) {
         createSingleOrMultipleUseToken(null, null, false, null, true, billingDetails, customer, null, tokenId, cardCvn, tokenCallback);
     }
 
@@ -467,9 +467,9 @@ public class Xendit {
             final TokenCallback tokenCallback
     ) {
         /**
-        * card must exist when doing normal tokenization
-        * tokenId must exist when doing re-tokenization
-        */
+         * card must exist when doing normal tokenization
+         * tokenId must exist when doing re-tokenization
+         */
         if ((card != null || tokenId != null) && tokenCallback != null) {
             if (card != null && !CardValidator.isCardNumberValid(card.getCreditCardNumber())) {
                 tokenCallback.onError(new XenditError(context.getString(R.string.create_token_error_card_number)));
@@ -709,8 +709,8 @@ public class Xendit {
         _createToken(card, amount, shouldAuthenticate, "", isMultipleUse, null, null, null, null, null, new NetworkHandler<AuthenticatedToken>().setResultListener(new ResultListener<AuthenticatedToken>() {
             @Override
             public void onSuccess(AuthenticatedToken authentication) {
-                    TrackerController tracker = getTracker(context);
-                    tracker.track(Structured.builder()
+                TrackerController tracker = getTracker(context);
+                tracker.track(Structured.builder()
                         .category("api-request")
                         .action("create-token")
                         .label("Create Token")

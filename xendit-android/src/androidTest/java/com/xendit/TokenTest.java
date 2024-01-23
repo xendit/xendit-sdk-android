@@ -2,9 +2,9 @@ package com.xendit;
 
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
 
 import com.xendit.Models.Card;
 import com.xendit.Models.Token;
@@ -30,7 +30,7 @@ public class TokenTest {
     @Before
     public void setup() {
         String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
         xendit = new Xendit(appContext, PUBLISHABLE_KEY);
     }
 

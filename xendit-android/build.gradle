@@ -1,9 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'signing'
 
 group 'com.xendit'
 version '4.0.0'
+
 
 ext {
     bintrayOrg = 'xendit'
@@ -31,6 +33,7 @@ ext {
 }
 
 android {
+    namespace 'com.xendit'
     compileSdk 34
     defaultConfig {
         minSdkVersion 21
@@ -55,15 +58,13 @@ android {
     }
     productFlavors {
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
     }
-    buildToolsVersion '34.0.0'
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -85,7 +86,7 @@ dependencies {
 
     // Testing-only dependencies
     // Required -- JUnit 4 framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     // Optional -- Robolectric environment
     testImplementation 'androidx.test:core:1.5.0'
     testImplementation 'org.robolectric:robolectric:4.0-beta-1'
@@ -107,7 +108,7 @@ dependencies {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        Production(MavenPublication) {
             artifact("$buildDir/outputs/aar/xendit-android-release.aar") // replace with your library name
             groupId this.group
             artifactId 'xendit-android' // replace with your library artifact id
@@ -133,6 +134,7 @@ publishing {
 }
 
 tasks.withType(Javadoc).all { enabled = false }
+
 
 if (project.hasProperty("android")) { // Android libraries
     task sourcesJar(type: Jar) {
@@ -161,22 +163,27 @@ String ossrhUser = properties.getProperty('ossrh.username')
 String ossrhPassword = properties.getProperty('ossrh.password')
 
 signing {
-    sign publishing.publications.mavenJava
+    useGpgCmd()
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.findByName("release")
-
-            groupId publishedGroupId
-            artifactId artifact
-            version libraryVersion
+            groupId = 'com.xendit'
+            artifactId = 'xendit-sdk-android'
+            version = '4.0.0'
 
             pom {
-                name = libraryName
+                name = bintrayName
+                packaging = 'aar'
                 description = libraryDescription
                 url = siteUrl
+
+                scm {
+                    connection = gitUrl
+                    developerConnection = gitUrl
+                    url = gitUrl
+                }
 
                 licenses {
                     license {
@@ -192,24 +199,26 @@ publishing {
                         email = developerEmail
                     }
                 }
-
-                scm {
-                    connection = gitUrl
-                    developerConnection = gitUrl
-                    url = siteUrl
-                }
             }
         }
     }
-}
 
-repositories {
-    maven {
-        name = "Sonatype"
-        url = version.endsWith('SNAPSHOT') ? "https://s01.oss.sonatype.org/content/repositories/snapshots/" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-        credentials {
-            username ossrhUser
-            password ossrhPassword
+    repositories {
+        maven {
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = ossrhUser
+                password = ossrhPassword
+            }
+        }
+
+        maven {
+            name = "Snapshots"
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            credentials {
+                username = ossrhUser
+                password = ossrhPassword
+            }
         }
     }
 }
