@@ -1,7 +1,11 @@
 # CHANGELOG
 
-## 4.0.0 (2024-01-22)
-- Update to use Andriod API Version 34 (Android 14)
+## 4.1.0 (2024-01-25)
+- Fix package corruption issues on 4.0.0.
+
+
+## 4.0.0 (2024-01-22) - Package Corrupted. Use latest version instead
+- Update to use Andriod API Version 34 (Android 14). This package is corrupted
 
 ## 3.8.5 (2023-07-04)
 - Chore: Upgrade sentry-android to 6.24.0
