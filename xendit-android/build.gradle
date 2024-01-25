@@ -4,7 +4,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'signing'
 
 group 'com.xendit'
-version '4.0.0'
+version '4.1.0'
 
 ext {
     bintrayOrg = 'xendit'
@@ -38,7 +38,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName '4.0.0'
+        versionName '4.1.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -64,6 +64,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    buildToolsVersion '34.0.0'
 }
 
 dependencies {
@@ -170,6 +171,22 @@ publishing {
                         email = developerEmail
                     }
                 }
+
+                withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Iterate over the implementation dependencies (we don't want the test ones),
+                    // adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included in the pom.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
             }
         }
 
@@ -203,6 +220,22 @@ publishing {
                         id = developerId
                         name = developerName
                         email = developerEmail
+                    }
+                }
+
+                withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Iterate over the implementation dependencies (we don't want the test ones),
+                    // adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included in the pom.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
                     }
                 }
             }
