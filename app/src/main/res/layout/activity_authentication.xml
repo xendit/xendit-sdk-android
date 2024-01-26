@@ -45,6 +45,15 @@
             android:textColorHint="#cccccc"/>
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/midLabelEditText_AuthenticationActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="mid_label (switcher merchant only)"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc" />
+
     <Button
         android:id="@+id/authenticateBtn_AuthenticationActivity"
         android:layout_width="wrap_content"

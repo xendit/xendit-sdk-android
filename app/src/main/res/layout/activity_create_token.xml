@@ -70,6 +70,15 @@
         android:textColor="@android:color/black"
         android:textColorHint="#cccccc" />
 
+    <EditText
+        android:id="@+id/midLabelEditText_CreateTokenActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="mid_label (switcher merchant only)"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc" />
+
     <CheckBox
         android:id="@+id/multipleUseCheckBox_CreateTokenActivity"
         android:layout_width="match_parent"
