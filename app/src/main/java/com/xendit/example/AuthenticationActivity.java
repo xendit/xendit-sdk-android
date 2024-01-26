@@ -31,6 +31,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private EditText tokenIdEditText;
     private EditText amountEditText;
     private EditText cardCvnEditText;
+    private EditText midLabelText;
     private Button authenticateBtn;
     private TextView resultTextView;
 
@@ -48,6 +49,8 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         tokenIdEditText = (EditText) findViewById(R.id.tokenIdEditText_AuthenticationActivity);
         amountEditText = (EditText) findViewById(R.id.amountEditText_AuthenticationActivity);
         cardCvnEditText = (EditText) findViewById(R.id.cardCvnEditText_AuthenticationActivity);
+        midLabelText = (EditText) findViewById(R.id.midLabelEditText_AuthenticationActivity);
+
         authenticateBtn = (Button) findViewById(R.id.authenticateBtn_AuthenticationActivity);
         resultTextView = (TextView) findViewById(R.id.result_AuthenticationActivity);
 
@@ -75,22 +78,42 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         String amount = amountEditText.getText().toString();
         String cardCvn = cardCvnEditText.getText().toString();
         String onBehalfOf = "";
+        String midLabel = midLabelText.getText().toString();
 
-        xendit.createAuthentication(tokenId, amount, "IDR", cardCvn, onBehalfOf, new AuthenticationCallback() {
-            @Override
-            public void onSuccess(Authentication authentication) {
-                Gson gson = new Gson();
-                AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
-                String json = gson.toJson(authenticationResponse);
-                resultTextView.setText(json);
-                Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
-            }
+        if (midLabel.isBlank()){
+            xendit.createAuthentication(tokenId, amount, "IDR", cardCvn, onBehalfOf, new AuthenticationCallback() {
+                @Override
+                public void onSuccess(Authentication authentication) {
+                    Gson gson = new Gson();
+                    AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
+                    String json = gson.toJson(authenticationResponse);
+                    resultTextView.setText(json);
+                    Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onError(XenditError xenditError) {
-                Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onError(XenditError xenditError) {
+                    Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            xendit.createAuthentication(tokenId, amount, "IDR", cardCvn, onBehalfOf, midLabel ,new AuthenticationCallback() {
+                @Override
+                public void onSuccess(Authentication authentication) {
+                    Gson gson = new Gson();
+                    AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
+                    String json = gson.toJson(authenticationResponse);
+                    resultTextView.setText(json);
+                    Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(XenditError xenditError) {
+                    Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
     }
 
     @Override

@@ -45,6 +45,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     private EditText expYearEditText;
     private EditText cvnEditText;
     private EditText amountEditText;
+    private EditText midLabelText;
     private Button createTokenBtn;
     private CheckBox multipleUseCheckBox;
     private CheckBox shouldAuthenticateCheckBox;
@@ -71,6 +72,8 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         expYearEditText = (EditText) findViewById(R.id.expYearEditText_CreateTokenActivity);
         cvnEditText = (EditText) findViewById(R.id.cvnEditText_CreateTokenActivity);
         amountEditText = (EditText) findViewById(R.id.amountEditText_CreateTokenActivity);
+        midLabelText = (EditText) findViewById(R.id.midLabelEditText_CreateTokenActivity);
+
         createTokenBtn = (Button) findViewById(R.id.createTokenBtn_CreateTokenActivity);
         multipleUseCheckBox = (CheckBox) findViewById(R.id.multipleUseCheckBox_CreateTokenActivity);
         shouldAuthenticateCheckBox = (CheckBox) findViewById(R.id.shouldAuthenticate_CreateTokenActivity);
@@ -161,11 +164,21 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             }
         };
 
+        String midLabel = midLabelText.getText().toString();
         if (isMultipleUse) {
-            xendit.createMultipleUseToken(card, onBehalfOf, billingDetails, customer, callback);
+            if (midLabel.isBlank()){
+                xendit.createMultipleUseToken(card, onBehalfOf, billingDetails, customer, callback);
+            } else {
+                xendit.createMultipleUseToken(card, onBehalfOf, billingDetails, customer, midLabel, callback);
+            }
         } else {
             String amount = amountEditText.getText().toString();
-            xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, "IDR", callback);
+
+            if (midLabel.isBlank()){
+                xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, "IDR", callback);
+            } else {
+                xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, "IDR", midLabel, callback);
+            }
         }
     }
 
