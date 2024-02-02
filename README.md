@@ -87,10 +87,26 @@ Xendit xendit = new Xendit(getApplicationContext(), "xnd_public_development_O4uG
 ```
 
 ### Creating a single-use token
+
+This function accepts parameters below:
+
+|Parameter|Type|Description|
+|---------|----|-----------|
+|Card|Card Object|Card data that will be used to create a token|
+|amount|String|Amount that will be used to create a token bundled with 3DS authentication|
+|shouldAuthenticate|Boolean|A flag indicating if 3DS authentication is required for this token. Will be set to `true` if you omit the parameter|
+|onBehalfOf|String| Sub-account business ID for XenPlatform master account who intended to create a token for their sub-account. Will be set to `empty` if you omit the parameter|
+|isMultipleUse|Boolean|A flag to identify whether a token will be reusable or just for one-time use. Will be set to `false` if you omit the parameter|
+|billingDetails|billingDetails Object|Card holder's billing details|
+|customer|customer object|Xendit customer object|
+|currency|String|Currency of the transaction that will be submitted for 3DS authentication|
+|midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
+
+
 ```
 Card card = new Card("4000000000001091", "12", "2017", "123");
 
-xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
+xendit.createSingleUseToken(card, 75000, true, "user-id", billingDetails, customer, currency, midLabel, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -103,13 +119,20 @@ xendit.createSingleUseToken(card, 75000, true, "user-id", new TokenCallback() {
     }
 });
 ```
-`createSingleUseToken` accept 5 parameters: `Card` object, amount, optional `shouldAuthenticate` (boolean), optional `onBehalfOf` (string), and a `TokenCallback`. `shouldAuthenticate` will be set to true and `onBehalfOf` will be set to empty if you omit these parameters.
 
 ### Creating a multiple-use token
+|Parameter|Type|Description|
+|---------|----|-----------|
+|Card|Card Object|Card data that will be used to create a token|
+|onBehalfOf|String| Sub-account business ID for XenPlatform master account who intended to create a token for their sub-account. Will be set to `empty` if you omit the parameter|
+|billingDetails|billingDetails Object|Card holder's billing details|
+|customer|customer object|Xendit customer object|
+|midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
+
 ```
 Card card = new Card("4000000000001091", "12", "2017", "123");
 
-xendit.createMultipleUseToken(card, "user-id", new TokenCallback() {
+xendit.createMultipleUseToken(card, "user-id", billingDetails, customer, midLabel, new TokenCallback() {
     @Override
     public void onSuccess(Token token) {
         // Handle successful tokenization
@@ -122,14 +145,23 @@ xendit.createMultipleUseToken(card, "user-id", new TokenCallback() {
     }
 });
 ```
-`createMultipleUseToken` accept 3 parameters: `Card` object, optional `onBehalfOf` (string), and a `TokenCallback`. `onBehalfOf` will be set to empty if you omit this parameter.
 
 ### Creating a 3DS authentication
+|Parameter|Type|Description|
+|---------|----|-----------|
+|tokenId|String|a multiple-use token ID that is already created|
+|amount|String|Amount that will be used to create a token bundled with 3DS authentication|
+|currency|String|Currency of the transaction that will be submitted for 3DS authentication|
+|cardCvn|String|Card verification Number collected from card holder|
+|midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
+|onBehalfOf|String| Sub-account business ID for XenPlatform master account who intended to create a token for their sub-account. Will be set to `empty` if you omit the parameter|
+|midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
+
 ```
 String tokenId = "sample-token-id";
 int amount = 50000;
 
-xendit.createAuthentication(tokenId, amount, "user-id", new AuthenticationCallback() {
+xendit.createAuthentication(tokenId, amount, currency, cardCvn, "user-id", midLabel, new AuthenticationCallback() {
     @Override
     public void onSuccess(Authentication authentication) {
         // Handle successful authentication
@@ -142,8 +174,6 @@ xendit.createAuthentication(tokenId, amount, "user-id", new AuthenticationCallba
     }
 });
 ```
-
-`createAuthentication` accept 4 parameters: tokenId, amount, optional `onBehalfOf` (string), and an `AuthenticationCallback`. `onBehalfOf` will be set to empty if you omit it, but is required when you passed it during `createSingleUseToken` or `createMultipleUseToken`.
 
 ## Creating a charge
 When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
