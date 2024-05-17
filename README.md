@@ -104,7 +104,8 @@ This function accepts parameters below:
 
 
 ```
-Card card = new Card("4000000000001091", "12", "2017", "123");
+// The second (month) parameter needs to be a 2-digit string representing the month (e.g., "01" for January, "12" for December)
+Card card = new Card("4000000000001091", "05", "2017", "123");
 
 xendit.createSingleUseToken(card, 75000, true, "user-id", billingDetails, customer, currency, midLabel, new TokenCallback() {
     @Override
