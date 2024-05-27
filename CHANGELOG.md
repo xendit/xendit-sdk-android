@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.1.2 (2024-05-27)
+- fix JCB card detection and expiry date
+
 ## 4.1.1 (20240-01-26)
 - Support mid_label in create token and unbundled create authentication
 
