@@ -294,7 +294,10 @@ public class CardValidator {
     private static boolean isCardJCB(String cardNumber) {
         if (cardNumber != null && cardNumber.length() >= 4) {
             int startingNumber = number(cardNumber.substring(0, 4));
-            return (startingNumber >= 3528 && startingNumber <= 3589) || cardNumber.startsWith("308800") || cardNumber.startsWith("333755");
+            return (startingNumber >= 3528 && startingNumber <= 3589) ||
+                cardNumber.startsWith("308800") ||
+                cardNumber.startsWith("333755") ||
+                cardNumber.startsWith("333700");
         } else {
             return false;
         }
