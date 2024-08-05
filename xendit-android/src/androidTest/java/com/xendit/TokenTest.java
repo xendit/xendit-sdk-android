@@ -94,7 +94,7 @@ public class TokenTest {
 
     @Test
     public void test_createSingleUseTokenAuthFalseWithCardHolderData() {
-        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "628212223242526");
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
         Card card = new Card("4000000000000002",
                 "12",
                 "2050",
@@ -118,7 +118,7 @@ public class TokenTest {
 
     @Test
     public void test_createSingleUseTokenAuthTrueWithCardHolderData() {
-        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "628212223242526");
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
         Card card = new Card("4000000000000002",
                 "12",
                 "2050",
@@ -139,7 +139,7 @@ public class TokenTest {
 
     @Test
     public void test_createMultipleUseTokenWithCardHolderData() {
-        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "628212223242526");
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
         Card card = new Card("4000000000000002",
                 "12",
                 "2050",

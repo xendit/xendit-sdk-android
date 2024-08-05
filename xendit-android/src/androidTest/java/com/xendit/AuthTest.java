@@ -47,7 +47,7 @@ public class AuthTest {
             public void onError(XenditError xenditError) {
             }
         };
-        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "628212223242526");
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
         xendit.createAuthentication("9823104219412", 200, cardHolderData, callback);
     }
 

@@ -4,6 +4,10 @@
     <string name="expMonthTest">12</string>
     <string name="cvnTest">123</string>
     <string name="amountTest">123000</string>
+    <string name="cardHolderFirstNameTest">John</string>
+    <string name="cardHolderLastNameTest">Hudson</string>
+    <string name="cardHolderEmailTest">john@xendit.co</string>
+    <string name="cardHolderPhoneNumberTest">+628123123123</string>
     <string name="create_token">Create Token</string>
     <string name="store_cvn">Store CVN</string>
 </resources>
