@@ -4,6 +4,8 @@ buildscript {
         google()
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
+        // https://github.com/bintray/gradle-bintray-plugin/issues/346#issuecomment-2262396647
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.2.1'

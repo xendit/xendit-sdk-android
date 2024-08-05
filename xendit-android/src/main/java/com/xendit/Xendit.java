@@ -29,6 +29,7 @@ import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Authentication;
 import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
+import com.xendit.Models.CardHolderData;
 import com.xendit.Models.Customer;
 import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
@@ -72,7 +73,7 @@ public class Xendit {
     private static final String CREATE_CREDIT_CARD_URL = PRODUCTION_XENDIT_BASE_URL + "/credit_card_tokens";
     private static final String CREATE_CREDIT_CARD_TOKEN_URL = PRODUCTION_XENDIT_BASE_URL + "/v2/credit_card_tokens";
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
-    private static final String DNS_SERVER = "https://7190a1331444434eb6aed7b5a8d776f0@o30316.ingest.sentry.io/6314580";
+    private static final String DSN_SERVER = "https://7190a1331444434eb6aed7b5a8d776f0@o30316.ingest.sentry.io/6314580";
     private static final String CLIENT_IDENTIFIER = "Xendit Android SDK";
     private static final String CLIENT_API_VERSION = "2.0.0";
     private static final String CLIENT_TYPE = "SDK";
@@ -104,6 +105,8 @@ public class Xendit {
         SentryAndroid.init(context, new Sentry.OptionsConfiguration<SentryAndroidOptions>() {
             @Override
             public void configure(SentryAndroidOptions sentryAndroidOptions) {
+                sentryAndroidOptions.setDsn(DSN_SERVER);
+
                 try {
                     PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
                     String versionName = pInfo.versionName;
@@ -131,8 +134,6 @@ public class Xendit {
                         return null;
                     }
                 });
-
-                sentryAndroidOptions.setDsn(DNS_SERVER);
             }
         });
 
@@ -725,56 +726,115 @@ public class Xendit {
     /**
      * Creates a 3DS authentication for a multiple-use token
      *
-     * @param tokenId A multi-use token id
-     * @param amount Amount of money to be authenticated
-     * @param currency Currency of the amount
-     * @param authenticationCallback The callback that will be called when the authentication completes or
-     *                      fails
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or fails
      */
     public void createAuthentication(final String tokenId, final int amount, final String currency, final AuthenticationCallback authenticationCallback) {
         final String amountStr = Integer.toString(amount);
-        createAuthenticationInternal(tokenId, amountStr, currency, null, null, null, authenticationCallback);
+        createAuthenticationInternal(tokenId, amountStr, currency, null, null, null, null, authenticationCallback);
     }
 
     /**
      * Creates a 3DS authentication for a multiple-use token
      *
-     * @param  tokenId The id of a multiple-use token
-     * @param  amount The amount that will eventually be charged. This number is displayed to the
-     *                user in the 3DS authentication view
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param cardHolderData         Additional information of the card holder data
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or fails
+     */
+    public void createAuthentication(final String tokenId, final int amount, final String currency, final CardHolderData cardHolderData, final AuthenticationCallback authenticationCallback) {
+        final String amountStr = Integer.toString(amount);
+        createAuthenticationInternal(tokenId, amountStr, currency, null, null, null, cardHolderData, authenticationCallback);
+    }
+
+    /**
+     * Creates a 3DS authentication for a multiple-use token
+     *
+     * @param tokenId                The id of a multiple-use token
+     * @param amount                 The amount that will eventually be charged. This number is displayed to the
+     *                               user in the 3DS authentication view
      * @param authenticationCallback The callback that will be called when the authentication
      *                               creation completes or fails
      */
     public void createAuthentication(final String tokenId, final int amount, final AuthenticationCallback authenticationCallback) {
         final String amountStr = Integer.toString(amount);
-        createAuthenticationInternal(tokenId, amountStr, null, null, null, null, authenticationCallback);
+        createAuthenticationInternal(tokenId, amountStr, null, null, null, null, null, authenticationCallback);
     }
 
     /**
      * Creates a 3DS authentication for a multiple-use token
      *
-     * @param tokenId A multi-use token id
-     * @param amount Amount of money to be authenticated
-     * @param currency Currency of the amount
-     * @param cardCvn CVV/CVN collected from the card holder
-     * @param authenticationCallback The callback that will be called when the authentication completes or
-     *                      fails
+     * @param tokenId                The id of a multiple-use token
+     * @param amount                 The amount that will eventually be charged. This number is displayed to the
+     *                               user in the 3DS authentication view
+     * @param cardHolderData         Additional information of the card holder
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication creation completes or fails
+     */
+    public void createAuthentication(final String tokenId, final int amount, CardHolderData cardHolderData, final AuthenticationCallback authenticationCallback) {
+        final String amountStr = Integer.toString(amount);
+        createAuthenticationInternal(tokenId, amountStr, null, null, null, null, cardHolderData, authenticationCallback);
+    }
+
+    /**
+     * Creates a 3DS authentication for a multiple-use token
+     *
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param cardCvn                CVV/CVN collected from the card holder
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or fails
      */
     public void createAuthentication(final String tokenId, final String amount, final String currency, final String cardCvn, final AuthenticationCallback authenticationCallback) {
-        createAuthenticationInternal(tokenId, amount, currency, cardCvn, null, null, authenticationCallback);
+        createAuthenticationInternal(tokenId, amount, currency, cardCvn, null, null, null, authenticationCallback);
     }
 
     /**
      * Creates a 3DS authentication for a multiple-use token
      *
-     * @param tokenId A multi-use token id
-     * @param amount Amount of money to be authenticated
-     * @param currency Currency of the amount
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param cardCvn                CVV/CVN collected from the card holder
+     * @param cardHolderData         Additional information of the card holder data
      * @param authenticationCallback The callback that will be called when the authentication completes or
-     *                      fails
+     *                               fails
+     */
+    public void createAuthentication(final String tokenId, final String amount, final String currency, final String cardCvn, final CardHolderData cardHolderData, final AuthenticationCallback authenticationCallback) {
+        createAuthenticationInternal(tokenId, amount, currency, cardCvn, null, null, cardHolderData, authenticationCallback);
+    }
+
+    /**
+     * Creates a 3DS authentication for a multiple-use token
+     *
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or fails
      */
     public void createAuthentication(final String tokenId, final String amount, final String currency, final AuthenticationCallback authenticationCallback) {
-        createAuthenticationInternal(tokenId, amount, currency, null, null, null, authenticationCallback);
+        createAuthenticationInternal(tokenId, amount, currency, null, null, null, null, authenticationCallback);
+    }
+
+    /**
+     * Creates a 3DS authentication for a multiple-use token
+     *
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param cardHolderData         Additional information of the card holder data
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or fails
+     */
+    public void createAuthentication(final String tokenId, final String amount, final String currency, final CardHolderData cardHolderData, final AuthenticationCallback authenticationCallback) {
+        createAuthenticationInternal(tokenId, amount, currency, null, null, null, cardHolderData, authenticationCallback);
     }
 
     /**
@@ -787,12 +847,29 @@ public class Xendit {
      * @param onBehalfOf             Business Id to call the API on behalf of
      *                               (Applicable to Platform merchants)
      * @param authenticationCallback The callback that will be called when the
-     *                               authentication completes or
-     *                               fails
+     *                               authentication completes or fails
      */
     public void createAuthentication(final String tokenId, final String amount, final String currency,
             final String cardCvn, final String onBehalfOf, final AuthenticationCallback authenticationCallback) {
-        createAuthenticationInternal(tokenId, amount, currency, cardCvn, onBehalfOf, null, authenticationCallback);
+        createAuthenticationInternal(tokenId, amount, currency, cardCvn, onBehalfOf, null, null, authenticationCallback);
+    }
+
+    /**
+     * Creates a 3DS authentication for a multiple-use token
+     *
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param cardCvn                CVV/CVN collected from the card holder
+     * @param cardHolderData         Additional information of the card holder data
+     * @param onBehalfOf             Business Id to call the API on behalf of
+     *                               (Applicable to Platform merchants)
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or fails
+     */
+    public void createAuthentication(final String tokenId, final String amount, final String currency,
+                                     final String cardCvn, final CardHolderData cardHolderData, final String onBehalfOf, final AuthenticationCallback authenticationCallback) {
+        createAuthenticationInternal(tokenId, amount, currency, cardCvn, onBehalfOf, null, cardHolderData, authenticationCallback);
     }
 
     /**
@@ -814,11 +891,34 @@ public class Xendit {
     public void createAuthentication(final String tokenId, final String amount, final String currency,
             final String cardCvn, final String onBehalfOf, final String midLabel,
             final AuthenticationCallback authenticationCallback) {
-        createAuthenticationInternal(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel, authenticationCallback);
+        createAuthenticationInternal(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel, null, authenticationCallback);
+    }
+
+    /**
+     * Creates a 3DS authentication for a multiple-use token
+     *
+     * @param tokenId                A multi-use token id
+     * @param amount                 Amount of money to be authenticated
+     * @param currency               Currency of the amount
+     * @param cardCvn                CVV/CVN collected from the card holder
+     * @param cardHolderData         Additional information of the card holder data
+     * @param onBehalfOf             Business Id to call the API on behalf of
+     *                               (Applicable to Platform merchants)
+     * @param midLabel               Mid label to perform authentication if
+     *                               tokenization is bundled with authenticaiton.
+     *                               This is only applicable for switcher mid.
+     * @param authenticationCallback The callback that will be called when the
+     *                               authentication completes or
+     *                               fails
+     */
+    public void createAuthentication(final String tokenId, final String amount, final String currency,
+                                     final String cardCvn, final CardHolderData cardHolderData, final String onBehalfOf, final String midLabel,
+                                     final AuthenticationCallback authenticationCallback) {
+        createAuthenticationInternal(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel, cardHolderData, authenticationCallback);
     }
 
     private void createAuthenticationInternal(final String tokenId, final String amount, final String currency,
-            final String cardCvn, final String onBehalfOf, final String midLabel,
+            final String cardCvn, final String onBehalfOf, final String midLabel, final CardHolderData cardHolderData,
             final AuthenticationCallback authenticationCallback) {
         if (tokenId == null || tokenId.equals("")) {
             authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
@@ -830,7 +930,7 @@ public class Xendit {
             return;
         }
 
-        _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel,
+        _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel, cardHolderData,
                 new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
             @Override
             public void onSuccess(Authentication authentication) {
@@ -1146,6 +1246,13 @@ public class Xendit {
             cardData.addProperty("exp_year", card.getCardExpirationYear());
             cardData.addProperty("exp_month", card.getCardExpirationMonth());
             cardData.addProperty("cvn", card.getCreditCardCVN());
+            CardHolderData cardHolderData = card.getCardHolder();
+            if (cardHolderData != null) {
+                cardData.addProperty("card_holder_first_name", cardHolderData.getFirstName());
+                cardData.addProperty("card_holder_last_name", cardHolderData.getLastName());
+                cardData.addProperty("card_holder_email", cardHolderData.getEmail());
+                cardData.addProperty("card_holder_phone_number", cardHolderData.getPhoneNumber());
+            }
             request.addJsonParam("card_data", cardData);
         }
 
@@ -1194,7 +1301,7 @@ public class Xendit {
     }
 
     private void _createAuthentication(String tokenId, String amount, String currency, String cardCvn,
-            String onBehalfOf, String midLabel, NetworkHandler<Authentication> handler) {
+                                       String onBehalfOf, String midLabel, CardHolderData cardHolder, NetworkHandler<Authentication> handler) {
         String requestUrl = CREATE_CREDIT_CARD_URL + "/" + tokenId + "/authentications";
 
         BaseRequest<Authentication> request = buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class, new DefaultResponseHandler<>(handler));
@@ -1205,26 +1312,20 @@ public class Xendit {
         if (cardCvn != null && !cardCvn.isEmpty()) {
             request.addParam("card_cvn", cardCvn);
         }
+        if (cardHolder != null) {
+            JsonObject cardHolderData = new JsonObject();
+            cardHolderData.addProperty("card_holder_first_name", cardHolder.getFirstName());
+            cardHolderData.addProperty("card_holder_last_name", cardHolder.getLastName());
+            cardHolderData.addProperty("card_holder_email", cardHolder.getEmail());
+            cardHolderData.addProperty("card_holder_phone_number", cardHolder.getPhoneNumber());
+            request.addJsonParam("card_data", cardHolderData);
+        }
 
         if (midLabel != null) {
             request.addParam("mid_label", midLabel);
         }
 
         sendRequest(request, handler);
-    }
-
-    private void _createAuthenticationToken(final String tokenId, String amount, String currency, String cardCvn, String onBehalfOf, final String midLabel, final TokenCallback tokenCallback) {
-        _createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel, new NetworkHandler<Authentication>().setResultListener(new ResultListener<Authentication>() {
-            @Override
-            public void onSuccess(Authentication responseObject) {
-                handleAuthenticatedToken(tokenId, responseObject, tokenCallback);
-            }
-
-            @Override
-            public void onFailure(NetworkError error) {
-                tokenCallback.onError(new XenditError(error));
-            }
-        }));
     }
 
     private void handle3ds1Tokenization(AuthenticatedToken authentication, TokenCallback tokenCallback) {
