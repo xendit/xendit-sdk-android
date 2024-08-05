@@ -103,8 +103,9 @@ This function accepts parameters below:
 |midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
 
 
-```
-Card card = new Card("4000000000001091", "12", "2017", "123");
+```java
+CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
+Card card = new Card("4000000000001091", "12", "2017", "123", cardHolderData);
 
 xendit.createSingleUseToken(card, 75000, true, "user-id", billingDetails, customer, currency, midLabel, new TokenCallback() {
     @Override
@@ -129,7 +130,8 @@ xendit.createSingleUseToken(card, 75000, true, "user-id", billingDetails, custom
 |customer|customer object|Xendit customer object|
 |midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
 
-```
+```java
+CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
 Card card = new Card("4000000000001091", "12", "2017", "123");
 
 xendit.createMultipleUseToken(card, "user-id", billingDetails, customer, midLabel, new TokenCallback() {
@@ -147,21 +149,22 @@ xendit.createMultipleUseToken(card, "user-id", billingDetails, customer, midLabe
 ```
 
 ### Creating a 3DS authentication
-|Parameter|Type|Description|
-|---------|----|-----------|
-|tokenId|String|a multiple-use token ID that is already created|
-|amount|String|Amount that will be used to create a token bundled with 3DS authentication|
-|currency|String|Currency of the transaction that will be submitted for 3DS authentication|
-|cardCvn|String|Card verification Number collected from card holder|
-|midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
-|onBehalfOf|String| Sub-account business ID for XenPlatform master account who intended to create a token for their sub-account. Will be set to `empty` if you omit the parameter|
-|midLabel|String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
+| Parameter      |Type|Description|
+|----------------|----|-----------|
+| tokenId        |String|a multiple-use token ID that is already created|
+| amount         |String|Amount that will be used to create a token bundled with 3DS authentication|
+| currency       |String|Currency of the transaction that will be submitted for 3DS authentication|
+| cardCvn        |String|Card verification Number collected from card holder|
+| cardHolderData |String|Additional information of the card holder data|
+| midLabel       |String|*For switcher merchant only* Specific string value which labels any of your Merchant IDs (MID) set up with Xendit. This can be configured in the list of MIDs on your Dashboard settings. (If this is not included in a request, and you have more than 1 MID in your list, the transaction will proceed using your prioritized MID (first MID on your list)).|
+| onBehalfOf     |String| Sub-account business ID for XenPlatform master account who intended to create a token for their sub-account. Will be set to `empty` if you omit the parameter|
 
-```
+```java
 String tokenId = "sample-token-id";
 int amount = 50000;
+CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
 
-xendit.createAuthentication(tokenId, amount, currency, cardCvn, "user-id", midLabel, new AuthenticationCallback() {
+xendit.createAuthentication(tokenId, amount, currency, cardCvn, cardHolderData, "user-id", midLabel, new AuthenticationCallback() {
     @Override
     public void onSuccess(Authentication authentication) {
         // Handle successful authentication
@@ -179,7 +182,7 @@ xendit.createAuthentication(tokenId, amount, currency, cardCvn, "user-id", midLa
 When you're ready to charge a card, use the private key on your backend to call the charge endpoint. See our API reference at https://xendit.github.io/apireference/#create-charge
 
 
-## Compability with ProGuard
+## Compatibility with ProGuard
 
 You will need to add the following to your proguard rules file (`proguard-rules.pro`). Else, proguard might affect deserialization of the authentication response body.
 ```
