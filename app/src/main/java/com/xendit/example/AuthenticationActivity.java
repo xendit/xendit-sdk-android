@@ -31,6 +31,10 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private EditText tokenIdEditText;
     private EditText amountEditText;
     private EditText cardCvnEditText;
+    private EditText cardHolderFirstNameEditText;
+    private EditText cardHolderLastNameEditText;
+    private EditText cardHolderEmailEditText;
+    private EditText cardHolderPhoneNumberEditText;
     private EditText midLabelText;
     private Button authenticateBtn;
     private TextView resultTextView;
@@ -49,6 +53,10 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         tokenIdEditText = (EditText) findViewById(R.id.tokenIdEditText_AuthenticationActivity);
         amountEditText = (EditText) findViewById(R.id.amountEditText_AuthenticationActivity);
         cardCvnEditText = (EditText) findViewById(R.id.cardCvnEditText_AuthenticationActivity);
+        cardHolderFirstNameEditText = (EditText) findViewById(R.id.cardHolderFirstNameEditText_AuthenticationActivity);
+        cardHolderLastNameEditText = (EditText) findViewById(R.id.cardHolderLastNameEditText_AuthenticationActivity);
+        cardHolderEmailEditText = (EditText) findViewById(R.id.cardHolderEmailEditText_AuthenticationActivity);
+        cardHolderPhoneNumberEditText = (EditText) findViewById(R.id.cardHolderPhoneNumberEditText_AuthenticationActivity);
         midLabelText = (EditText) findViewById(R.id.midLabelEditText_AuthenticationActivity);
 
         authenticateBtn = (Button) findViewById(R.id.authenticateBtn_AuthenticationActivity);
@@ -56,6 +64,10 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
         amountEditText.setText(getString(R.string.amountTest));
         cardCvnEditText.setText(getString(R.string.cvnTest));
+        cardHolderFirstNameEditText.setText(R.string.cardHolderFirstNameTest);
+        cardHolderLastNameEditText.setText(R.string.cardHolderLastNameTest);
+        cardHolderEmailEditText.setText(R.string.cardHolderEmailTest);
+        cardHolderPhoneNumberEditText.setText(R.string.cardHolderPhoneNumberTest);
 
         authenticateBtn.setOnClickListener(this);
     }
