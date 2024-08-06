@@ -105,7 +105,7 @@ This function accepts parameters below:
 
 ```java
 CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
-Card card = new Card("4000000000001091", "12", "2017", "123", cardHolderData);
+Card card = new Card("4000000000001091", "12", "2039", "123", cardHolderData);
 
 xendit.createSingleUseToken(card, 75000, true, "user-id", billingDetails, customer, currency, midLabel, new TokenCallback() {
     @Override
@@ -132,7 +132,7 @@ xendit.createSingleUseToken(card, 75000, true, "user-id", billingDetails, custom
 
 ```java
 CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
-Card card = new Card("4000000000001091", "12", "2017", "123");
+Card card = new Card("4000000000001091", "12", "2039", "123");
 
 xendit.createMultipleUseToken(card, "user-id", billingDetails, customer, midLabel, new TokenCallback() {
     @Override
