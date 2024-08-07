@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.xendit.Models.Address;
 import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
+import com.xendit.Models.CardHolderData;
 import com.xendit.Models.CardInfo;
 import com.xendit.Models.Customer;
 import com.xendit.Models.Token;
@@ -45,6 +46,10 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     private EditText expYearEditText;
     private EditText cvnEditText;
     private EditText amountEditText;
+    private EditText cardHolderFirstNameEditText;
+    private EditText cardHolderLastNameEditText;
+    private EditText cardHolderEmailEditText;
+    private EditText cardHolderPhoneNumberEditText;
     private EditText midLabelText;
     private Button createTokenBtn;
     private CheckBox multipleUseCheckBox;
@@ -72,6 +77,10 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         expYearEditText = (EditText) findViewById(R.id.expYearEditText_CreateTokenActivity);
         cvnEditText = (EditText) findViewById(R.id.cvnEditText_CreateTokenActivity);
         amountEditText = (EditText) findViewById(R.id.amountEditText_CreateTokenActivity);
+        cardHolderFirstNameEditText = (EditText) findViewById(R.id.cardHolderFirstNameEditText_CreateTokenActivity);
+        cardHolderLastNameEditText = (EditText) findViewById(R.id.cardHolderLastNameEditText_CreateTokenActivity);
+        cardHolderEmailEditText = (EditText) findViewById(R.id.cardHolderEmailEditText_CreateTokenActivity);
+        cardHolderPhoneNumberEditText = (EditText) findViewById(R.id.cardHolderPhoneNumberEditText_CreateTokenActivity);
         midLabelText = (EditText) findViewById(R.id.midLabelEditText_CreateTokenActivity);
 
         createTokenBtn = (Button) findViewById(R.id.createTokenBtn_CreateTokenActivity);
@@ -87,6 +96,10 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         expYearEditText.setText(year);
         cvnEditText.setText(R.string.cvnTest);
         amountEditText.setText(R.string.amountTest);
+        cardHolderFirstNameEditText.setText(R.string.cardHolderFirstNameTest);
+        cardHolderLastNameEditText.setText(R.string.cardHolderLastNameTest);
+        cardHolderEmailEditText.setText(R.string.cardHolderEmailTest);
+        cardHolderPhoneNumberEditText.setText(R.string.cardHolderPhoneNumberTest);
     }
 
     private void setActionBarTitle(String title) {
@@ -108,10 +121,16 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         isMultipleUse = multipleUseCheckBox.isChecked();
         shouldAuthenticate = !shouldAuthenticateCheckBox.isChecked();
 
+        CardHolderData cardHolderData = new CardHolderData(cardHolderFirstNameEditText.getText().toString(),
+                cardHolderLastNameEditText.getText().toString(),
+                cardHolderEmailEditText.getText().toString(),
+                cardHolderPhoneNumberEditText.getText().toString());
+
         Card card = new Card(cardNumberEditText.getText().toString(),
                 expMonthEditText.getText().toString(),
                 expYearEditText.getText().toString(),
-                cvnEditText.getText().toString());
+                cvnEditText.getText().toString(),
+                cardHolderData);
 
         Address billingAddress = new Address();
         billingAddress.setCountry("ID");
@@ -123,22 +142,22 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
         billingAddress.setPostalCode("123123");
 
         BillingDetails billingDetails = new BillingDetails();
-        billingDetails.setMobileNumber("+6208123123123");
+        billingDetails.setMobileNumber("+628123123123");
         billingDetails.setEmail("john@xendit.co");
         billingDetails.setGivenNames("John");
         billingDetails.setSurname("Hudson");
-        billingDetails.setPhoneNumber("+6208123123123");
+        billingDetails.setPhoneNumber("+628123123123");
         billingDetails.setAddress(billingAddress);
 
         Address shippingAddress = billingAddress;
         Address[] customerAddress = { shippingAddress };
 
         Customer customer = new Customer();
-        customer.setMobileNumber("+6208123123123");
+        customer.setMobileNumber("+628123123123");
         customer.setEmail("john@xendit.co");
         customer.setGivenNames("John");
         customer.setSurname("Hudson");
-        customer.setPhoneNumber("+6208123123123");
+        customer.setPhoneNumber("+628123123123");
         customer.setNationality("ID");
         customer.setDateOfBirth("1990-04-13");
         customer.setDescription("test user");

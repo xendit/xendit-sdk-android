@@ -8,17 +8,34 @@ import com.xendit.utils.CardValidator;
 
 public class Card {
 
-    private String creditCardNumber;
-    private String cardExpirationMonth;
-    private String cardExpirationYear;
-    private String creditCardCVN;
-
+    private final String creditCardNumber;
+    private final String cardExpirationMonth;
+    private final String cardExpirationYear;
+    private final String creditCardCVN;
+    private final CardHolderData cardHolderData;
 
     public Card(String creditCardNumber, String cardExpirationMonth, String cardExpirationYear, String creditCardCVN) {
         this.creditCardNumber = CardValidator.cleanCardNumber(creditCardNumber);
         this.cardExpirationMonth = cardExpirationMonth;
         this.cardExpirationYear = cardExpirationYear;
         this.creditCardCVN = CardValidator.cleanCvn(creditCardCVN);
+        this.cardHolderData = null;
+    }
+
+    public Card(String creditCardNumber, String cardExpirationMonth, String cardExpirationYear, String creditCardCVN, String cardHolderFirstName, String cardHolderLastName, String cardHolderEmail, String cardHolderPhoneNumber) {
+        this.creditCardNumber = CardValidator.cleanCardNumber(creditCardNumber);
+        this.cardExpirationMonth = cardExpirationMonth;
+        this.cardExpirationYear = cardExpirationYear;
+        this.creditCardCVN = CardValidator.cleanCvn(creditCardCVN);
+        this.cardHolderData = new CardHolderData(cardHolderFirstName, cardHolderLastName, cardHolderEmail, cardHolderPhoneNumber);
+    }
+
+    public Card(String creditCardNumber, String cardExpirationMonth, String cardExpirationYear, String creditCardCVN, CardHolderData cardHolderData) {
+        this.creditCardNumber = CardValidator.cleanCardNumber(creditCardNumber);
+        this.cardExpirationMonth = cardExpirationMonth;
+        this.cardExpirationYear = cardExpirationYear;
+        this.creditCardCVN = CardValidator.cleanCvn(creditCardCVN);
+        this.cardHolderData = cardHolderData;
     }
 
     public String getCreditCardNumber() {
@@ -35,5 +52,37 @@ public class Card {
 
     public String getCreditCardCVN() {
         return creditCardCVN;
+    }
+
+    public CardHolderData getCardHolder() {
+        return cardHolderData;
+    }
+
+    public String getCardHolderFirstName() {
+        if (cardHolderData != null) {
+            return cardHolderData.getFirstName();
+        }
+        return null;
+    }
+
+    public String getCardHolderLastName() {
+        if (cardHolderData != null) {
+            return cardHolderData.getLastName();
+        }
+        return null;
+    }
+
+    public String getCardHolderEmail() {
+        if (cardHolderData != null) {
+            return cardHolderData.getEmail();
+        }
+        return null;
+    }
+
+    public String getCardHolderPhoneNumber() {
+        if (cardHolderData != null) {
+            return cardHolderData.getPhoneNumber();
+        }
+        return null;
     }
 }

@@ -7,10 +7,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import com.xendit.Models.Card;
+import com.xendit.Models.CardHolderData;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
-import com.xendit.TokenCallback;
-import com.xendit.Xendit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,10 +35,9 @@ public class TokenTest {
 
     @Test
     public void test_createSingleUseTokenAuthFalse() {
-
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -59,10 +57,9 @@ public class TokenTest {
 
     @Test
     public void test_createSingleUseTokenAuthTrue() {
-
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -79,11 +76,75 @@ public class TokenTest {
 
     @Test
     public void test_createMultipleUseToken() {
-
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "123");
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        xendit.createMultipleUseToken(card, onBehalfOf, callback);
+    }
+
+    @Test
+    public void test_createSingleUseTokenAuthFalseWithCardHolderData() {
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
+        Card card = new Card("4000000000000002",
+                "12",
+                "2050",
+                "123",
+                cardHolderData);
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+                assertThat(token.getId(), isA(String.class));
+                assertThat(token.getAuthenticationId(), isA(String.class));
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+                fail();
+            }
+        };
+
+        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
+    }
+
+    @Test
+    public void test_createSingleUseTokenAuthTrueWithCardHolderData() {
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
+        Card card = new Card("4000000000000002",
+                "12",
+                "2050",
+                "123",
+                cardHolderData);
+        TokenCallback callback = new TokenCallback() {
+            @Override
+            public void onSuccess(Token token) {
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        xendit.createSingleUseToken(card, 400, true, onBehalfOf, callback);
+    }
+
+
+    @Test
+    public void test_createMultipleUseTokenWithCardHolderData() {
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
+        Card card = new Card("4000000000000002",
+                "12",
+                "2050",
+                "123",
+                cardHolderData);
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
@@ -100,7 +161,7 @@ public class TokenTest {
     public void test_createCardTokenNotMultipleUse_deprecated() {
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -118,7 +179,7 @@ public class TokenTest {
     public void test_createCardTokenMultipleUse_deprecated() {
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -138,7 +199,7 @@ public class TokenTest {
 
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -156,7 +217,7 @@ public class TokenTest {
     public void test_createSingleUseTokenInvalidCard() {
         Card card = new Card("4000000000000001",
                 "12",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -178,7 +239,7 @@ public class TokenTest {
     public void test_createSingleUseTokenInvalidExpiryMonth() {
         Card card = new Card("4000000000000002",
                 "120",
-                "2020",
+                "2050",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
@@ -222,7 +283,7 @@ public class TokenTest {
     public void test_createSingleUseTokenInvalidCvn() {
         Card card = new Card("4000000000000002",
                 "12",
-                "2020",
+                "2050",
                 "12");
         TokenCallback callback = new TokenCallback() {
             @Override
