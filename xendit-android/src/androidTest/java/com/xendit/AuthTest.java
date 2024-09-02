@@ -7,6 +7,7 @@ import androidx.test.filters.SmallTest;
 
 import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Authentication;
+import com.xendit.Models.CardHolderData;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
@@ -33,6 +34,21 @@ public class AuthTest {
             }
         };
         xendit.createAuthentication("9823104219412", 200, callback);
+    }
+
+    @Test
+    public void test_createAuthWithCardHolderData() {
+        AuthenticationCallback callback = new AuthenticationCallback() {
+            @Override public void onSuccess(Authentication authentication) {
+
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+            }
+        };
+        CardHolderData cardHolderData = new CardHolderData("John", "Doe", "johndoe@example.com", "+628212223242526");
+        xendit.createAuthentication("9823104219412", 200, cardHolderData, callback);
     }
 
 }

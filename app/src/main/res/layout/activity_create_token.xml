@@ -70,6 +70,57 @@
         android:textColor="@android:color/black"
         android:textColorHint="#cccccc" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/cardHolderFirstNameEditText_CreateTokenActivity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:hint="First Name"
+            android:inputType="text|textPersonName"
+            android:textColor="@android:color/black"
+            android:textColorHint="#cccccc" />
+
+        <EditText
+            android:id="@+id/cardHolderLastNameEditText_CreateTokenActivity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:hint="Last Name"
+            android:inputType="text|textPersonName"
+            android:textColor="@android:color/black"
+            android:textColorHint="#cccccc" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/cardHolderEmailEditText_CreateTokenActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Email"
+        android:inputType="text|textWebEmailAddress"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc" />
+
+    <EditText
+        android:id="@+id/cardHolderPhoneNumberEditText_CreateTokenActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Phone Number"
+        android:inputType="text"
+        android:textColor="@android:color/black"
+        android:textColorHint="#cccccc" />
+
     <EditText
         android:id="@+id/midLabelEditText_CreateTokenActivity"
         android:layout_width="match_parent"

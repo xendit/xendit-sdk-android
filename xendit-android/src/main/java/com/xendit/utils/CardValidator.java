@@ -77,14 +77,15 @@ public class CardValidator {
             return false;
         }
 
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
         String cleanMonth = removeWhitespace(expirationMonth);
         String cleanYear = removeWhitespace(expirationYear);
 
         return isNumeric(cleanMonth) && isNumeric(cleanYear) &&
                 parseNumberSafely(cleanMonth) >= 1 &&
                 parseNumberSafely(cleanMonth) <= 12 &&
-                parseNumberSafely(cleanYear) >= 2017 &&
-                parseNumberSafely(cleanYear) <= 2100 &&
+                parseNumberSafely(cleanYear) <= (currentYear + 100) &&
                 isNotInThePast(cleanMonth, cleanYear);
     }
 
@@ -293,7 +294,10 @@ public class CardValidator {
     private static boolean isCardJCB(String cardNumber) {
         if (cardNumber != null && cardNumber.length() >= 4) {
             int startingNumber = number(cardNumber.substring(0, 4));
-            return startingNumber >= 3528 && startingNumber <= 3589;
+            return (startingNumber >= 3528 && startingNumber <= 3589) ||
+                cardNumber.startsWith("308800") ||
+                cardNumber.startsWith("333755") ||
+                cardNumber.startsWith("333700");
         } else {
             return false;
         }
