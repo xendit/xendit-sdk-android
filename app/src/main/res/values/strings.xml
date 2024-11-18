@@ -4,6 +4,7 @@
     <string name="expMonthTest">12</string>
     <string name="cvnTest">123</string>
     <string name="amountTest">123000</string>
+    <string name="currencyTest">IDR</string>
     <string name="cardHolderFirstNameTest">John</string>
     <string name="cardHolderLastNameTest">Hudson</string>
     <string name="cardHolderEmailTest">john@xendit.co</string>
