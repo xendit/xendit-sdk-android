@@ -22,7 +22,6 @@ import com.xendit.Models.Address;
 import com.xendit.Models.BillingDetails;
 import com.xendit.Models.Card;
 import com.xendit.Models.CardHolderData;
-import com.xendit.Models.CardInfo;
 import com.xendit.Models.Customer;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
@@ -41,11 +40,13 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
     public static final String onBehalfOf = "";
 
+    public EditText apiKeyEditText;
     private EditText cardNumberEditText;
     private EditText expMonthEditText;
     private EditText expYearEditText;
     private EditText cvnEditText;
     private EditText amountEditText;
+    private EditText currencyEditText;
     private EditText cardHolderFirstNameEditText;
     private EditText cardHolderLastNameEditText;
     private EditText cardHolderEmailEditText;
@@ -58,6 +59,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     private boolean isMultipleUse;
     private boolean shouldAuthenticate;
+    private String currency;
 
     private static String tokenId;
 
@@ -72,11 +74,13 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
         setActionBarTitle(getString(R.string.create_token));
 
+        apiKeyEditText = (EditText) findViewById(R.id.apiKeyEditText_CreateTokenActivity);
         cardNumberEditText = (EditText) findViewById(R.id.cardNumberEditText_CreateTokenActivity);
         expMonthEditText = (EditText) findViewById(R.id.expMonthEditText_CreateTokenActivity);
         expYearEditText = (EditText) findViewById(R.id.expYearEditText_CreateTokenActivity);
         cvnEditText = (EditText) findViewById(R.id.cvnEditText_CreateTokenActivity);
         amountEditText = (EditText) findViewById(R.id.amountEditText_CreateTokenActivity);
+        currencyEditText = (EditText) findViewById(R.id.currencyEditText_CreateTokenActivity);
         cardHolderFirstNameEditText = (EditText) findViewById(R.id.cardHolderFirstNameEditText_CreateTokenActivity);
         cardHolderLastNameEditText = (EditText) findViewById(R.id.cardHolderLastNameEditText_CreateTokenActivity);
         cardHolderEmailEditText = (EditText) findViewById(R.id.cardHolderEmailEditText_CreateTokenActivity);
@@ -90,12 +94,14 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
         createTokenBtn.setOnClickListener(this);
 
+        apiKeyEditText.setText(PUBLISHABLE_KEY);
         cardNumberEditText.setText(R.string.cardNumbTest);
         expMonthEditText.setText(R.string.expMonthTest);
         String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR) + 1);
         expYearEditText.setText(year);
         cvnEditText.setText(R.string.cvnTest);
         amountEditText.setText(R.string.amountTest);
+        currencyEditText.setText(R.string.currencyTest);
         cardHolderFirstNameEditText.setText(R.string.cardHolderFirstNameTest);
         cardHolderLastNameEditText.setText(R.string.cardHolderLastNameTest);
         cardHolderEmailEditText.setText(R.string.cardHolderEmailTest);
@@ -113,13 +119,15 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view) {
-        final Xendit xendit = new Xendit(getApplicationContext(), PUBLISHABLE_KEY, this);
+        final Xendit xendit = new Xendit(getApplicationContext(), apiKeyEditText.getText().toString(), this);
 
         final ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
         isMultipleUse = multipleUseCheckBox.isChecked();
         shouldAuthenticate = !shouldAuthenticateCheckBox.isChecked();
+
+        currency = currencyEditText.getText().toString();
 
         CardHolderData cardHolderData = new CardHolderData(cardHolderFirstNameEditText.getText().toString(),
                 cardHolderLastNameEditText.getText().toString(),
@@ -178,6 +186,8 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onError(XenditError xenditError) {
                 progressBar.setVisibility(View.GONE);
+                String errorMessage = String.format("{ \"error_code\": \"%s\", \"message\": \"%s\" }", xenditError.getErrorCode(), xenditError.getErrorMessage());
+                resultTextView.setText(errorMessage);
                 Toast.makeText(CreateTokenActivity.this, xenditError.getErrorCode() + " " +
                         xenditError.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -194,9 +204,9 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             String amount = amountEditText.getText().toString();
 
             if (midLabel.isBlank()){
-                xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, "IDR", callback);
+                xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, currency, callback);
             } else {
-                xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, "IDR", midLabel, callback);
+                xendit.createSingleUseToken(card, amount, shouldAuthenticate, onBehalfOf, billingDetails, customer, currency, midLabel, callback);
             }
         }
     }
