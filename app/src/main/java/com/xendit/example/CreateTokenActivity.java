@@ -40,7 +40,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
     public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
     public static final String onBehalfOf = "";
 
-    public EditText apiKeyEditText;
+    private EditText apiKeyEditText;
     private EditText cardNumberEditText;
     private EditText expMonthEditText;
     private EditText expYearEditText;
