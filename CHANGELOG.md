@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.1 (2024-11-20)
+- Enhance: Moved finish() call to Handler to ensure proper UI thread execution and prevent memory leaks
+- Fix: Potential race conditions when closing activities with pending operations
+
 ## 4.2.0 (2024-08-06)
 - Feat: Added card holder information in create token and create authentication
 
