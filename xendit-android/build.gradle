@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 group 'com.xendit'
-version '4.2.1'
+version '4.2.2'
 
 ext {
     bintrayOrg = 'xendit'
