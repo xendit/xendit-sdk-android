@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.2.2 (2024-11-21)
+- Fixed app crash related to unregistered AuthenticationBroadcastReceiver by implementing proper lifecycle-aware receiver management
+
 ## 4.2.1 (2024-11-20)
 - Enhance: Moved finish() call to Handler to ensure proper UI thread execution and prevent memory leaks
 - Fix: Potential race conditions when closing activities with pending operations
