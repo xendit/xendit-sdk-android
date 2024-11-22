@@ -34,6 +34,7 @@ import com.xendit.Models.Customer;
 import com.xendit.Models.ThreeDSRecommendation;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
+import com.xendit.interceptor.Interceptor;
 import com.xendit.network.BaseRequest;
 import com.xendit.network.DefaultResponseHandler;
 import com.xendit.network.NetworkHandler;
@@ -59,6 +60,7 @@ import io.sentry.android.core.SentryAndroidOptions;
 import io.sentry.protocol.SentryException;
 import io.sentry.protocol.SentryStackFrame;
 import io.sentry.protocol.SentryStackTrace;
+import javax.annotation.Nullable;
 
 import static com.xendit.Tracker.SnowplowTrackerBuilder.getTracker;
 
@@ -88,6 +90,15 @@ public class XenditImpl implements Xendit {
     private AuthenticationBroadcastReceiver authenticationBroadcastReceiver;
     private TokenBroadcastReceiver tokenBroadcastReceiver;
     private AuthenticatedTokenBroadcastReceiver authenticatedTokenBroadcastReceiver;
+
+    private Interceptor<BaseRequest<?>> requestInterceptor;
+    private Interceptor<?> responseInterceptor;
+
+    protected XenditImpl(final Context context, String publishableKey, @Nullable Interceptor<BaseRequest<?>> request, @Nullable Interceptor<?> response) {
+        this(context, publishableKey);
+        this.requestInterceptor = request;
+        this.responseInterceptor = response;
+    }
 
     protected XenditImpl(final Context context, String publishableKey, Activity activity) {
         this(context, publishableKey);
@@ -691,7 +702,7 @@ public class XenditImpl implements Xendit {
             CREATE_CREDIT_CARD_TOKEN_URL,
             onBehalfOf == null || onBehalfOf.equals("") ? "" : onBehalfOf,
             Token.class,
-            new DefaultResponseHandler<>(handler)
+            new DefaultResponseHandler<>(handler, (Interceptor<Token>)responseInterceptor)
         );
 
         if (tokenId == null || tokenId.equals("")) {
@@ -1323,7 +1334,7 @@ public class XenditImpl implements Xendit {
         NetworkHandler<AuthenticatedToken> handler) {
         BaseRequest<AuthenticatedToken> request =
             buildBaseRequest(Request.Method.POST, CREATE_CREDIT_CARD_TOKEN_URL, onBehalfOf,
-                AuthenticatedToken.class, new DefaultResponseHandler<>(handler));
+                AuthenticatedToken.class, new DefaultResponseHandler<>(handler, (Interceptor<AuthenticatedToken>)responseInterceptor));
 
         JsonObject cardData = new JsonObject();
         if (card != null) {
@@ -1384,7 +1395,7 @@ public class XenditImpl implements Xendit {
 
         BaseRequest<ThreeDSRecommendation> request =
             buildBaseRequest(Request.Method.GET, url, null, ThreeDSRecommendation.class,
-                new DefaultResponseHandler<>(handler));
+                new DefaultResponseHandler<>(handler, (Interceptor<ThreeDSRecommendation>)responseInterceptor));
         sendRequest(request, handler);
     }
 
@@ -1396,7 +1407,7 @@ public class XenditImpl implements Xendit {
 
         BaseRequest<Authentication> request =
             buildBaseRequest(Request.Method.POST, requestUrl, onBehalfOf, Authentication.class,
-                new DefaultResponseHandler<>(handler));
+                new DefaultResponseHandler<>(handler, (Interceptor<Authentication>)responseInterceptor));
         request.addParam("amount", amount);
         if (currency != null && !currency.isEmpty()) {
             request.addParam("currency", currency);
@@ -1465,6 +1476,9 @@ public class XenditImpl implements Xendit {
 
     private void sendRequest(BaseRequest request, NetworkHandler<?> handler) {
         if (isConnectionAvailable()) {
+            if (requestInterceptor != null) {
+                requestInterceptor.intercept(request);
+            }
             requestQueue.add(request);
         } else if (handler != null) {
             handler.handleError(new ConnectionError());
