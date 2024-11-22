@@ -25,7 +25,6 @@ import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 import com.xendit.Xendit;
 import com.xendit.example.models.StoreCVNResponse;
-import com.xendit.example.models.TokenizationResponse;
 import com.xendit.utils.StoreCVNCallback;
 
 public class StoreCvnActivity extends AppCompatActivity implements View.OnClickListener {
@@ -62,7 +61,7 @@ public class StoreCvnActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        final Xendit xendit = new Xendit(getApplicationContext(), DUMMY_PUBLISHABLE_KEY, this);
+        final Xendit xendit = Xendit.create(getApplicationContext(), DUMMY_PUBLISHABLE_KEY, this);
 
         final ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);

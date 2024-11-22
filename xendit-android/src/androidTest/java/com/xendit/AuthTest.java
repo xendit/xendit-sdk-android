@@ -20,7 +20,7 @@ public class AuthTest {
 
     private final static String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
     private Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
-    private final Xendit xendit = new Xendit(appContext, PUBLISHABLE_KEY);
+    private final Xendit xendit = Xendit.create(appContext, PUBLISHABLE_KEY);
 
     @Test
     public void test_createAuth() {

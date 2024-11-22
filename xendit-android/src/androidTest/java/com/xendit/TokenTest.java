@@ -30,7 +30,7 @@ public class TokenTest {
     public void setup() {
         String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
         Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
-        xendit = new Xendit(appContext, PUBLISHABLE_KEY);
+        xendit = Xendit.create(appContext, PUBLISHABLE_KEY);
     }
 
     @Test

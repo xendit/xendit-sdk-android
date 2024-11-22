@@ -119,7 +119,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view) {
-        final Xendit xendit = new Xendit(getApplicationContext(), apiKeyEditText.getText().toString(), this);
+        final Xendit xendit = Xendit.create(getApplicationContext(), apiKeyEditText.getText().toString(), this);
 
         final ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
