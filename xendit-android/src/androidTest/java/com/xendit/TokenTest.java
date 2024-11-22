@@ -6,11 +6,18 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import com.android.volley.VolleyError;
+import com.xendit.Models.AuthenticatedToken;
 import com.xendit.Models.Card;
 import com.xendit.Models.CardHolderData;
 import com.xendit.Models.Token;
 import com.xendit.Models.XenditError;
 
+import com.xendit.interceptor.Interceptor;
+import com.xendit.interceptor.InterceptorImpl;
+import com.xendit.network.BaseRequest;
+import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,31 +35,61 @@ public class TokenTest {
     private String onBehalfOf = "";
     @Before
     public void setup() {
-        String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+        String PUBLISHABLE_KEY = "xnd_public_development_D8wJuWpOY15JvjJyUNfCdDUTRYKGp8CSM3W0ST4d0N4CsugKyoGEIx6b84j1D7Pg";
         Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
         xendit = Xendit.create(appContext, PUBLISHABLE_KEY);
     }
 
     @Test
     public void test_createSingleUseTokenAuthFalse() {
-        Card card = new Card("4000000000000002",
+        final boolean[] done = { false };
+        Card card = new Card("4000000000001091",
                 "12",
-                "2050",
+                "2030",
                 "123");
         TokenCallback callback = new TokenCallback() {
             @Override
             public void onSuccess(Token token) {
+                System.out.println("Success " + token.getId());
+                done[0] = true;
                 assertThat(token.getId(), isA(String.class));
                 assertThat(token.getAuthenticationId(), isA(String.class));
             }
 
             @Override
             public void onError(XenditError xenditError) {
+                System.out.println("Error " + xenditError.getErrorMessage());
+                done[0] = true;
                 fail();
             }
         };
 
-        xendit.createSingleUseToken(card, 400, false, onBehalfOf, callback);
+        String PUBLISHABLE_KEY = "xnd_public_development_D8wJuWpOY15JvjJyUNfCdDUTRYKGp8CSM3W0ST4d0N4CsugKyoGEIx6b84j1D7Pg";
+        Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
+        Xendit xendit = new XenditImpl(appContext, PUBLISHABLE_KEY,
+            new Interceptor<BaseRequest<?>>() {
+                @Override public void intercept(BaseRequest<?> interceptedMessage) {
+                    System.out.println("Intercepted " + interceptedMessage.getUrl());
+                }
+
+                @Override public void handleError(VolleyError error) {
+                    System.out.println("Error " + error.getMessage());
+                }
+            }, new Interceptor<Object>() {
+                @Override public void intercept(Object interceptedMessage) {
+                    System.out.println("Intercepted " + interceptedMessage.getClass().getName());
+                    AuthenticatedToken authenticatedToken = (AuthenticatedToken) interceptedMessage;
+                    System.out.println("AuthenticatedToken " + authenticatedToken.getId());
+                    done[0] = true;
+                }
+
+                @Override public void handleError(VolleyError error) {
+                    System.out.println("Error " + error.getMessage());
+                }
+        });
+        xendit.createSingleUseToken(card, 10000, true, onBehalfOf, callback);
+
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> done[0]);
     }
 
     @Test

@@ -104,6 +104,10 @@ dependencies {
     //Logging Network Calls
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
+    androidTestImplementation('org.awaitility:awaitility:4.2.2') {
+        transitive = false
+    }
+
 }
 
 

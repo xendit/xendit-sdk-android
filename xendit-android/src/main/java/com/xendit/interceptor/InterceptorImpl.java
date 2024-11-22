@@ -6,7 +6,7 @@ import com.xendit.Models.XenditError;
 public class InterceptorImpl<T> implements Interceptor<T> {
     private final Interceptor.Callback<T> callback;
 
-    InterceptorImpl(Interceptor.Callback<T> callback) {
+    public InterceptorImpl(Interceptor.Callback<T> callback) {
         this.callback = callback;
     }
 

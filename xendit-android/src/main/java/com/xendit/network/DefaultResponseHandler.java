@@ -25,6 +25,7 @@ public class DefaultResponseHandler<T> implements Response.Listener<T>, Response
     public void onErrorResponse(VolleyError error) {
         if (interceptor != null) {
             interceptor.handleError(error);
+            return;
         }
         if (handler != null) {
             NetworkError netError;
@@ -43,6 +44,7 @@ public class DefaultResponseHandler<T> implements Response.Listener<T>, Response
     public void onResponse(T response) {
         if (interceptor != null) {
             interceptor.intercept(response);
+            return;
         }
         if (handler != null) {
             handler.handleSuccess(response);
