@@ -140,7 +140,6 @@ public class AuthTest {
                     System.out.println("AuthenticatedToken " + authenticatedToken);
                     assertNotNull(authenticatedToken.getId());
                     assertEquals(authenticatedToken.getStatus(), "IN_REVIEW");
-                    fail();
                     authToken[0] = authenticatedToken.getId();
                     done[0] = true;
                 }
