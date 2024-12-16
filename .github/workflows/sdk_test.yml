@@ -21,26 +21,26 @@ jobs:
      - name: Touch local properties
        run: touch local.properties
 
-#     - name: AVD cache
-#       uses: actions/cache@v3
-#       id: avd-cache
-#       with:
-#         path: |
-#           ~/.android/avd/*
-#           ~/.android/adb*
-#         key: avd-29
+     - name: AVD cache
+       uses: actions/cache@v3
+       id: avd-cache
+       with:
+         path: |
+           ~/.android/avd/*
+           ~/.android/adb*
+         key: avd-29
 
-#     - name: create AVD and generate snapshot for caching
-#       if: steps.avd-cache.outputs.cache-hit != 'true'
-#       uses: reactivecircus/android-emulator-runner@v2
-#       with:
-#         api-level: 29
-#         arch: arm64-v8a
-#         force-avd-creation: false
-#         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-#         disable-animations: false
-#         ram-size: 4096M
-#         script: echo "Generated AVD snapshot for caching."
+     - name: create AVD and generate snapshot for caching
+       if: steps.avd-cache.outputs.cache-hit != 'true'
+       uses: reactivecircus/android-emulator-runner@v2
+       with:
+         api-level: 29
+         arch: arm64-v8a
+         force-avd-creation: false
+         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+         disable-animations: false
+         ram-size: 4096M
+         script: echo "Generated AVD snapshot for caching."
 
      - name: Setup Gradle
        uses: gradle/gradle-build-action@v2
@@ -58,13 +58,12 @@ jobs:
      - name: Run Instrumentation Test
        uses: reactivecircus/android-emulator-runner@v2
        with:
-#         emulator-build: 7425822
-         api-level: 30
-         target: google_apis
+         emulator-build: 7425822
+         api-level: 29
          arch: x86_64
-#         force-avd-creation: false
+         force-avd-creation: false
          ram-size: 4096M
-         script: ./gradlew :xendit-android:connectedCheck --stacktrace
+         script: ./gradlew :xendit-android:connectedCheck --stacktrace --no-daemon
 
  # notify-slack:
  #   needs: unit-test
