@@ -49,6 +49,7 @@ android {
         }
         debug {
             minifyEnabled false
+            testCoverageEnabled true
             consumerProguardFiles 'proguard-rules.pro'
             buildConfigField('long', 'VERSION_CODE', "${defaultConfig.versionCode}")
             buildConfigField('String','VERSION_NAME', "\"${defaultConfig.versionName}\"")
