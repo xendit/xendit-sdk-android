@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 import com.xendit.AuthenticationCallback;
 import com.xendit.Models.Authentication;
-import com.xendit.Models.CardInfo;
 import com.xendit.Models.XenditError;
 import com.xendit.Xendit;
 import com.xendit.example.models.AuthenticationResponse;
@@ -84,7 +83,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View view) {
 
-        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY, this);
+        Xendit xendit = Xendit.create(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY, this);
 
         String tokenId = tokenIdEditText.getText().toString();
         String amount = amountEditText.getText().toString();

@@ -9,6 +9,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:8.2.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0'
+        //Jacoco Plugin
+        classpath "org.jacoco:org.jacoco.core:0.8.10"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
