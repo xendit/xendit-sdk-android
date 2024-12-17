@@ -58,6 +58,9 @@ jobs:
          echo "Free space:"
          df -h
 
+     - name: Run Coverage
+       run: ./gradlew :xendit-android:jacocoReport
+
      - name: Grant execute permission for gradlew
        run: chmod +x gradlew
 
@@ -71,6 +74,16 @@ jobs:
          ram-size: 4096M
          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
          script: ./gradlew :xendit-android:connectedCheck --stacktrace
+
+     - name: Add coverage to PR
+       id: jacoco
+       uses: madrapps/jacoco-report@v1.7.1
+       with:
+         paths: |
+           ${{ github.workspace }}/**/build/reports/coverage/androidTest/debug/connected/report.xml
+         token: ${{ secrets.GITHUB_TOKEN }}
+         min-coverage-overall: 40
+         min-coverage-changed-files: 60
 
  # notify-slack:
  #   needs: unit-test
