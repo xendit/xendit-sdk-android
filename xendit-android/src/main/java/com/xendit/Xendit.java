@@ -75,7 +75,6 @@ public class Xendit {
     private static final String GET_3DS_URL = PRODUCTION_XENDIT_BASE_URL + "/3ds_bin_recommendation";
     private static final String DSN_SERVER = "https://7190a1331444434eb6aed7b5a8d776f0@o30316.ingest.sentry.io/6314580";
     private static final String CLIENT_IDENTIFIER = "Xendit Android SDK";
-    private static final String CLIENT_API_VERSION = "2.0.0";
     private static final String CLIENT_TYPE = "SDK";
     static final String ACTION_KEY = "ACTION_KEY";
 
@@ -1000,9 +999,9 @@ public class Xendit {
                             .build());
 
                         if (!authentication.getStatus().equalsIgnoreCase("VERIFIED")) {
-                            registerBroadcastReceiver(authenticationCallback);
+                            registerBroadcastReceiver(authenticationCallback); //It was register here the receiver
                             context.startActivity(
-                                XenditActivity.getLaunchIntent(context, authentication));
+                                XenditActivity.getLaunchIntent(context, authentication)); //Go to webview
                         } else {
                             authenticationCallback.onSuccess(authentication);
                         }
@@ -1499,7 +1498,7 @@ public class Xendit {
         }
         request.addHeader("Authorization", basicAuthCredentials.replace("\n", ""));
         request.addHeader("x-client-identifier", CLIENT_IDENTIFIER);
-        request.addHeader("client-version", CLIENT_API_VERSION);
+        request.addHeader("client-version", BuildConfig.VERSION_NAME);
         request.addHeader("client-type", CLIENT_TYPE);
         return request;
     }

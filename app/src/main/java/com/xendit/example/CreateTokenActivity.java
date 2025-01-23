@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -175,6 +176,7 @@ public class CreateTokenActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onSuccess(Token token) {
                 progressBar.setVisibility(View.GONE);
+                Log.d("TAG", "onSuccess tokenId: " +token.getId());
                 setTokenId(token.getId());
                 Gson gson = new Gson();
                 TokenizationResponse tokenizationResponse = new TokenizationResponse(token);

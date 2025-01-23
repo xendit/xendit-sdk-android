@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -34,6 +35,7 @@ public class AuthenticationBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         try {
             String message = intent.getExtras().getString(XenditActivity.MESSAGE_KEY);
+            Log.d("TAG", "AuthenticationBroadcastReceiver onReceive: " + message);
             if (!message.isEmpty() && message.equals(context.getString(R.string.create_token_error_validation))) {
                 authenticationCallback.onError(new XenditError(context.getString(R.string.create_token_error_validation)));
                 context.unregisterReceiver(this);
