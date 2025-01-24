@@ -5,7 +5,7 @@ apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco.gradle"
 
 group 'com.xendit'
-version '4.2.2'
+version '4.2.3'
 
 ext {
     bintrayOrg = 'xendit'
@@ -39,7 +39,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName '4.2.2'
+        versionName '4.2.3'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

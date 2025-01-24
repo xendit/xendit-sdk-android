@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.2.3 (2025-01-24)
+- Fix: Handle 3DS authentication edge case and version tracking
+
 ## 4.2.2 (2024-11-21)
 - Fixed app crash related to unregistered AuthenticationBroadcastReceiver by implementing proper lifecycle-aware receiver management
 
