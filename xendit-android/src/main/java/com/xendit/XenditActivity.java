@@ -13,8 +13,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-
 import com.xendit.Models.HasAuthenticationUrl;
+import com.xendit.utils.Auth3DSEventValidator;
 
 /**
  * Created by Sergey on 3/23/17.
@@ -99,9 +99,10 @@ public class XenditActivity extends Activity {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    sendBroadcastReceiver(message);
-
-                    finish();
+                    if (Auth3DSEventValidator.is3DSResultEventFromXendit(message, XenditActivity.this)) {
+                        sendBroadcastReceiver(message);
+                        finish();
+                    }
                 }
             });
         }
