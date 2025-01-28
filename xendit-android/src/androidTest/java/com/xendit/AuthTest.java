@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 @SmallTest
 public class AuthTest {
 
-    private final static String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+    private final static String PUBLISHABLE_KEY = "xnd_public_production_zY1voDvOj27UWD5rAX4LMWuiafcylMEUBmtUX3OHpNbuOSto9zOqlNIEt7K";
     private Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
     private final Xendit xendit = new Xendit(appContext, PUBLISHABLE_KEY);
 

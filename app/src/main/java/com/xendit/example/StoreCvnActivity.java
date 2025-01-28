@@ -29,7 +29,7 @@ import com.xendit.example.models.TokenizationResponse;
 import com.xendit.utils.StoreCVNCallback;
 
 public class StoreCvnActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String DUMMY_PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+    public static final String DUMMY_PUBLISHABLE_KEY = "xnd_public_development_D8wJuWpOY15JvjJyUNfCdDUTRYKGp8CSM3W0ST4d0N4CsugKyoGEIx6b84j1D7Pg";
 
     private EditText tokenId;
     private EditText cardCVN;

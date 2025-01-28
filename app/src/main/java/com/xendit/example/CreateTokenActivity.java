@@ -37,7 +37,7 @@ import java.util.Calendar;
 
 public class CreateTokenActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
+    public static final String PUBLISHABLE_KEY = "xnd_public_development_D8wJuWpOY15JvjJyUNfCdDUTRYKGp8CSM3W0ST4d0N4CsugKyoGEIx6b84j1D7Pg";
     public static final String onBehalfOf = "";
 
     private EditText apiKeyEditText;
