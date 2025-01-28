@@ -28,8 +28,11 @@ import com.xendit.example.models.AuthenticationResponse;
 
 public class AuthenticationActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final String PUBLISHABLE_KEY = "xnd_public_development_D8wJuWpOY15JvjJyUNfCdDUTRYKGp8CSM3W0ST4d0N4CsugKyoGEIx6b84j1D7Pg";
+    private EditText apiKeyEditText;
     private EditText tokenIdEditText;
     private EditText amountEditText;
+    private EditText currencyEditText;
     private EditText cardCvnEditText;
     private EditText cardHolderFirstNameEditText;
     private EditText cardHolderLastNameEditText;
@@ -50,8 +53,10 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
         setActionBarTitle("Authentication");
 
+        apiKeyEditText = (EditText) findViewById(R.id.apiKeyEditText_AuthenticationActivity);
         tokenIdEditText = (EditText) findViewById(R.id.tokenIdEditText_AuthenticationActivity);
         amountEditText = (EditText) findViewById(R.id.amountEditText_AuthenticationActivity);
+        currencyEditText = (EditText) findViewById(R.id.currencyEditText_AuthenticationActivity);
         cardCvnEditText = (EditText) findViewById(R.id.cardCvnEditText_AuthenticationActivity);
         cardHolderFirstNameEditText = (EditText) findViewById(R.id.cardHolderFirstNameEditText_AuthenticationActivity);
         cardHolderLastNameEditText = (EditText) findViewById(R.id.cardHolderLastNameEditText_AuthenticationActivity);
@@ -62,7 +67,9 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         authenticateBtn = (Button) findViewById(R.id.authenticateBtn_AuthenticationActivity);
         resultTextView = (TextView) findViewById(R.id.result_AuthenticationActivity);
 
+        apiKeyEditText.setText(PUBLISHABLE_KEY);
         amountEditText.setText(getString(R.string.amountTest));
+        currencyEditText.setText(getString(R.string.currencyTest));
         cardCvnEditText.setText(getString(R.string.cvnTest));
         cardHolderFirstNameEditText.setText(R.string.cardHolderFirstNameTest);
         cardHolderLastNameEditText.setText(R.string.cardHolderLastNameTest);
@@ -84,46 +91,42 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View view) {
 
-        Xendit xendit = new Xendit(getApplicationContext(), CreateTokenActivity.PUBLISHABLE_KEY, this);
-
+        String apiKey = apiKeyEditText.getText().toString();
         String tokenId = tokenIdEditText.getText().toString();
         String amount = amountEditText.getText().toString();
+        String currency = currencyEditText.getText().toString();
         String cardCvn = cardCvnEditText.getText().toString();
         String onBehalfOf = "";
         String midLabel = midLabelText.getText().toString();
 
+        Xendit xendit = new Xendit(getApplicationContext(), apiKey, this);
+
+        AuthenticationCallback callback = new AuthenticationCallback() {
+            @Override
+            public void onSuccess(Authentication authentication) {
+                Gson gson = new Gson();
+                AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
+                String json = gson.toJson(authenticationResponse);
+                resultTextView.setText(json);
+                Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(XenditError xenditError) {
+                String errorMessage = String.format("{ \"error_code\": \"%s\", \"message\": \"%s\" }", xenditError.getErrorCode(), xenditError.getErrorMessage());
+                resultTextView.setText(errorMessage);
+                Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
         if (midLabel.isBlank()){
-            xendit.createAuthentication(tokenId, amount, "IDR", cardCvn, onBehalfOf, new AuthenticationCallback() {
-                @Override
-                public void onSuccess(Authentication authentication) {
-                    Gson gson = new Gson();
-                    AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
-                    String json = gson.toJson(authenticationResponse);
-                    resultTextView.setText(json);
-                    Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(XenditError xenditError) {
-                    Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            xendit.createAuthentication(tokenId, amount, "IDR", cardCvn, onBehalfOf, midLabel ,new AuthenticationCallback() {
-                @Override
-                public void onSuccess(Authentication authentication) {
-                    Gson gson = new Gson();
-                    AuthenticationResponse authenticationResponse = new AuthenticationResponse(authentication);
-                    String json = gson.toJson(authenticationResponse);
-                    resultTextView.setText(json);
-                    Toast.makeText(AuthenticationActivity.this, "Status: " + authentication.getStatus(), Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(XenditError xenditError) {
-                    Toast.makeText(AuthenticationActivity.this, xenditError.getErrorCode(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (cardCvn.isBlank()) {
+                xendit.createAuthentication(tokenId, amount, currency, onBehalfOf, callback);
+            } else {
+                xendit.createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, callback);
+            }
+        } else{
+            xendit.createAuthentication(tokenId, amount, currency, cardCvn, onBehalfOf, midLabel , callback);
         }
 
     }
