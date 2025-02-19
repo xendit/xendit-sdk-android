@@ -122,7 +122,7 @@ public class AuthTest {
                 @Override
                 public void interceptRequest(JsonObject jsonObj, String url) {
                     // verify if the json object contains card_data
-                    assertEquals(jsonObj.get("should_authenticate").getAsString(), "true");
+                    assertEquals(jsonObj.get("should_authenticate").getAsString(), "false");
                     assertNotNull(jsonObj.get("card_data").getAsJsonObject().get("account_number"));
                     assertNotNull(jsonObj.get("card_data").getAsJsonObject().get("exp_year"));
                     assertNotNull(jsonObj.get("card_data").getAsJsonObject().get("exp_month"));
@@ -139,7 +139,7 @@ public class AuthTest {
                     AuthenticatedToken authenticatedToken = (AuthenticatedToken) interceptedMessage;
                     System.out.println("AuthenticatedToken " + authenticatedToken);
                     assertNotNull(authenticatedToken.getId());
-                    assertEquals(authenticatedToken.getStatus(), "IN_REVIEW");
+                    assertEquals(authenticatedToken.getStatus(), "VERIFIED");
                     authToken[0] = authenticatedToken.getId();
                     done[0] = true;
                 }
@@ -149,7 +149,7 @@ public class AuthTest {
                     fail();
                 }
             });
-        x.createSingleUseToken(card, 10000, true, onBehalfOf, callback);
+        x.createSingleUseToken(card, 10000, false, onBehalfOf, callback);
 
         Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> done[0]);
 
