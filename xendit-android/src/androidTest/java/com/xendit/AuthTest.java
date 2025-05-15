@@ -48,7 +48,7 @@ public class AuthTest {
     private final String onBehalfOf = "";
     private static final Gson gson = new GsonBuilder().create();
     private static final String PROTOCOL_CHARSET = "utf-8";
-    static final String PUBLISHABLE_KEY = "xnd_public_development_D8wJuWpOY15JvjJyUNfCdDUTRYKGp8CSM3W0ST4d0N4CsugKyoGEIx6b84j1D7Pg";
+    static final String PUBLISHABLE_KEY = "xnd_public_development_O4uGfOR3gbOunJU4frcaHmLCYNLy8oQuknDm+R1r9G3S/b2lBQR+gQ==";
 
 
     public static Xendit createXendit(
