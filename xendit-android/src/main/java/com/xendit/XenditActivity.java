@@ -6,14 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-
 import com.xendit.Models.HasAuthenticationUrl;
+import com.xendit.utils.Auth3DSEventValidator;
 
 /**
  * Created by Sergey on 3/23/17.
@@ -94,8 +95,16 @@ public class XenditActivity extends Activity {
 
         @android.webkit.JavascriptInterface
         public void postMessage(String message) {
-            sendBroadcastReceiver(message);
-            finish();
+            Handler handler = new Handler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (Auth3DSEventValidator.is3DSResultEventFromXendit(message, XenditActivity.this)) {
+                        sendBroadcastReceiver(message);
+                        finish();
+                    }
+                }
+            });
         }
     }
 

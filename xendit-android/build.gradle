@@ -1,9 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: 'jacoco'
+apply from: "$project.rootDir/jacoco.gradle"
 
 group 'com.xendit'
-version '4.2.0'
+version '4.2.3'
 
 ext {
     bintrayOrg = 'xendit'
@@ -37,7 +39,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName '4.2.0'
+        versionName '4.2.3'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -49,6 +51,8 @@ android {
         }
         debug {
             minifyEnabled false
+            enableUnitTestCoverage true
+            testCoverageEnabled true
             consumerProguardFiles 'proguard-rules.pro'
             buildConfigField('long', 'VERSION_CODE', "${defaultConfig.versionCode}")
             buildConfigField('String','VERSION_NAME', "\"${defaultConfig.versionName}\"")
@@ -103,6 +107,10 @@ dependencies {
     api 'com.squareup.retrofit2:converter-scalars:2.5.0'
     //Logging Network Calls
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+
+    androidTestImplementation('org.awaitility:awaitility:4.2.2') {
+        transitive = false
+    }
 
 }
 
