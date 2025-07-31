@@ -5,7 +5,7 @@ apply plugin: 'jacoco'
 apply from: "$project.rootDir/jacoco.gradle"
 
 group 'com.xendit'
-version '4.2.3'
+version '4.2.4'
 
 ext {
     bintrayOrg = 'xendit'
@@ -39,7 +39,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName '4.2.3'
+        versionName '4.2.4'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -82,7 +82,7 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-android'
 
     // sentry
-    api 'io.sentry:sentry-android:6.24.0'
+    api 'io.sentry:sentry-android:8.16.0'
 
     // this dependency is not required if you are already using your own
     // slf4j implementation
@@ -252,7 +252,7 @@ publishing {
 
     repositories {
         maven {
-            url = version.endsWith('SNAPSHOT') ? uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") : uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            url = version.endsWith('SNAPSHOT') ? uri("https://central.sonatype.com/repository/maven-snapshots/") : uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
 
             credentials {
                 username = ossrhUser
@@ -267,7 +267,7 @@ signing {
 }
 
 nexusStaging {
-    serverUrl = 'https://s01.oss.sonatype.org/service/local/'
+    serverUrl = 'https://ossrh-staging-api.central.sonatype.com/service/local/'
     username = ossrhUser
     password = ossrhPassword
     repositoryDescription = 'Closed and released using gradle script'
