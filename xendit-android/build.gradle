@@ -82,7 +82,7 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-android'
 
     // sentry
-    api 'io.sentry:sentry-android:6.24.0'
+    api 'io.sentry:sentry-android:8.16.0'
 
     // this dependency is not required if you are already using your own
     // slf4j implementation
