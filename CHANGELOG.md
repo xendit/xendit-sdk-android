@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.2.4 (2025-07-30)
+- Chore: Upgrade sentry-android to 8.16.0
+- 
 ## 4.2.3 (2025-01-24)
 - Fix: Handle 3DS authentication edge case and version tracking
 

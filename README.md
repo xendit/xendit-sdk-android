@@ -31,24 +31,24 @@ Maven:
 <dependency>
   <groupId>com.xendit</groupId>
   <artifactId>xendit-android</artifactId>
-  <version>4.2.3</version>
+  <version>4.2.4</version>
   <type>pom</type>
 </dependency>
 ```
 
 Gradle:
 ```
-compile 'com.xendit:xendit-android:4.2.3'
+compile 'com.xendit:xendit-android:4.2.4'
 ```
 
 Ivy:
 ```
-<dependency org='com.xendit' name='xendit-android' rev='4.2.3'>
+<dependency org='com.xendit' name='xendit-android' rev='4.2.4'>
   <artifact name='xendit-android' ext='pom' ></artifact>
 </dependency>
 ```
 
-For more information, visit https://central.sonatype.com/artifact/com.xendit/xendit-android/4.2.3/versions
+For more information, visit https://central.sonatype.com/artifact/com.xendit/xendit-android/4.2.4/versions
 
 **Note**:
 
