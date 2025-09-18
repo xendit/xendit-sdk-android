@@ -190,6 +190,8 @@ You will need to add the following to your proguard rules file (`proguard-rules.
 # xendit
 -keep public class com.xendit.** { public *;}
 -keep class com.xendit.Models.** { *; }
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
 -keepattributes *Annotation*
 -keepattributes LocalVariableTable,LocalVariableTypeTable
 ```
