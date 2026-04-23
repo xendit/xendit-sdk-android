@@ -48,10 +48,17 @@ public class XenditActivity extends Activity {
         WebView webView = findViewById(R.id.webView_XenditActivity);
         progressBar = findViewById(R.id.progressBar_XenditActivity);
 
+        // Issue #72: Multiple immediate charges left a stale Mastercard ID Check
+        // session cookie behind, which the bank then rejected as expired. Clear
+        // any leftover cookies before starting a fresh 3DS challenge.
+        CookieManager cookieManager = CookieManager.getInstance();
         if (android.os.Build.VERSION.SDK_INT >= 21) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+            cookieManager.removeAllCookies(null);
+            cookieManager.flush();
+            cookieManager.setAcceptThirdPartyCookies(webView, true);
         } else {
-            CookieManager.getInstance().setAcceptCookie(true);
+            cookieManager.removeAllCookie();
+            cookieManager.setAcceptCookie(true);
         }
 
         webView.getSettings().setJavaScriptEnabled(true);
