@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.2.5 (2026-10-14)
+- Security: Harden 3DS WebView result handling and restrict the result broadcast to the host app
+
 ## 4.2.4 (2025-07-30)
 - Chore: Upgrade sentry-android to 8.16.0
 - 
