@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
+import androidx.core.content.ContextCompat;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BaseHttpStack;
@@ -1248,10 +1249,17 @@ public class XenditImpl implements Xendit {
         }
     }
 
+    /**
+     * Registers a receiver for the 3DS result broadcast from {@link XenditActivity}.
+     */
+    static void registerXenditReceiver(Context context, BroadcastReceiver receiver) {
+        ContextCompat.registerReceiver(context, receiver, new IntentFilter(ACTION_KEY),
+            ContextCompat.RECEIVER_NOT_EXPORTED);
+    }
+
     private void registerBroadcastReceiver(final AuthenticationCallback authenticationCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
-            @SuppressLint("UnspecifiedRegisterReceiverFlag")
             public void run() {
                 if (authenticationBroadcastReceiver != null) {
                     unregisterXenBroadcastReceiver(authenticationBroadcastReceiver);
@@ -1260,15 +1268,7 @@ public class XenditImpl implements Xendit {
 
                 authenticationBroadcastReceiver =
                     new AuthenticationBroadcastReceiver(authenticationCallback);
-                // if version is over 33
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    context.registerReceiver(authenticationBroadcastReceiver,
-                        new IntentFilter(ACTION_KEY),
-                        Context.RECEIVER_EXPORTED);
-                } else {
-                    context.registerReceiver(authenticationBroadcastReceiver,
-                        new IntentFilter(ACTION_KEY));
-                }
+                registerXenditReceiver(context, authenticationBroadcastReceiver);
             }
         });
     }
@@ -1276,7 +1276,6 @@ public class XenditImpl implements Xendit {
     private void registerBroadcastReceiver(final TokenCallback tokenCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
 
-            @SuppressLint("UnspecifiedRegisterReceiverFlag")
             @Override
             public void run() {
                 if (tokenBroadcastReceiver != null) {
@@ -1285,19 +1284,13 @@ public class XenditImpl implements Xendit {
                 }
 
                 tokenBroadcastReceiver = new TokenBroadcastReceiver(tokenCallback);
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    context.registerReceiver(tokenBroadcastReceiver, new IntentFilter(ACTION_KEY),
-                        Context.RECEIVER_EXPORTED);
-                } else {
-                    context.registerReceiver(tokenBroadcastReceiver, new IntentFilter(ACTION_KEY));
-                }
+                registerXenditReceiver(context, tokenBroadcastReceiver);
             }
         });
     }
 
     private void registerBroadcastReceiverAuthenticatedToken(final TokenCallback tokenCallback) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @SuppressLint("UnspecifiedRegisterReceiverFlag")
             @Override
             public void run() {
                 if (authenticatedTokenBroadcastReceiver != null) {
@@ -1307,13 +1300,7 @@ public class XenditImpl implements Xendit {
 
                 authenticatedTokenBroadcastReceiver =
                     new AuthenticatedTokenBroadcastReceiver(tokenCallback);
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    context.registerReceiver(authenticatedTokenBroadcastReceiver,
-                        new IntentFilter(ACTION_KEY), Context.RECEIVER_EXPORTED);
-                } else {
-                    context.registerReceiver(authenticatedTokenBroadcastReceiver,
-                        new IntentFilter(ACTION_KEY));
-                }
+                registerXenditReceiver(context, authenticatedTokenBroadcastReceiver);
             }
         });
     }
