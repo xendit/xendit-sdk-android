@@ -15,6 +15,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import com.xendit.Models.HasAuthenticationUrl;
 import com.xendit.utils.Auth3DSEventValidator;
+import java.security.SecureRandom;
 
 /**
  * Created by Sergey on 3/23/17.
@@ -25,7 +26,17 @@ public class XenditActivity extends Activity {
     public static final String MESSAGE_KEY = "message_key";
     private static final String AUTHENTICATION_KEY = "authentication_key";
 
+    /**
+     * Origins the 3DS result is accepted from.
+     */
+    private static final String[] TRUSTED_MESSAGE_ORIGINS = {"https://redirect.xendit.co"};
+
     private ProgressBar progressBar;
+
+    /**
+     * Per-activity token passed by the page script with each message to MobileBridge.
+     */
+    private final String bridgeToken = generateBridgeToken();
 
     public static Intent getLaunchIntent(Context context, HasAuthenticationUrl authentication) {
         Intent intent = new Intent(context, XenditActivity.class);
@@ -83,9 +94,15 @@ public class XenditActivity extends Activity {
                     "html, body {margin: 0; padding: 0;}" +
                     "iframe {border: none;width: 100%;height: 100%;position: fixed;left: 0;top: 0;}" +
                 "</style>" +
-                "<script>addEventListener('message', function(e){ try {MobileBridge.postMessage(e['data']);} catch(err) {console.log('Android call error');} }, false);</script>" +
+                "<script>" +
+                    "var trustedOrigins = " + toJsArray(TRUSTED_MESSAGE_ORIGINS) + ";" +
+                    "addEventListener('message', function(e){" +
+                        "if (trustedOrigins.indexOf(e.origin) === -1) return;" +
+                        "try {MobileBridge.postMessage('" + bridgeToken + "', e['data']);} catch(err) {console.log('Android call error');}" +
+                    "}, false);" +
+                "</script>" +
             "</head>" +
-            "<body><iframe src='" + authentication.getPayerAuthenticationUrl() + "'></iframe></body>" +
+            "<body><iframe src='" + escapeHtmlAttribute(authentication.getPayerAuthenticationUrl()) + "'></iframe></body>" +
             "</html>";
 
         webView.loadDataWithBaseURL(baseUrl, data, "text/html", "utf-8", null);
@@ -94,7 +111,10 @@ public class XenditActivity extends Activity {
     private class WebViewJavaScriptInterface {
 
         @android.webkit.JavascriptInterface
-        public void postMessage(String message) {
+        public void postMessage(String token, String message) {
+            if (!bridgeToken.equals(token) || message == null) {
+                return;
+            }
             Handler handler = new Handler();
             handler.post(new Runnable() {
                 @Override
@@ -117,7 +137,37 @@ public class XenditActivity extends Activity {
     private void sendBroadcastReceiver(String message) {
         Intent intent = new Intent();
         intent.setAction(Xendit.ACTION_KEY);
+        // Deliver the 3DS result only to this app.
+        intent.setPackage(getPackageName());
         intent.putExtra(MESSAGE_KEY, message);
         sendBroadcast(intent);
+    }
+
+    private static String generateBridgeToken() {
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    private static String toJsArray(String[] values) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) sb.append(',');
+            sb.append('\'').append(values[i]).append('\'');
+        }
+        return sb.append(']').toString();
+    }
+
+    private static String escapeHtmlAttribute(String value) {
+        if (value == null) return "";
+        return value.replace("&", "&amp;")
+            .replace("'", "&#39;")
+            .replace("\"", "&quot;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;");
     }
 }
