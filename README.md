@@ -1,5 +1,6 @@
 > [!WARNING] 
-> ⚠️ **DEPRECATION NOTICE:**
+> **DEPRECATION NOTICE:**
+>
 > This SDK (`xendit-sdk-android`) is **deprecated** and in maintenance mode. No new features will be added.
 >
 > For all new integrations and existing apps, please migrate to our new drop-in **Xendit Components SDK**:
