@@ -1,3 +1,13 @@
+> [!WARNING] 
+> **DEPRECATION NOTICE:**
+>
+> This SDK (`xendit-sdk-android`) is **deprecated** and in maintenance mode. No new features will be added.
+>
+> For all new integrations and existing apps, please migrate to our new drop-in **Xendit Components SDK**:
+> [https://github.com/xendit/xendit-components-android](https://github.com/xendit/xendit-components-android)
+> 
+> 📖 **[Read the Step-by-Step Migration Guide Here](https://github.com/xendit/xendit-components-android/blob/main/MIGRATION_GUIDE.md)**
+
 # xendit-sdk-android
 The Xendit Android SDK makes it easy to collect sensitive credit card information without that data ever having to touch your server.
 
