@@ -1,3 +1,4 @@
+> [!WARNING] 
 > ⚠️ **DEPRECATION NOTICE:**
 > This SDK (`xendit-sdk-android`) is **deprecated** and in maintenance mode. No new features will be added.
 >
